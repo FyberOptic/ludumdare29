@@ -94,6 +94,7 @@ public class LD29
 		long gameTickTime = 0;
 		long secondTickTime = 0;
 		int ticks = 0;
+		int fps = 0;
 		
 		while (gameRunning)			 
 		{			 
@@ -101,7 +102,7 @@ public class LD29
 			deltaTime = (int)(currentTime - lastTime);
 			lastTime = currentTime;
 			
-			handleInput(deltaTime);
+			handleInput(deltaTime);		
 			
 			gameTickTime += deltaTime;
 			while (gameTickTime >= 50) // 50 = 20 fps
@@ -122,9 +123,11 @@ public class LD29
 			secondTickTime += deltaTime;
 			while (secondTickTime >= 1000)
 			{
-				System.out.println("TICKS: " + ticks);
+				//System.out.println("TICKS: " + ticks);
 				ticks = 0;
 				secondTickTime -= 1000;
+				System.out.println("FPS: " + fps); 
+				fps = 0;
 			}
 			
 			player.update(deltaTime);
@@ -137,6 +140,8 @@ public class LD29
 			if (Display.isCloseRequested()) gameRunning = false;
 			
 			if (Display.wasResized()) sizeDisplay();
+			
+			fps++;
 		}
 	 
 		Display.destroy();
@@ -176,8 +181,8 @@ public class LD29
 		float playervel = 50;
 		if (Keyboard.isKeyDown(Keyboard.KEY_A)) player.xVel = -playervel; 
 		if (Keyboard.isKeyDown(Keyboard.KEY_D)) player.xVel = playervel; 	
-		if (Keyboard.isKeyDown(Keyboard.KEY_W)) player.yVel = -playervel; 
-		if (Keyboard.isKeyDown(Keyboard.KEY_S)) player.yVel = playervel;
+		//if (Keyboard.isKeyDown(Keyboard.KEY_W)) player.yVel = -playervel; 
+		//if (Keyboard.isKeyDown(Keyboard.KEY_S)) player.yVel = playervel;
 		
 		
 		
