@@ -10,6 +10,7 @@ public class GridChunk
 	int gridX;
 	int gridY;
 	byte[] tiles;
+	byte[] data;
 	int renderList;
 	boolean dirty = true;
 	
@@ -17,8 +18,9 @@ public class GridChunk
 	public GridChunk()
 	{
 		tiles = new byte[CHUNKWIDTH*CHUNKHEIGHT];
+		data = new byte[CHUNKWIDTH*CHUNKHEIGHT];
 		
-		for (int n = 0; n < CHUNKWIDTH*CHUNKHEIGHT; n++) tiles[n] = 2; //(byte)(Math.random() * 4);
+		for (int n = 0; n < CHUNKWIDTH*CHUNKHEIGHT; n++) tiles[n] = 3; //(byte)(Math.random() * 4);
 		
 		for (int caves = 0; caves < 4; caves++)
 		{				
@@ -47,11 +49,11 @@ public class GridChunk
 				
 				boolean hitEdge = false;
 				
-				if (!setTile(intX, intY, -1)) hitEdge = true;
-				if (!setTile(intX+1, intY, -1)) hitEdge = true;
-				if (!setTile(intX-1, intY, -1)) hitEdge = true;
-				if (!setTile(intX, intY+1, -1)) hitEdge = true;
-				if (!setTile(intX, intY-1, -1)) hitEdge = true;
+				if (!setTile(intX, intY, 0)) hitEdge = true;
+				if (!setTile(intX+1, intY, 0)) hitEdge = true;
+				if (!setTile(intX-1, intY, 0)) hitEdge = true;
+				if (!setTile(intX, intY+1, 0)) hitEdge = true;
+				if (!setTile(intX, intY-1, 0)) hitEdge = true;
 				
 				if (hitEdge) 
 				{ 
@@ -92,21 +94,51 @@ public class GridChunk
 	{			
 		if (x < 1 || y < 1 || x >= CHUNKWIDTH-1 || y >= CHUNKHEIGHT-1) return false;			
 		tiles[(y * CHUNKWIDTH) + x] = (byte)(tilenum & 0xFF);
+		
+		notifyTileUpdate(x, y);
+		notifyTileUpdate(x+1, y);
+		notifyTileUpdate(x-1, y);
+		notifyTileUpdate(x, y+1);
+		notifyTileUpdate(x, y-1);
+		
 		return true;
 	}
 	
 	public int getTile(int x, int y)
 	{			
-		if (x < 0 || y < 0 || x >= CHUNKWIDTH || y >= CHUNKHEIGHT) return -1;			
-		return tiles[(y * CHUNKWIDTH) + x];		
+		if (x < 0 || y < 0 || x >= CHUNKWIDTH || y >= CHUNKHEIGHT) return 0;			
+		return tiles[(y * CHUNKWIDTH) + x] & 0xFF;		
 	}
+	
+	public void setData(int x, int y, int data)
+	{
+		if (x < 0 || y < 0 || x >= CHUNKWIDTH || y >= CHUNKHEIGHT) return;			
+		this.data[(y * CHUNKWIDTH) + x] = (byte) (data & 0xFF);
+	}
+	
+	public void notifyTileUpdate(int x, int y)
+	{
+		int thisTile = getTile(x, y);
+		if (thisTile > 0) { setData(x, y, 0); return; }
+		
+		int data = 0;
+		if (getTile(x - 1, y) > 0 && getTile(x, y - 1) > 0 ) data |= 1;
+		if (getTile(x + 1, y) > 0 && getTile(x, y - 1) > 0 ) data |= 2;
+		if (getTile(x - 1, y) > 0 && getTile(x, y + 1) > 0 ) data |= 4;
+		if (getTile(x + 1, y) > 0 && getTile(x, y + 1) > 0 ) data |= 8;
+		
+		//System.out.println(data);
+		setData(x, y, data);
+		
+	}
+	
 	
 	/**
 	 * 
 	 */
 	public void renderToList()
 	{
-		float uvCalc = 1.0f / (512 / 16);
+		
 
 		GL11.glNewList(renderList,GL11.GL_COMPILE);
 		
@@ -115,24 +147,19 @@ public class GridChunk
 		{
 			for (int x = 0; x < CHUNKWIDTH; x++)
 			{
-				int tilenum = tiles[(y * CHUNKWIDTH) + x];
-				if (tilenum < 0) continue;
+				int tilenum = tiles[(y * CHUNKWIDTH) + x] & 0xFF;
+				//if (tilenum < 0) continue;
 				// 32 tiles per row in atlas (512x512, 16x16 tiles)
 				
-				float tileX = (float)(tilenum % 32) * uvCalc;
-				float tileY = (float)(tilenum / 32) * uvCalc;					
+				renderTileQuad(x, y, tilenum);
 				
-				GL11.glTexCoord2f(tileX + 0.0001f, tileY + 0.0001f);	
-				GL11.glVertex2f(x * 16, y * 16);	
+				int tiledata = data[(y * CHUNKWIDTH) + x] & 0xFF;
+				if ((tiledata & 1) > 0) renderTileQuad(x, y, 64);
+				if ((tiledata & 2) > 0) renderTileQuad(x, y, 65);
+				if ((tiledata & 4) > 0) renderTileQuad(x, y, 66);
+				if ((tiledata & 8) > 0) renderTileQuad(x, y, 67);
 				
-				GL11.glTexCoord2f(tileX + uvCalc - 0.0001f, tileY + 0.0001f); 
-				GL11.glVertex2f(x * 16 + 16, y * 16);	
 				
-				GL11.glTexCoord2f(tileX + uvCalc - 0.0001f, tileY + uvCalc - 0.0001f); 
-				GL11.glVertex2f(x * 16 + 16, y * 16 + 16);	
-				
-				GL11.glTexCoord2f(tileX + 0.0001f, tileY + uvCalc - 0.0001f); 
-				GL11.glVertex2f(x * 16, y * 16 + 16);	
 			}
 		}
 		GL11.glEnd();			
@@ -149,6 +176,27 @@ public class GridChunk
 //		GL11.glEnd();			
 		
 		GL11.glEndList();
+	}
+	
+	
+	public void renderTileQuad(int x, int y, int tilenum)
+	{
+		if (tilenum == 0) return;
+		
+		float uvCalc = 1.0f / (512 / 16);
+		
+		float tileX = (float)(tilenum % 32) * uvCalc;
+		float tileY = (float)(tilenum / 32) * uvCalc;					
+		
+		GL11.glTexCoord2f(tileX + 0.0001f, tileY + 0.0001f);	
+		GL11.glVertex2f(x * 16, y * 16);					
+		GL11.glTexCoord2f(tileX + uvCalc - 0.0001f, tileY + 0.0001f); 
+		GL11.glVertex2f(x * 16 + 16, y * 16);				
+		GL11.glTexCoord2f(tileX + uvCalc - 0.0001f, tileY + uvCalc - 0.0001f); 
+		GL11.glVertex2f(x * 16 + 16, y * 16 + 16);				
+		GL11.glTexCoord2f(tileX + 0.0001f, tileY + uvCalc - 0.0001f); 
+		GL11.glVertex2f(x * 16, y * 16 + 16);	
+
 	}
 	
 	/**

@@ -18,6 +18,8 @@ public class Entity
 	
 	int tileNum;
 	
+	int facing = 1;
+	
 	GridChunk gridChunk = null;
 	
 	ArrayList<Vector2i> intercepts = new ArrayList<Vector2i>();
@@ -45,17 +47,22 @@ public class Entity
 		//GL11.glDisable(GL11.GL_TEXTURE_2D);
 		//GL11.glPolygonMode(GL11.GL_FRONT_AND_BACK, GL11.GL_LINE);
 		
+		float uvLeft = tileX;
+		float uvRight = tileX + uvCalc;
+		
+		if (facing == -1) { uvLeft = tileX + uvCalc; uvRight = tileX; }
+		
 		GL11.glBegin(GL11.GL_QUADS);
-		GL11.glTexCoord2f(tileX, tileY);	
+		GL11.glTexCoord2f(uvLeft, tileY);	
 		GL11.glVertex2f(xPos, yPos);	
 		
-		GL11.glTexCoord2f(tileX + uvCalc, tileY); 
+		GL11.glTexCoord2f(uvRight, tileY); 
 		GL11.glVertex2f(xPos + 16, yPos);	
 		
-		GL11.glTexCoord2f(tileX + uvCalc, tileY + uvCalc); 
+		GL11.glTexCoord2f(uvRight, tileY + uvCalc); 
 		GL11.glVertex2f(xPos + 16, yPos + 16);	
 		
-		GL11.glTexCoord2f(tileX, tileY + uvCalc); 
+		GL11.glTexCoord2f(uvLeft, tileY + uvCalc); 
 		GL11.glVertex2f(xPos, yPos + 16);
 		GL11.glEnd();
 		
@@ -97,7 +104,7 @@ public class Entity
 	
 	public BoundingBox getBB()
 	{
-		return new BoundingBox(xPos, yPos, xPos + 15f, yPos + 15f);
+		return new BoundingBox(xPos + 4, yPos, xPos + 15f - 4, yPos + 15f);
 	}
 	
 	
@@ -176,7 +183,7 @@ public class Entity
 		{
 			for (int x = (int)(Math.floor(bb.xMin)) >> 4; x <= (int)(Math.floor(bb.xMax)) >> 4; x++)
 			{
-				if (gridChunk.getTile(x, y) >= 0) list.add(new Vector2i(x, y));
+				if (gridChunk.getTile(x, y) > 0) list.add(new Vector2i(x, y));
 			}
 		}		
 
@@ -189,8 +196,14 @@ public class Entity
 		
 		//yVel += 200 * delta;
 		
+		if (Keyboard.isKeyDown(Keyboard.KEY_SPACE)) yVel -= 400 * delta;
+		else yVel += 200 * delta;
+		
+		if (yVel < -100) yVel = -100;
+		if (yVel > 400) yVel = 400;
 
-		if (Keyboard.isKeyDown(Keyboard.KEY_SPACE)) yVel = -100; 
+		//if (Keyboard.isKeyDown(Keyboard.KEY_SPACE)) yVel -= 500* delta;
+		//if (yVel < -100) yVel = -100;
 		
 		
 		float moveX = xVel * delta;
@@ -209,12 +222,8 @@ public class Entity
 		moveX = getMaxMoveAmountX(this.getBB().translate(moveX,  moveY), moveX);	
 		
 		xPos = xPos + moveX;
-		//if (startX != 0 && moveX == 0) xVel = 0;
-		//if (moveX != 0 || startX != moveX) xVel = 0;
-		//if (lastX == xPos) xVel = 0;		
-		
 		yPos = yPos + moveY;		
-		if (startY != 0 && moveY == 0) yVel = 0;
+		if (startY != 0 && moveY != startY) { yVel = 0; }
 		
 		
 		intercepts.clear();
@@ -224,11 +233,31 @@ public class Entity
 		
 	}
 	
+	int frameTimer = 0;
+	public boolean animating = false;
 	
 	public void tick()
 	{
-		yVel += 20;		
+	
+		
 		xVel *= 0.5;
+		if (xVel < 0.1f && xVel > -0.1f) xVel = 0;
+		
+		if (xVel > 0) facing = 1;
+		if (xVel < 0) facing = -1;
+		
+		if (xVel != 0) animating = true; else animating = false;
+		if (animating) frameTimer++;
+		if (frameTimer > 2)
+		{
+			tileNum++;
+			if (tileNum > 34) tileNum = 32;
+			
+			frameTimer = 0;
+		}
+		
+		
+		//if (!animating) tileNum = 32;
 		
 		
 	}

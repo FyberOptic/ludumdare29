@@ -174,10 +174,12 @@ public class LD29
 		if (Keyboard.isKeyDown(Keyboard.KEY_DOWN)) { player.yVel = 0; player.yPos += moveamount; }
 		
 		float playervel = 50;
-		if (Keyboard.isKeyDown(Keyboard.KEY_A)) player.xVel = -playervel;
-		if (Keyboard.isKeyDown(Keyboard.KEY_D)) player.xVel = playervel; 		
+		if (Keyboard.isKeyDown(Keyboard.KEY_A)) player.xVel = -playervel; 
+		if (Keyboard.isKeyDown(Keyboard.KEY_D)) player.xVel = playervel; 	
 		if (Keyboard.isKeyDown(Keyboard.KEY_W)) player.yVel = -playervel; 
 		if (Keyboard.isKeyDown(Keyboard.KEY_S)) player.yVel = playervel;
+		
+		
 		
 		scrollX = 160 + -player.xPos - 8;
 		scrollY = 120 + -player.yPos - 8;
