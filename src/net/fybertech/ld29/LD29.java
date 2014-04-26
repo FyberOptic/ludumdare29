@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.util.Arrays;
 
 import org.lwjgl.LWJGLException;
+import org.lwjgl.Sys;
+import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.DisplayMode;
 import org.lwjgl.opengl.GL11;
@@ -12,7 +14,18 @@ import org.newdawn.slick.opengl.TextureLoader;
 import org.newdawn.slick.util.ResourceLoader;
 
 public class LD29 
-{
+{	
+	
+	public boolean gameRunning = true;	
+	public Texture textureAtlas = null;
+	int displayScale = 1;
+	float userScale = 1;
+	
+	long[] keypressStart = null;
+	
+	float scrollX = 0;
+	float scrollY = 0;
+	
 	
 	public class GridChunk
 	{
@@ -30,7 +43,7 @@ public class LD29
 		{
 			tiles = new byte[CHUNKWIDTH*CHUNKHEIGHT];
 			
-			for (int n = 0; n < CHUNKWIDTH*CHUNKHEIGHT; n++) tiles[n] = 0; //(byte)(Math.random() * 4);
+			for (int n = 0; n < CHUNKWIDTH*CHUNKHEIGHT; n++) tiles[n] = 2; //(byte)(Math.random() * 4);
 			
 			for (int caves = 0; caves < 4; caves++)
 			{				
@@ -93,6 +106,13 @@ public class LD29
 			renderList = GL11.glGenLists(1);
 		}
 		
+		/**
+		 * 
+		 * @param x
+		 * @param y
+		 * @param tilenum
+		 * @return
+		 */
 		public boolean setTile(int x, int y, int tilenum)
 		{			
 			if (x < 1 || y < 1 || x >= CHUNKWIDTH-1 || y >= CHUNKHEIGHT-1) return false;			
@@ -101,6 +121,9 @@ public class LD29
 		}
 		
 		
+		/**
+		 * 
+		 */
 		public void renderToList()
 		{
 			float uvCalc = 1.0f / (512 / 16);
@@ -132,8 +155,7 @@ public class LD29
 					GL11.glVertex2f(x * 16, y * 16 + 16);	
 				}
 			}
-			GL11.glEnd();
-			
+			GL11.glEnd();			
 			
 //			GL11.glBegin(GL11.GL_QUADS);	
 //			GL11.glTexCoord2f(0,0);	
@@ -144,26 +166,41 @@ public class LD29
 //			GL11.glVertex2f(textureAtlas.getTextureWidth(),textureAtlas.getTextureHeight());		
 //			GL11.glTexCoord2f(0,1);
 //			GL11.glVertex2f(0,textureAtlas.getTextureHeight());	
-//			GL11.glEnd();
-			
+//			GL11.glEnd();			
 			
 			GL11.glEndList();
 		}
 		
+		/**
+		 * 
+		 */
 		public void release()
 		{
 			tiles = null;
 			GL11.glDeleteLists(renderList,  1);
 		}
 	}
+
 	
 	
 	
-	public boolean gameRunning = true;	
-	public Texture textureAtlas = null;
-	int displayScale = 1;
 	
 	
+	
+	
+	/**
+	 * 
+	 * @return
+	 */
+	public long getTime() 
+	{
+		return (Sys.getTime() * 1000) / Sys.getTimerResolution();
+	}
+	
+	
+	/**
+	 * 
+	 */
 	public void start()
 	{
 		
@@ -189,6 +226,7 @@ public class LD29
 			System.exit(0);
 		}
 		
+		keypressStart = new long[Keyboard.KEYBOARD_SIZE];
 		
 		sizeDisplay();
 		
@@ -202,12 +240,49 @@ public class LD29
 		GridChunk gc = new GridChunk();
 		gc.renderToList();
 		
+		long currentTime = getTime();
+		long lastTime = getTime();
+		int deltaTime = 0;
+		
+		long gameTickTime = 0;
+		long secondTickTime = 0;
+		int ticks = 0;
+		
 		while (gameRunning)			 
 		{			 
+			currentTime = getTime();
+			deltaTime = (int)(currentTime - lastTime);
+			lastTime = currentTime;
+			
+			handleInput(deltaTime);
+			
+			gameTickTime += deltaTime;
+			while (gameTickTime >= 50) // 50 = 20 fps
+			{				
+				gameTickTime -= 50;
+				ticks++;
+				
+				//if (Keyboard.isKeyDown(Keyboard.KEY_LEFT)) scrollX -= 2;
+				//if (Keyboard.isKeyDown(Keyboard.KEY_RIGHT)) scrollX += 2;
+				//if (Keyboard.isKeyDown(Keyboard.KEY_UP)) scrollY -= 2;
+				//if (Keyboard.isKeyDown(Keyboard.KEY_DOWN)) scrollY += 2;		
+				
+				if (Keyboard.isKeyDown(Keyboard.KEY_ESCAPE)) gameRunning = false; 
+			}
+			
+			secondTickTime += deltaTime;
+			while (secondTickTime >= 1000)
+			{
+				System.out.println("TICKS: " + ticks);
+				ticks = 0;
+				secondTickTime -= 1000;
+			}		
+			
 			GL11.glClear(GL11.GL_COLOR_BUFFER_BIT);
 			GL11.glLoadIdentity();
-			GL11.glScalef((float)displayScale / 8.0f, (float) displayScale / 8.0f, (float)displayScale / 8.0f);
+			GL11.glScalef(((float)displayScale / 1.0f) * userScale, ((float) displayScale / 1.0f) * userScale, 1);
 			render();
+			GL11.glTranslatef(scrollX,  scrollY,  0);
 			GL11.glCallList(gc.renderList);
 			Display.update();
 			
@@ -220,7 +295,35 @@ public class LD29
 	}
 	
 	
+	/**
+	 * 
+	 * @param deltaTime
+	 */
+	public void handleInput(int deltaTime)
+	{
+		while (Keyboard.next())
+		{			
+			if (Keyboard.getEventKeyState()) 
+			{ 
+				keypressStart[Keyboard.getEventKey()] = getTime();
+				
+				if (Keyboard.getEventKey() == Keyboard.KEY_ADD) this.userScale *= 2.0f;
+				if (Keyboard.getEventKey() == Keyboard.KEY_SUBTRACT) this.userScale /= 2.0f; 
+				
+			}			
+		}
+		
+		float scrollamount = (deltaTime / 1000.0f) * 150;
+		if (Keyboard.isKeyDown(Keyboard.KEY_LEFT)) scrollX -= scrollamount; 
+		if (Keyboard.isKeyDown(Keyboard.KEY_RIGHT)) scrollX += scrollamount;
+		if (Keyboard.isKeyDown(Keyboard.KEY_UP)) scrollY -= scrollamount;
+		if (Keyboard.isKeyDown(Keyboard.KEY_DOWN)) scrollY += scrollamount;
+	}
 	
+	
+	/**
+	 * 
+	 */
 	public void sizeDisplay()
 	{
 		GL11.glViewport(0,0,Display.getWidth(), Display.getHeight());
@@ -239,13 +342,19 @@ public class LD29
 	}
 	
 	
+	/**
+	 * 
+	 */
 	public void render()
 	{
 		
 	}
 	
 	
-	
+	/**
+	 * 
+	 * @param args
+	 */
 	public static void main(String[] args)
 	{
 		LD29 ld29 = new LD29();
