@@ -21,5 +21,28 @@ public class BoundingBox
 		yMax = ymm;
 	}
 	
+	public BoundingBox translate(float x, float y)
+	{
+		xMin += x;
+		xMax += x;
+		yMin += y;
+		yMax += y;
+		
+		return this;
+	}
+	
+	public BoundingBox addTo(float x, float y)
+	{
+		if (x > 0) xMax += x; else xMin -= x;
+		if (y > 0) yMax += y; else yMin -= y;
+		
+		return this;
+	}
+	
+	public BoundingBox copy()
+	{
+		return new BoundingBox(xMin, yMin, xMax, yMax);
+	}
+	
 	
 }

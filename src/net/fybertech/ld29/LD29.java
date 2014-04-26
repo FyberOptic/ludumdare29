@@ -167,16 +167,21 @@ public class LD29
 		if (Keyboard.isKeyDown(Keyboard.KEY_NUMPAD8)) scrollY -= scrollamount;
 		if (Keyboard.isKeyDown(Keyboard.KEY_NUMPAD2)) scrollY += scrollamount;
 		
-		float moveamount = (deltaTime / 1000.0f) * 50;
+		float moveamount = (deltaTime / 1000.0f) * 10;
 		if (Keyboard.isKeyDown(Keyboard.KEY_LEFT)) player.xPos -= moveamount; 
 		if (Keyboard.isKeyDown(Keyboard.KEY_RIGHT)) player.xPos += moveamount;
 		if (Keyboard.isKeyDown(Keyboard.KEY_UP)) player.yPos -= moveamount;
 		if (Keyboard.isKeyDown(Keyboard.KEY_DOWN)) player.yPos += moveamount;
 		
+		if (Keyboard.isKeyDown(Keyboard.KEY_D)) player.xVel = 20; 
+		if (Keyboard.isKeyDown(Keyboard.KEY_A)) player.xVel = -20;
+		if (Keyboard.isKeyDown(Keyboard.KEY_W)) player.yVel = -20; 
+		if (Keyboard.isKeyDown(Keyboard.KEY_S)) player.yVel = 20;
+		
 		scrollX = 160 + -player.xPos - 8;
 		scrollY = 120 + -player.yPos - 8;
 		
-		if (Keyboard.isKeyDown(Keyboard.KEY_S)) 
+		if (Keyboard.isKeyDown(Keyboard.KEY_TAB)) 
 		{ 
 			scrollX += (Math.random() * 8) - 4; 
 			scrollY += (Math.random() * 8) - 4;
