@@ -142,22 +142,30 @@ public class GridChunk
 
 		GL11.glNewList(renderList,GL11.GL_COMPILE);
 		
+		int padding = 20;
+		
 		GL11.glBegin(GL11.GL_QUADS);	
-		for (int y = 0; y < CHUNKHEIGHT; y++)
+		for (int y = -padding; y < CHUNKHEIGHT + padding; y++)
 		{
-			for (int x = 0; x < CHUNKWIDTH; x++)
+			for (int x = -padding; x < CHUNKWIDTH + padding; x++)
 			{
-				int tilenum = tiles[(y * CHUNKWIDTH) + x] & 0xFF;
-				//if (tilenum < 0) continue;
-				// 32 tiles per row in atlas (512x512, 16x16 tiles)
+				int tilenum = 3;
 				
-				renderTileQuad(x, y, tilenum);
-				
-				int tiledata = data[(y * CHUNKWIDTH) + x] & 0xFF;
-				if ((tiledata & 1) > 0) renderTileQuad(x, y, 64);
-				if ((tiledata & 2) > 0) renderTileQuad(x, y, 65);
-				if ((tiledata & 4) > 0) renderTileQuad(x, y, 66);
-				if ((tiledata & 8) > 0) renderTileQuad(x, y, 67);
+				if (x >= 0 && x < CHUNKWIDTH && y >= 0 && y < CHUNKHEIGHT)
+				{
+					tilenum = tiles[(y * CHUNKWIDTH) + x] & 0xFF;
+
+					// 32 tiles per row in atlas (512x512, 16x16 tiles)
+					
+					renderTileQuad(x, y, tilenum);
+					
+					int tiledata = data[(y * CHUNKWIDTH) + x] & 0xFF;
+					if ((tiledata & 1) > 0) renderTileQuad(x, y, 64);
+					if ((tiledata & 2) > 0) renderTileQuad(x, y, 65);
+					if ((tiledata & 4) > 0) renderTileQuad(x, y, 66);
+					if ((tiledata & 8) > 0) renderTileQuad(x, y, 67);
+				}
+				else renderTileQuad(x, y, 3);
 				
 				
 			}

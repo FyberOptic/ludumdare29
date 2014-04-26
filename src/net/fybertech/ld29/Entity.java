@@ -47,22 +47,22 @@ public class Entity
 		//GL11.glDisable(GL11.GL_TEXTURE_2D);
 		//GL11.glPolygonMode(GL11.GL_FRONT_AND_BACK, GL11.GL_LINE);
 		
-		float uvLeft = tileX;
-		float uvRight = tileX + uvCalc;
+		float uvLeft = tileX + 0.0001f;
+		float uvRight = tileX + uvCalc - 0.0001f;
 		
-		if (facing == -1) { uvLeft = tileX + uvCalc; uvRight = tileX; }
+		if (facing == -1) { uvLeft = tileX + uvCalc - 0.0001f; uvRight = tileX + 0.0001f; }
 		
 		GL11.glBegin(GL11.GL_QUADS);
-		GL11.glTexCoord2f(uvLeft, tileY);	
+		GL11.glTexCoord2f(uvLeft, tileY + 0.0001f);	
 		GL11.glVertex2f(xPos, yPos);	
 		
-		GL11.glTexCoord2f(uvRight, tileY); 
+		GL11.glTexCoord2f(uvRight, tileY + 0.0001f); 
 		GL11.glVertex2f(xPos + 16, yPos);	
 		
-		GL11.glTexCoord2f(uvRight, tileY + uvCalc); 
+		GL11.glTexCoord2f(uvRight, tileY + uvCalc - 0.0001f); 
 		GL11.glVertex2f(xPos + 16, yPos + 16);	
 		
-		GL11.glTexCoord2f(uvLeft, tileY + uvCalc); 
+		GL11.glTexCoord2f(uvLeft, tileY + uvCalc - 0.0001f); 
 		GL11.glVertex2f(xPos, yPos + 16);
 		GL11.glEnd();
 		

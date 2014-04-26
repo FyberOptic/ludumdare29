@@ -167,11 +167,11 @@ public class LD29
 		if (Keyboard.isKeyDown(Keyboard.KEY_NUMPAD8)) scrollY -= scrollamount;
 		if (Keyboard.isKeyDown(Keyboard.KEY_NUMPAD2)) scrollY += scrollamount;
 		
-		float moveamount = (deltaTime / 1000.0f) * 10;
-		if (Keyboard.isKeyDown(Keyboard.KEY_LEFT)) player.xPos -= moveamount; 
-		if (Keyboard.isKeyDown(Keyboard.KEY_RIGHT)) player.xPos += moveamount;
-		if (Keyboard.isKeyDown(Keyboard.KEY_UP)) {player.yVel = 0; player.yPos -= moveamount; }
-		if (Keyboard.isKeyDown(Keyboard.KEY_DOWN)) { player.yVel = 0; player.yPos += moveamount; }
+		//float moveamount = (deltaTime / 1000.0f) * 10;
+		//if (Keyboard.isKeyDown(Keyboard.KEY_LEFT)) player.xPos -= moveamount; 
+		//if (Keyboard.isKeyDown(Keyboard.KEY_RIGHT)) player.xPos += moveamount;
+		//if (Keyboard.isKeyDown(Keyboard.KEY_UP)) {player.yVel = 0; player.yPos -= moveamount; }
+		//if (Keyboard.isKeyDown(Keyboard.KEY_DOWN)) { player.yVel = 0; player.yPos += moveamount; }
 		
 		float playervel = 50;
 		if (Keyboard.isKeyDown(Keyboard.KEY_A)) player.xVel = -playervel; 
@@ -221,6 +221,30 @@ public class LD29
 	{
 		GL11.glTranslatef((Display.getWidth() - (320.0f * displayScale * userScale)) / 2.0f, ( Display.getHeight() - (240.0f * displayScale * userScale)) / 2.0f,0);
 		GL11.glScalef(((float)displayScale / 1.0f) * userScale, ((float) displayScale / 1.0f) * userScale, 1);
+		
+		
+		float scaleFactor;
+		
+		GL11.glPushMatrix();
+		scaleFactor = 0.5f;
+		GL11.glColor3f(0.25f,  0.25f,  0.25f);
+		GL11.glScalef(scaleFactor, scaleFactor, scaleFactor);
+		GL11.glTranslatef(scrollX * scaleFactor,  scrollY * scaleFactor,  0);		
+		GL11.glCallList(gridChunk.renderList);
+		GL11.glPopMatrix();
+		
+		GL11.glPushMatrix();
+		scaleFactor = 0.75f;
+		GL11.glColor3f(0.5f,  0.5f,  0.5f);
+		GL11.glScalef(scaleFactor, scaleFactor, scaleFactor);
+		GL11.glTranslatef(scrollX * scaleFactor,  scrollY * scaleFactor,  0);		
+		GL11.glCallList(gridChunk.renderList);
+		GL11.glPopMatrix();
+		
+
+
+		
+		GL11.glColor3f(1,1,1);
 		GL11.glTranslatef(scrollX,  scrollY,  0);
 		GL11.glCallList(gridChunk.renderList);
 		player.render();
