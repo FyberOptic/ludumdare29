@@ -26,8 +26,9 @@ public class LD29
 	float scrollX = 0;
 	float scrollY = 0;
 	
-	Entity player = new Entity(32);
+	Entity player;// = new Entity(32);
 	
+	GridChunk gridChunk = null;
 	
 	
 	/**
@@ -79,8 +80,12 @@ public class LD29
 		
 		textureAtlas.bind();
 		
-		GridChunk gc = new GridChunk();
-		gc.renderToList();
+		gridChunk = new GridChunk();
+		gridChunk.renderToList();
+		
+		player = new Entity(gridChunk, 32);
+		player.xPos = 32;
+		player.yPos = 32;
 		
 		long currentTime = getTime();
 		long lastTime = getTime();
@@ -107,7 +112,9 @@ public class LD29
 				//if (Keyboard.isKeyDown(Keyboard.KEY_LEFT)) scrollX -= 2;
 				//if (Keyboard.isKeyDown(Keyboard.KEY_RIGHT)) scrollX += 2;
 				//if (Keyboard.isKeyDown(Keyboard.KEY_UP)) scrollY -= 2;
-				//if (Keyboard.isKeyDown(Keyboard.KEY_DOWN)) scrollY += 2;		
+				//if (Keyboard.isKeyDown(Keyboard.KEY_DOWN)) scrollY += 2;			
+				
+				player.tick();
 				
 				if (Keyboard.isKeyDown(Keyboard.KEY_ESCAPE)) gameRunning = false; 
 			}
@@ -118,18 +125,13 @@ public class LD29
 				System.out.println("TICKS: " + ticks);
 				ticks = 0;
 				secondTickTime -= 1000;
-			}		
+			}
+			
+			player.update(deltaTime);
 			
 			GL11.glClear(GL11.GL_COLOR_BUFFER_BIT);
 			GL11.glLoadIdentity();
-			
-			GL11.glTranslatef((Display.getWidth() - (320.0f * displayScale * userScale)) / 2.0f, ( Display.getHeight() - (240.0f * displayScale * userScale)) / 2.0f,0);
-			GL11.glScalef(((float)displayScale / 1.0f) * userScale, ((float) displayScale / 1.0f) * userScale, 1);
-			
 			render();
-			GL11.glTranslatef(scrollX,  scrollY,  0);
-			GL11.glCallList(gc.renderList);
-			player.render();
 			Display.update();
 			
 			if (Display.isCloseRequested()) gameRunning = false;
@@ -174,7 +176,7 @@ public class LD29
 		scrollX = 160 + -player.xPos - 8;
 		scrollY = 120 + -player.yPos - 8;
 		
-		if (Keyboard.isKeyDown(Keyboard.KEY_SPACE)) 
+		if (Keyboard.isKeyDown(Keyboard.KEY_S)) 
 		{ 
 			scrollX += (Math.random() * 8) - 4; 
 			scrollY += (Math.random() * 8) - 4;
@@ -209,7 +211,11 @@ public class LD29
 	 */
 	public void render()
 	{
-		
+		GL11.glTranslatef((Display.getWidth() - (320.0f * displayScale * userScale)) / 2.0f, ( Display.getHeight() - (240.0f * displayScale * userScale)) / 2.0f,0);
+		GL11.glScalef(((float)displayScale / 1.0f) * userScale, ((float) displayScale / 1.0f) * userScale, 1);
+		GL11.glTranslatef(scrollX,  scrollY,  0);
+		GL11.glCallList(gridChunk.renderList);
+		player.render();
 	}
 	
 	

@@ -95,6 +95,11 @@ public class GridChunk
 		return true;
 	}
 	
+	public int getTile(int x, int y)
+	{			
+		if (x < 0 || y < 0 || x >= CHUNKWIDTH || y >= CHUNKHEIGHT) return -1;			
+		return tiles[(y * CHUNKWIDTH) + x];		
+	}
 	
 	/**
 	 * 
