@@ -170,13 +170,14 @@ public class LD29
 		float moveamount = (deltaTime / 1000.0f) * 10;
 		if (Keyboard.isKeyDown(Keyboard.KEY_LEFT)) player.xPos -= moveamount; 
 		if (Keyboard.isKeyDown(Keyboard.KEY_RIGHT)) player.xPos += moveamount;
-		if (Keyboard.isKeyDown(Keyboard.KEY_UP)) player.yPos -= moveamount;
-		if (Keyboard.isKeyDown(Keyboard.KEY_DOWN)) player.yPos += moveamount;
+		if (Keyboard.isKeyDown(Keyboard.KEY_UP)) {player.yVel = 0; player.yPos -= moveamount; }
+		if (Keyboard.isKeyDown(Keyboard.KEY_DOWN)) { player.yVel = 0; player.yPos += moveamount; }
 		
-		if (Keyboard.isKeyDown(Keyboard.KEY_D)) player.xVel = 20; 
-		if (Keyboard.isKeyDown(Keyboard.KEY_A)) player.xVel = -20;
-		if (Keyboard.isKeyDown(Keyboard.KEY_W)) player.yVel = -20; 
-		if (Keyboard.isKeyDown(Keyboard.KEY_S)) player.yVel = 20;
+		float playervel = 50;
+		if (Keyboard.isKeyDown(Keyboard.KEY_A)) player.xVel = -playervel;
+		if (Keyboard.isKeyDown(Keyboard.KEY_D)) player.xVel = playervel; 		
+		if (Keyboard.isKeyDown(Keyboard.KEY_W)) player.yVel = -playervel; 
+		if (Keyboard.isKeyDown(Keyboard.KEY_S)) player.yVel = playervel;
 		
 		scrollX = 160 + -player.xPos - 8;
 		scrollY = 120 + -player.yPos - 8;

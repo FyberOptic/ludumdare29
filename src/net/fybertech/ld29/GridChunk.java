@@ -122,16 +122,16 @@ public class GridChunk
 				float tileX = (float)(tilenum % 32) * uvCalc;
 				float tileY = (float)(tilenum / 32) * uvCalc;					
 				
-				GL11.glTexCoord2f(tileX, tileY);	
+				GL11.glTexCoord2f(tileX + 0.0001f, tileY + 0.0001f);	
 				GL11.glVertex2f(x * 16, y * 16);	
 				
-				GL11.glTexCoord2f(tileX + uvCalc, tileY); 
+				GL11.glTexCoord2f(tileX + uvCalc - 0.0001f, tileY + 0.0001f); 
 				GL11.glVertex2f(x * 16 + 16, y * 16);	
 				
-				GL11.glTexCoord2f(tileX + uvCalc, tileY + uvCalc); 
+				GL11.glTexCoord2f(tileX + uvCalc - 0.0001f, tileY + uvCalc - 0.0001f); 
 				GL11.glVertex2f(x * 16 + 16, y * 16 + 16);	
 				
-				GL11.glTexCoord2f(tileX, tileY + uvCalc); 
+				GL11.glTexCoord2f(tileX + 0.0001f, tileY + uvCalc - 0.0001f); 
 				GL11.glVertex2f(x * 16, y * 16 + 16);	
 			}
 		}
