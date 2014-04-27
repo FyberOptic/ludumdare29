@@ -24,6 +24,8 @@ public class Entity
 	
 	boolean onGround = false;
 	boolean hitHead = false;
+	boolean jumping = false;
+	int jumpcounter = 0;
 	
 	public boolean destroyEntity = false;
 	
@@ -268,7 +270,8 @@ public class Entity
 		else 
 		{
 			//if (!onGround) 
-				yVel += 300 * delta;
+			if (jumping) yVel += 100 * delta;
+			else yVel += 300 * delta;
 		}
 		
 		if (yVel < -100) yVel = -100;
