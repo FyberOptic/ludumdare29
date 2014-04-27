@@ -170,7 +170,7 @@ public class GridChunk
 		
 		if (thisTile > 0 && thisTile < 32)// && firstGeneration) 
 		{ 
-			setData(x, y, 0); 
+			//setData(x, y, 0); 
 			if (!isLeft && !isUp) { setTileDirect(x, y, 7); } //setData(x - 1, y, 0); setData(x, y - 1, 0);}
 			if (!isRight && !isUp) { setTileDirect(x, y, 8); } //setData(x + 1, y, 0); setData(x, y - 1, 0); }
 			if (!isLeft && !isDown) { setTileDirect(x, y, 9); } //setData(x - 1, y, 0); setData(x, y + 1, 0); }

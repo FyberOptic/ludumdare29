@@ -10,6 +10,7 @@ import org.lwjgl.LWJGLException;
 import org.lwjgl.Sys;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
+import org.lwjgl.openal.AL;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.DisplayMode;
 import org.lwjgl.opengl.GL11;
@@ -223,6 +224,7 @@ public class LD29
 		//soundLand
 		//soundHead
 		Display.destroy();
+		AL.destroy();
 	}
 	
 	
@@ -297,6 +299,8 @@ public class LD29
 		} 
 		
 		
+				
+		
 		// Handle mouse
 		
 		while (Mouse.next())
@@ -325,6 +329,13 @@ public class LD29
 				LD29.soundShoot.playAsSoundEffect((float)(Math.random() * 0.05) + 1f,  0.55f,  false);
 			}
 		}
+		
+		int mx = Mouse.getX();
+		int my = Mouse.getY();
+		my = Display.getHeight() - my -  1;		
+		int dx = (Display.getWidth() / 2) - mx;
+		int dy = (Display.getHeight() / 2) - my;
+		flashdir = (float)(Math.atan2(-dy, -dx) * 180 / Math.PI);
 
 	}
 	
@@ -351,6 +362,8 @@ public class LD29
 		awtFont = new Font("Arial", Font.BOLD, 8 * displayScale);
 		font = new TrueTypeFont(awtFont, false);
 	}
+	
+	float flashdir = 0;
 	
 	
 	/**
@@ -386,6 +399,7 @@ public class LD29
 
 				
 		GL11.glColor3f(1,1,1);
+		GL11.glColor3f(0.75f, 0.75f, 0.75f);
 		GL11.glTranslatef(scrollX,  scrollY,  0);
 		GL11.glCallList(gridChunk.renderList);
 		//for (Particle p : particles) p.render();
@@ -393,9 +407,52 @@ public class LD29
 		for (Entity e : entities) { if (e != player) e.render(); }
 		player.render();
 		
-		GL11.glLoadIdentity();
-		//GL11.glScalef(((float)displayScale / 1.0f), ((float) displayScale / 1.0f), 1);
+		//GL11.glBlendFunc( GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+		//GL11.glBlendFunc (GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
 		
+		GL11.glBlendFunc (GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+		
+		GL11.glLoadIdentity();
+		GL11.glTranslatef(Display.getWidth() / 2, (Display.getHeight() / 2), 0);
+		GL11.glScalef(((float)displayScale / 1.0f) * userScale * 10, ((float) displayScale / 1.0f) * userScale * 10, 1);
+		GL11.glTranslatef(0, 0.1f, 0);
+		
+		
+		int tilenum = 9 * 32;;
+		int x = 0;
+		int y = 0;
+			
+		float uvCalc = 1.0f / (512 / 16);
+		
+		float tileX = (float)(tilenum % 32) * uvCalc;
+		float tileY = (float)(tilenum / 32) * uvCalc;			
+				
+		//GL11.glScalef(10,10,10);
+		
+		GL11.glRotatef(flashdir,  0,  0,  1);;
+		GL11.glTranslatef(0, -8, 0);
+
+		//GL11.glColor3f(1, 1, 1);
+		GL11.glColor3f(0.75f, 0.75f, 1f);
+		
+		int flashwidth =  4;
+		int flashheight = 3;
+		
+		GL11.glBegin(GL11.GL_QUADS);
+		GL11.glTexCoord2f(tileX + 0.0001f, tileY + 0.0001f);	
+		GL11.glVertex2f(x * 16, y * 16);					
+		GL11.glTexCoord2f(tileX + (flashwidth * uvCalc) - 0.0001f, tileY + 0.0001f); 
+		GL11.glVertex2f(x * 16 + 16, y * 16);				
+		GL11.glTexCoord2f(tileX + (flashwidth * uvCalc) - 0.0001f, tileY + (flashheight * uvCalc) - 0.0001f); 
+		GL11.glVertex2f(x * 16 + 16, y * 16 + 16);				
+		GL11.glTexCoord2f(tileX + 0.0001f, tileY + (flashheight * uvCalc) - 0.0001f); 
+		GL11.glVertex2f(x * 16, y * 16 + 16);	
+		GL11.glEnd();
+		
+		GL11.glBlendFunc (GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+		
+		//GL11.glScalef(((float)displayScale / 1.0f), ((float) displayScale / 1.0f), 1);
+		GL11.glLoadIdentity();
 		font.drawString(5,5,"Gems: " + gemTotal, Color.white);
 	}
 	

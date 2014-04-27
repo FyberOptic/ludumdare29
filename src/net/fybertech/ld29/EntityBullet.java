@@ -81,7 +81,6 @@ public class EntityBullet extends Entity
 					BoundingBox bbb = new BoundingBox(xPos, yPos, xPos + 15f, yPos + 15f);
 					if (boxOverlaps(bbb, bb))
 					{			
-						System.out.println("SDFDSF");
 						int data = gridChunk.getData(v.x, v.y);
 						data++;
 						gridChunk.setData(v.x, v.y, data);
