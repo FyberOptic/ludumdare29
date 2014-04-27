@@ -20,7 +20,12 @@ public class GridChunk
 		tiles = new byte[CHUNKWIDTH*CHUNKHEIGHT];
 		data = new byte[CHUNKWIDTH*CHUNKHEIGHT];
 		
-		for (int n = 0; n < CHUNKWIDTH*CHUNKHEIGHT; n++) tiles[n] = 3; //(byte)(Math.random() * 4);
+		for (int n = 0; n < CHUNKWIDTH*CHUNKHEIGHT; n++) 
+		{
+			tiles[n] = 3;
+			if (Math.random() > 0.98) tiles[n] = (byte) (4 + (int)(Math.random() * 3));
+			
+		}
 		
 		for (int caves = 0; caves < 4; caves++)
 		{				

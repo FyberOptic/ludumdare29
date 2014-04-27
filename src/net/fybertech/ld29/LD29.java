@@ -41,6 +41,7 @@ public class LD29
 	public static ArrayList<Particle> particles = new ArrayList<Particle>();
 	
 	public static Audio soundGem = null;
+	public static Audio soundThrust = null;
 	
 	Font awtFont;
 	public static TrueTypeFont font;
@@ -83,6 +84,7 @@ public class LD29
 			textureAtlas.setTextureFilter(GL11.GL_NEAREST);
 			
 			soundGem = AudioLoader.getAudio("WAV", ResourceLoader.getResourceAsStream("res/gem.wav"));
+			soundThrust = AudioLoader.getAudio("WAV", ResourceLoader.getResourceAsStream("res/thrust.wav"));
 		}
 		catch(IOException e)
 		{

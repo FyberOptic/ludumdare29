@@ -317,7 +317,13 @@ public class Entity
 	
 	public void tick()
 	{
-		if (Keyboard.isKeyDown(Keyboard.KEY_SPACE)) LD29.particles.add(new Particle(xPos, yPos));
+		if (Keyboard.isKeyDown(Keyboard.KEY_SPACE))
+		{
+			LD29.particles.add(new Particle(xPos, yPos));
+			float pitch = (float)(Math.random() * 0.20) + 1f;
+			pitch = 0.75f - (this.yVel / 2000) + (float)(Math.random() * 0.10);
+			LD29.soundThrust.playAsSoundEffect(pitch, 0.25f, false);
+		}
 		
 		xVel *= 0.5;
 		if (xVel < 0.1f && xVel > -0.1f) xVel = 0;
