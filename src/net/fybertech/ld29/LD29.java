@@ -120,7 +120,8 @@ public class LD29
 		textureAtlas.bind();
 		
 		gridChunk = new GridChunk();
-		gridChunk.renderToList();
+		gridChunk.renderToList(gridChunk.initialRenderList);
+		gridChunk.renderToList(gridChunk.renderList);
 		
 		player = new Entity(gridChunk, 32);
 		player.xPos = 32;
@@ -206,7 +207,7 @@ public class LD29
 			
 			if (Display.wasResized()) sizeDisplay();
 			
-			if (gridChunk.dirty) gridChunk.renderToList();
+			if (gridChunk.dirty) gridChunk.renderToList(gridChunk.renderList);
 						
 			SoundStore.get().poll(0);
 			
@@ -254,12 +255,13 @@ public class LD29
 		if (Keyboard.isKeyDown(Keyboard.KEY_SPACE))
 		{
 			if (player.onGround) { player.yVel = -100; player.jumping = true; player.jumpcounter = 0; }
+			//else if (!player.jumping) { player.jumping = true; player.jumpcounter = 500; }
 			else if (player.jumping) 
 			{ 
 				int delta = deltaTime;
 				player.jumpcounter += deltaTime;
 				//if (player.jumpcounter < 500) player.yVel -= 300 * (delta / 1000.0f);
-				if (player.jumpcounter > 500) player.jumping = false;
+				//if (player.jumpcounter > 500) player.jumping = false;
 			}			 
 		}
 		else player.jumping = false;
@@ -368,7 +370,7 @@ public class LD29
 			GL11.glColor3f(0.25f,  0.25f,  0.25f);
 			GL11.glScalef(scaleFactor, scaleFactor, scaleFactor);
 			GL11.glTranslatef(scrollX * scaleFactor,  scrollY * scaleFactor,  0);		
-			GL11.glCallList(gridChunk.renderList);
+			GL11.glCallList(gridChunk.initialRenderList);
 			GL11.glPopMatrix();
 			
 			GL11.glPushMatrix();
@@ -376,7 +378,7 @@ public class LD29
 			GL11.glColor3f(0.5f,  0.5f,  0.5f);
 			GL11.glScalef(scaleFactor, scaleFactor, scaleFactor);
 			GL11.glTranslatef(scrollX * scaleFactor,  scrollY * scaleFactor,  0);		
-			GL11.glCallList(gridChunk.renderList);
+			GL11.glCallList(gridChunk.initialRenderList);
 			GL11.glPopMatrix();
 		}
 

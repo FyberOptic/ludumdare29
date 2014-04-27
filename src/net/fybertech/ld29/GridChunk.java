@@ -11,10 +11,14 @@ public class GridChunk
 	int gridY;
 	byte[] tiles;
 	byte[] data;
+	int initialRenderList = -1;
 	int renderList = -1;
 	int paddingRenderList = -1;
 	boolean dirty = true;
 	
+	public static final int DIRTTILECOUNT = 7;
+	
+	boolean firstGeneration = true;
 	
 	public GridChunk()
 	{
@@ -23,7 +27,8 @@ public class GridChunk
 		
 		for (int n = 0; n < CHUNKWIDTH*CHUNKHEIGHT; n++) 
 		{
-			tiles[n] = 3;
+			tiles[n] = 17;
+			if (Math.random() > 0.5) tiles[n] = (byte)((Math.random() * DIRTTILECOUNT) + 11);
 			if (Math.random() > 0.98) tiles[n] = (byte) (4 + (int)(Math.random() * 3));
 			
 		}
@@ -83,6 +88,8 @@ public class GridChunk
 				
 				
 			}
+			
+			firstGeneration = false;
 		}
 		
 		int gems = 200;
@@ -96,6 +103,8 @@ public class GridChunk
 		
 		
 		renderList = GL11.glGenLists(1);
+		initialRenderList = GL11.glGenLists(1);
+		
 		
 	}
 	
@@ -139,6 +148,12 @@ public class GridChunk
 		this.data[(y * CHUNKWIDTH) + x] = (byte) (data & 0xFF);
 	}
 	
+	public int getData(int x, int y)
+	{
+		if (x < 0 || y < 0 || x >= CHUNKWIDTH || y >= CHUNKHEIGHT) return 0;			
+		return this.data[(y * CHUNKWIDTH) + x] & 0xFF;
+	}
+	
 	public void notifyTileUpdate(int x, int y)
 	{
 		int thisTile = getTile(x, y);
@@ -153,23 +168,25 @@ public class GridChunk
 		boolean isUp = tileUp > 0 && tileUp < 32;
 		boolean isDown = tileDown > 0 && tileDown < 32;
 		
-		if (thisTile > 0 && thisTile < 32) 
+		if (thisTile > 0 && thisTile < 32 && firstGeneration) 
 		{ 
 			setData(x, y, 0); 
-			if (!isLeft && !isUp) { setTileDirect(x, y,7); } //setData(x - 1, y, 0); setData(x, y - 1, 0);}
-			if (!isRight && !isUp) { setTileDirect(x, y,8); } //setData(x + 1, y, 0); setData(x, y - 1, 0); }
-			if (!isLeft && !isDown) { setTileDirect(x, y,9); } //setData(x - 1, y, 0); setData(x, y + 1, 0); }
-			if (!isRight && !isDown) { setTileDirect(x, y,10); } // setData(x + 1, y, 0); setData(x, y + 1, 0); }
+			if (!isLeft && !isUp) { setTileDirect(x, y, 7); } //setData(x - 1, y, 0); setData(x, y - 1, 0);}
+			if (!isRight && !isUp) { setTileDirect(x, y, 8); } //setData(x + 1, y, 0); setData(x, y - 1, 0); }
+			if (!isLeft && !isDown) { setTileDirect(x, y, 9); } //setData(x - 1, y, 0); setData(x, y + 1, 0); }
+			if (!isRight && !isDown) { setTileDirect(x, y, 10); } // setData(x + 1, y, 0); setData(x, y + 1, 0); }
 			return; 
 		}
 		
-		int data = 0;
+		int data = 0;		
 		
-		
-		if (isLeft && isUp) data |= 1;
-		if (isRight && isUp) data |= 2;
-		if (isLeft && isDown) data |= 4;
-		if (isRight && isDown) data |= 8;
+		if (thisTile == 0)
+		{			
+			if (isLeft && isUp) data |= 1;		
+			if (isRight && isUp) data |= 2;
+			if (isLeft && isDown) data |= 4;
+			if (isRight && isDown) data |= 8;
+		}
 		
 		//System.out.println(data);
 		setData(x, y, data);
@@ -180,7 +197,7 @@ public class GridChunk
 	/**
 	 * 
 	 */
-	public void renderToList()
+	public void renderToList(int renderListNum)
 	{
 		
 		// Pre-render border blocks
@@ -196,7 +213,11 @@ public class GridChunk
 			{
 				for (int x = -padding; x < CHUNKWIDTH + padding; x++)
 				{					
-					if (x < 0 || y < 0 || x >= CHUNKWIDTH || y >= CHUNKHEIGHT) renderTileQuad(x, y, 3);
+					//int tilenum = (int)((Math.random() * DIRTTILECOUNT) + 11);
+					int tilenum = 17;
+					if (Math.random() > 0.5) tilenum = (byte)((Math.random() * DIRTTILECOUNT) + 11);
+					if (Math.random() > 0.98) tilenum = (byte) (4 + (int)(Math.random() * 3));
+					if (x < 0 || y < 0 || x >= CHUNKWIDTH || y >= CHUNKHEIGHT) renderTileQuad(x, y, tilenum);
 				}
 			}
 			GL11.glEnd();	
@@ -205,9 +226,11 @@ public class GridChunk
 		
 		
 
+		
 		// Render main map
 		
-		GL11.glNewList(renderList,GL11.GL_COMPILE);
+		GL11.glNewList(renderListNum, GL11.GL_COMPILE);
+			
 		
 		GL11.glCallList(paddingRenderList);
 		
@@ -225,10 +248,20 @@ public class GridChunk
 				
 				// Render rounded corners
 				int tiledata = data[(y * CHUNKWIDTH) + x] & 0xFF;
-				if ((tiledata & 1) > 0) renderTileQuad(x, y, 64);
-				if ((tiledata & 2) > 0) renderTileQuad(x, y, 65);
-				if ((tiledata & 4) > 0) renderTileQuad(x, y, 66);
-				if ((tiledata & 8) > 0) renderTileQuad(x, y, 67);
+				
+				if (tilenum == 0)
+				{
+					if ((tiledata & 1) > 0) renderTileQuad(x, y, 64);
+					if ((tiledata & 2) > 0) renderTileQuad(x, y, 65);
+					if ((tiledata & 4) > 0) renderTileQuad(x, y, 66);
+					if ((tiledata & 8) > 0) renderTileQuad(x, y, 67);
+				}
+				else
+				{
+					if (tiledata == 1) renderTileQuad(x, y, 71);
+					if (tiledata == 2) renderTileQuad(x, y, 72);
+					if (tiledata == 3) renderTileQuad(x, y, 73);
+				}
 				
 				
 			}
@@ -240,6 +273,7 @@ public class GridChunk
 		
 		
 		GL11.glEndList();
+		
 		
 		this.dirty = false;
 	}

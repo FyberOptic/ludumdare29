@@ -266,11 +266,11 @@ public class Entity
 		
 		//yVel += 200 * delta;
 		
-		if (Keyboard.isKeyDown(Keyboard.KEY_W)) yVel -= 400 * delta;
+		if (!jumping && Keyboard.isKeyDown(Keyboard.KEY_SPACE)) yVel -= 400 * delta;
 		else 
 		{
 			//if (!onGround) 
-			if (jumping) yVel += 100 * delta;
+			if (jumping && jumpcounter < 500) yVel += 100 * delta;
 			else yVel += 300 * delta;
 		}
 		
@@ -371,9 +371,9 @@ public class Entity
 	
 	public void tick()
 	{
-		if (Keyboard.isKeyDown(Keyboard.KEY_W))
+		if (!jumping && Keyboard.isKeyDown(Keyboard.KEY_SPACE))
 		{
-			LD29.instance.newentities.add(new Particle(xPos, yPos));			
+			LD29.instance.newentities.add(new Particle(xPos + (facing == 1 ? -1 : 0), yPos));			
 			float pitch = (float)(Math.random() * 0.20) + 1f;
 			pitch = 0.75f - (this.yVel / 2000) + (float)(Math.random() * 0.10);
 			LD29.soundThrust.playAsSoundEffect(pitch, 0.25f, false);

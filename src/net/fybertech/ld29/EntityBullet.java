@@ -70,7 +70,28 @@ public class EntityBullet extends Entity
 			destroyEntity = true;
 			hitHead = true;
 			LD29.soundShothit.playAsSoundEffect((float)(Math.random() * 0.25) + 0.35f,  0.2f,  false);
-			System.out.println("HIT");
+			//System.out.println("HIT");
+			
+			for (Vector2i v : intercepts)
+			{
+				int tile = gridChunk.getTile(v.x,  v.y);
+				if (tile > 0 && tile < 32)
+				{					
+					BoundingBox bb = bbFromGridPos(v.x, v.y);
+					BoundingBox bbb = new BoundingBox(xPos, yPos, xPos + 15f, yPos + 15f);
+					if (boxOverlaps(bbb, bb))
+					{			
+						System.out.println("SDFDSF");
+						int data = gridChunk.getData(v.x, v.y);
+						data++;
+						gridChunk.setData(v.x, v.y, data);
+						if (data > 3) gridChunk.setTile(v.x,  v.y,  0); 						
+						
+						gridChunk.dirty = true;
+						break;
+					}
+				}
+			}
 		}
 		
 		
