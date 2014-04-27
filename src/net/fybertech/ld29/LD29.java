@@ -51,6 +51,7 @@ public class LD29
 	public static Audio soundHead = null;
 	public static Audio soundShoot = null;
 	public static Audio soundShothit = null;
+	public static Audio soundDirtbreak = null;
 	
 	Font awtFont;
 	public static TrueTypeFont font;
@@ -100,6 +101,7 @@ public class LD29
 			soundHead = AudioLoader.getAudio("WAV", ResourceLoader.getResourceAsStream("res/head.wav"));
 			soundShoot = AudioLoader.getAudio("WAV", ResourceLoader.getResourceAsStream("res/shoot.wav"));
 			soundShothit = AudioLoader.getAudio("WAV", ResourceLoader.getResourceAsStream("res/shothit.wav"));
+			soundDirtbreak = AudioLoader.getAudio("WAV", ResourceLoader.getResourceAsStream("res/dirtbreak2.wav"));
 		}
 		catch(IOException e)
 		{

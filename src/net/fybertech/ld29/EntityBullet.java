@@ -85,9 +85,15 @@ public class EntityBullet extends Entity
 						int data = gridChunk.getData(v.x, v.y);
 						data++;
 						gridChunk.setData(v.x, v.y, data);
-						if (data > 3) gridChunk.setTile(v.x,  v.y,  0); 						
+						if (data > 3) 
+						{
+							gridChunk.setTile(v.x,  v.y,  0);
+							LD29.soundDirtbreak.playAsSoundEffect((float)(Math.random() * 0.50) + 1f,  0.5f,  false);
+						}
 						
-						gridChunk.dirty = true;
+						gridChunk.dirty = true;					
+						
+						
 						break;
 					}
 				}

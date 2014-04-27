@@ -168,7 +168,7 @@ public class GridChunk
 		boolean isUp = tileUp > 0 && tileUp < 32;
 		boolean isDown = tileDown > 0 && tileDown < 32;
 		
-		if (thisTile > 0 && thisTile < 32 && firstGeneration) 
+		if (thisTile > 0 && thisTile < 32)// && firstGeneration) 
 		{ 
 			setData(x, y, 0); 
 			if (!isLeft && !isUp) { setTileDirect(x, y, 7); } //setData(x - 1, y, 0); setData(x, y - 1, 0);}
