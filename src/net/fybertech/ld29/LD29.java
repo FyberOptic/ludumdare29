@@ -154,6 +154,8 @@ public class LD29
 			
 			if (Display.wasResized()) sizeDisplay();
 			
+			if (gridChunk.dirty) gridChunk.renderToList();
+			
 			fps++;
 		}
 	 

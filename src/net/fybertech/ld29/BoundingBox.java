@@ -44,5 +44,15 @@ public class BoundingBox
 		return new BoundingBox(xMin, yMin, xMax, yMax);
 	}
 	
+	public BoundingBox expand(float xamount, float yamount)
+	{
+		xMin -= xamount / 2.0f;
+		xMax += xamount / 2.0f;
+		yMin -= yamount / 2.0f;
+		yMax += yamount / 2.0f;
+		
+		return this;
+	}
+	
 	
 }

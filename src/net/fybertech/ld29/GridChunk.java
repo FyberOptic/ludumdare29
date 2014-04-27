@@ -79,6 +79,15 @@ public class GridChunk
 			}
 		}
 		
+		int gems = 100;
+		while (true)
+		{
+			int x = (int)(Math.random() * CHUNKWIDTH);
+			int y = (int)(Math.random() * CHUNKWIDTH);
+			if (getTile(x, y) == 0) { setTile(x, y, 96); gems--; }
+			if (gems < 0) break;
+		}
+		
 		
 		renderList = GL11.glGenLists(1);
 	}
@@ -122,10 +131,21 @@ public class GridChunk
 		if (thisTile > 0) { setData(x, y, 0); return; }
 		
 		int data = 0;
-		if (getTile(x - 1, y) > 0 && getTile(x, y - 1) > 0 ) data |= 1;
-		if (getTile(x + 1, y) > 0 && getTile(x, y - 1) > 0 ) data |= 2;
-		if (getTile(x - 1, y) > 0 && getTile(x, y + 1) > 0 ) data |= 4;
-		if (getTile(x + 1, y) > 0 && getTile(x, y + 1) > 0 ) data |= 8;
+		
+		int tileLeft = getTile(x - 1, y);
+		int tileRight = getTile(x + 1, y);
+		int tileUp = getTile(x, y - 1);
+		int tileDown = getTile(x, y + 1);
+		
+		boolean isLeft = tileLeft > 0 && tileLeft < 32;
+		boolean isRight = tileRight > 0 && tileRight < 32;
+		boolean isUp = tileUp > 0 && tileUp < 32;
+		boolean isDown = tileDown > 0 && tileDown < 32;
+		
+		if (isLeft && isUp) data |= 1;
+		if (isRight && isUp) data |= 2;
+		if (isLeft && isDown) data |= 4;
+		if (isRight && isDown) data |= 8;
 		
 		//System.out.println(data);
 		setData(x, y, data);
@@ -184,6 +204,8 @@ public class GridChunk
 //		GL11.glEnd();			
 		
 		GL11.glEndList();
+		
+		this.dirty = false;
 	}
 	
 	

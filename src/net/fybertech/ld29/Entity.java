@@ -177,13 +177,14 @@ public class Entity
 	}
 	
 	
-	public void getIntercepts(BoundingBox bb, ArrayList<Vector2i> list)
+	public void getIntercepts(BoundingBox bb, ArrayList<Vector2i> list, boolean everything)
 	{
 		for (int y = (int)(Math.floor(bb.yMin)) >> 4; y <= (int)(Math.floor(bb.yMax)) >> 4; y++)
 		{
 			for (int x = (int)(Math.floor(bb.xMin)) >> 4; x <= (int)(Math.floor(bb.xMax)) >> 4; x++)
 			{
-				if (gridChunk.getTile(x, y) > 0) list.add(new Vector2i(x, y));
+				int tile = gridChunk.getTile(x, y);
+				if (tile > 0 && (tile < 32 || everything)) list.add(new Vector2i(x, y));
 			}
 		}		
 
@@ -216,7 +217,7 @@ public class Entity
 		
 		BoundingBox movebox = playerbox.copy().addCoord(moveX, moveY);
 		intercepts.clear();
-		getIntercepts(movebox, intercepts);
+		getIntercepts(movebox, intercepts, false);
 		
 		moveY = getMaxMoveAmountY(this.getBB().translate(0, moveY), moveY);			
 		moveX = getMaxMoveAmountX(this.getBB().translate(moveX,  moveY), moveX);	
@@ -227,7 +228,22 @@ public class Entity
 		
 		
 		intercepts.clear();
-		getIntercepts(this.getBB(), intercepts);
+		getIntercepts(this.getBB(), intercepts, true);
+		
+		for (Vector2i v : intercepts)
+		{
+			int tile = gridChunk.getTile(v.x,  v.y);
+			if (tile == 96)
+			{
+				BoundingBox bb = bbFromGridPos(v.x, v.y).expand(-8, -8);
+				if (boxOverlaps(this.getBB(), bb))
+				{			
+					gridChunk.setTile(v.x, v.y, 0);
+					gridChunk.dirty = true;
+				}
+			}
+		}
+		
 		//if (!intercepts.isEmpty()) yVel = 0;
 		
 		
