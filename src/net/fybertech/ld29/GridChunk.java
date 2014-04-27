@@ -118,6 +118,13 @@ public class GridChunk
 		return true;
 	}
 	
+	public boolean setTileDirect(int x, int y, int tilenum)
+	{			
+		if (x < 0 || y < 0 || x >= CHUNKWIDTH || y >= CHUNKHEIGHT) return false;			
+		tiles[(y * CHUNKWIDTH) + x] = (byte)(tilenum & 0xFF);
+		return true;
+	}
+	
 	public int getTile(int x, int y)
 	{			
 		if (x < 0 || y < 0 || x >= CHUNKWIDTH || y >= CHUNKHEIGHT) return 0;			
@@ -133,10 +140,7 @@ public class GridChunk
 	public void notifyTileUpdate(int x, int y)
 	{
 		int thisTile = getTile(x, y);
-		if (thisTile > 0 && thisTile < 32) { setData(x, y, 0); return; }
-		
-		int data = 0;
-		
+
 		int tileLeft = getTile(x - 1, y);
 		int tileRight = getTile(x + 1, y);
 		int tileUp = getTile(x, y - 1);
@@ -146,6 +150,19 @@ public class GridChunk
 		boolean isRight = tileRight > 0 && tileRight < 32;
 		boolean isUp = tileUp > 0 && tileUp < 32;
 		boolean isDown = tileDown > 0 && tileDown < 32;
+		
+		if (thisTile > 0 && thisTile < 32) 
+		{ 
+			setData(x, y, 0); 
+			if (!isLeft && !isUp) { setTileDirect(x, y,7); } //setData(x - 1, y, 0); setData(x, y - 1, 0);}
+			if (!isRight && !isUp) { setTileDirect(x, y,8); } //setData(x + 1, y, 0); setData(x, y - 1, 0); }
+			if (!isLeft && !isDown) { setTileDirect(x, y,9); } //setData(x - 1, y, 0); setData(x, y + 1, 0); }
+			if (!isRight && !isDown) { setTileDirect(x, y,10); } // setData(x + 1, y, 0); setData(x, y + 1, 0); }
+			return; 
+		}
+		
+		int data = 0;
+		
 		
 		if (isLeft && isUp) data |= 1;
 		if (isRight && isUp) data |= 2;
