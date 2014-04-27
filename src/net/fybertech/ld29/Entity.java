@@ -114,12 +114,12 @@ public class Entity
 	
 	public BoundingBox bbFromGridPos(int x, int y)
 	{
-		return new BoundingBox(x * 16, y * 16, (x * 16) + 16f, (y * 16) + 16f);
+		return new BoundingBox(x * 16, y * 16, (x * 16) + 15f, (y * 16) + 15f);
 	}
 	
 	public BoundingBox getBB()
 	{
-		return new BoundingBox(xPos + 4, yPos, xPos + 16f - 4, yPos + 16f);
+		return new BoundingBox(xPos + 4, yPos, xPos + 15f - 4, yPos + 15f);
 	}
 	
 	
@@ -170,21 +170,25 @@ public class Entity
 				float thisDelta = gridbb.xMin - bb.xMax;
 				if (thisDelta < currentDelta) currentDelta = thisDelta;
 			}
-			return currentDelta;
+			return (currentDelta > 0 ? currentDelta : 0);
+			//return currentDelta;
 		}
 		else if (x < 0)
 		{
 			//currentDelta = -y;
+			//System.out.println("DELTA2-START: " + currentDelta);
 			for (Vector2i v : intercepts)
 			{
 				BoundingBox gridbb = bbFromGridPos(v.x, v.y);
 				if (!boxOverlapsY(bb, gridbb)) continue;				
 				if (gridbb.xMin > bb.xMin) continue;					
-				
+				//System.out.print(".");
 				float thisDelta = gridbb.xMax - bb.xMin;
 				if (thisDelta > currentDelta) currentDelta = thisDelta;
 			}
-			return currentDelta;		
+			//System.out.println("DELTA2-END: " + currentDelta);
+			return (currentDelta < 0 ? currentDelta : 0);
+			//return currentDelta;		
 		}
 		
 		return x;
@@ -204,7 +208,7 @@ public class Entity
 				float thisDelta = gridbb.yMin - bb.yMax;
 				if (thisDelta < currentDelta) currentDelta = thisDelta;
 			}
-			return currentDelta;
+			return (currentDelta > 0 ? currentDelta : 0);
 		}
 		else if (y < 0)
 		{
@@ -218,7 +222,8 @@ public class Entity
 				float thisDelta = gridbb.yMax - bb.yMin;
 				if (thisDelta > currentDelta) currentDelta = thisDelta;
 			}
-			return currentDelta;		
+			return (currentDelta < 0 ? currentDelta : 0);
+			//return currentDelta;
 		}
 		
 		return y;
@@ -280,7 +285,7 @@ public class Entity
 		xPos = xPos + moveX;
 		yPos = yPos + moveY;		
 		if (startY != 0 && moveY != startY) { yVel = 0; }
-		if (startX != 0 && moveX != startX) { xVel = 0; }
+		//if (startX != 0 && moveX != startX) { xVel = 0; }
 		//System.out.println(xVel + " " + yVel);
 		
 		intercepts.clear();
