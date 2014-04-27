@@ -9,6 +9,7 @@ import java.util.Iterator;
 import org.lwjgl.LWJGLException;
 import org.lwjgl.Sys;
 import org.lwjgl.input.Keyboard;
+import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.DisplayMode;
 import org.lwjgl.opengl.GL11;
@@ -24,6 +25,8 @@ import org.newdawn.slick.util.ResourceLoader;
 public class LD29 
 {	
 	
+	public static LD29 instance = null;
+	
 	public boolean gameRunning = true;	
 	public Texture textureAtlas = null;
 	int displayScale = 1;
@@ -38,12 +41,16 @@ public class LD29
 	
 	GridChunk gridChunk = null;
 	
-	public static ArrayList<Particle> particles = new ArrayList<Particle>();
+	//public static ArrayList<Particle> particles = new ArrayList<Particle>();
+	public ArrayList<Entity> entities = new ArrayList<Entity>();
+	public ArrayList<Entity> newentities = new ArrayList<Entity>();
 	
 	public static Audio soundGem = null;
 	public static Audio soundThrust = null;
 	public static Audio soundLand = null;
 	public static Audio soundHead = null;
+	public static Audio soundShoot = null;
+	public static Audio soundShothit = null;
 	
 	Font awtFont;
 	public static TrueTypeFont font;
@@ -69,6 +76,7 @@ public class LD29
 	public void start()
 	{
 		
+		instance = this;
 		
 		//Display.setTitle("LD29 Project");
 		Display.setTitle("Gems of the Deep (LD29 Entry)");
@@ -90,6 +98,8 @@ public class LD29
 			soundThrust = AudioLoader.getAudio("WAV", ResourceLoader.getResourceAsStream("res/thrust.wav"));
 			soundLand = AudioLoader.getAudio("WAV", ResourceLoader.getResourceAsStream("res/land.wav"));
 			soundHead = AudioLoader.getAudio("WAV", ResourceLoader.getResourceAsStream("res/head.wav"));
+			soundShoot = AudioLoader.getAudio("WAV", ResourceLoader.getResourceAsStream("res/shoot.wav"));
+			soundShothit = AudioLoader.getAudio("WAV", ResourceLoader.getResourceAsStream("res/shothit.wav"));
 		}
 		catch(IOException e)
 		{
@@ -115,6 +125,7 @@ public class LD29
 		player = new Entity(gridChunk, 32);
 		player.xPos = 32;
 		player.yPos = 32;
+		entities.add(player);
 		
 		long currentTime = getTime();
 		long lastTime = getTime();
@@ -125,7 +136,7 @@ public class LD29
 		int ticks = 0;
 		int fps = 0;
 		
-		particles.add(new Particle(32, 32));
+		//particles.add(new Particle(32, 32));
 		
 		while (gameRunning)			 
 		{			 
@@ -147,13 +158,22 @@ public class LD29
 				//if (Keyboard.isKeyDown(Keyboard.KEY_DOWN)) scrollY += 2;			
 				
 				//for (Particle p : particles) p.tick();
-				for (Iterator<Particle> iterator = particles.iterator(); iterator.hasNext();) 
+//				for (Iterator<Particle> iterator = particles.iterator(); iterator.hasNext();) 
+//				{
+//					Particle p = iterator.next();
+//					p.tick();
+//					if (p.decay < 0) iterator.remove();
+//				}
+
+				for (Iterator<Entity> iterator = entities.iterator(); iterator.hasNext();) 
 				{
-					Particle p = iterator.next();
-					p.tick();
-					if (p.decay < 0) iterator.remove();
+					Entity e = iterator.next();
+					e.tick();
+					if (e.destroyEntity) iterator.remove();
 				}
-				player.tick();
+				entities.addAll(newentities);
+				newentities.clear();
+				
 				
 				if (Keyboard.isKeyDown(Keyboard.KEY_ESCAPE)) gameRunning = false; 
 			}
@@ -168,7 +188,14 @@ public class LD29
 				fps = 0;
 			}
 			
-			player.update(deltaTime);
+			//player.update(deltaTime);
+			//for (Entity p : entities) p.update(deltaTime);
+			for (Iterator<Entity> iterator = entities.iterator(); iterator.hasNext();) 
+			{
+				Entity e = iterator.next();
+				e.update(deltaTime);
+				if (e.destroyEntity) iterator.remove();
+			}
 			
 			GL11.glClear(GL11.GL_COLOR_BUFFER_BIT);
 			GL11.glLoadIdentity();
@@ -202,6 +229,8 @@ public class LD29
 	 */
 	public void handleInput(int deltaTime)
 	{
+		// Handle keyboard
+		
 		while (Keyboard.next())
 		{			
 			if (Keyboard.getEventKeyState()) 
@@ -210,13 +239,21 @@ public class LD29
 				
 				if (Keyboard.getEventKey() == Keyboard.KEY_ADD) this.userScale *= 2.0f;
 				if (Keyboard.getEventKey() == Keyboard.KEY_SUBTRACT) this.userScale /= 2.0f; 
+
 				
 			}
 			else
 			{
 				if (Keyboard.getEventKey() == Keyboard.KEY_BACK) debugMode = !debugMode;
 				if (Keyboard.getEventKey() == Keyboard.KEY_N) noClipping = !noClipping;
+				
 			}
+		}
+		
+		//if (Keyboard.getEventKey() == Keyboard.KEY_SPACE)
+		if (Keyboard.isKeyDown(Keyboard.KEY_SPACE))
+		{
+			if (player.onGround) player.yVel = -100;
 		}
 		
 		float scrollamount = (deltaTime / 1000.0f) * 150;
@@ -235,10 +272,9 @@ public class LD29
 		if (Keyboard.isKeyDown(Keyboard.KEY_A)) player.xVel = -playervel; 
 		if (Keyboard.isKeyDown(Keyboard.KEY_D)) player.xVel = playervel; 	
 		//if (Keyboard.isKeyDown(Keyboard.KEY_W)) player.yVel = -playervel; 
-		//if (Keyboard.isKeyDown(Keyboard.KEY_S)) player.yVel = playervel;
+		//if (Keyboard.isKeyDown(Keyboard.KEY_S)) player.yVel = playervel;	
 		
-		
-		
+				
 		scrollX = 160 + -player.xPos - 8;
 		scrollY = 120 + -player.yPos - 8;
 		
@@ -247,6 +283,36 @@ public class LD29
 			scrollX += (Math.random() * 8) - 4; 
 			scrollY += (Math.random() * 8) - 4;
 		} 
+		
+		
+		// Handle mouse
+		
+		while (Mouse.next())
+		{
+			if (Mouse.getEventButton() == 0 && Mouse.getEventButtonState())
+			{
+				int mx = Mouse.getEventX();
+				int my = Mouse.getEventY();
+				my = Display.getHeight() - my -  1;
+				
+				int dx = (Display.getWidth() / 2) - mx;
+				int dy = (Display.getHeight() / 2) - my;
+				double angle = Math.atan2(-dy, -dx) * 180 / Math.PI;
+				
+				//System.out.println("CLICK " + mx + " " + my + " " + angle);
+				
+				float speed = 400;
+				//float xv = -((float)dx / (Display.getWidth() / 2)) * speed;
+				//float yv = -((float)dy / (Display.getHeight() / 2)) * speed;
+				float xv = (float) (Math.cos(Math.toRadians(angle)) * speed);
+				float yv = (float) (Math.sin(Math.toRadians(angle)) * speed);
+				
+				//System.out.println(xv + " " + yv);
+				
+				newentities.add(new EntityBullet(player.xPos, player.yPos, xv, yv));
+				LD29.soundShoot.playAsSoundEffect((float)(Math.random() * 0.05) + 1f,  0.55f,  false);
+			}
+		}
 
 	}
 	
@@ -310,7 +376,9 @@ public class LD29
 		GL11.glColor3f(1,1,1);
 		GL11.glTranslatef(scrollX,  scrollY,  0);
 		GL11.glCallList(gridChunk.renderList);
-		for (Particle p : particles) p.render();
+		//for (Particle p : particles) p.render();
+		//player.render();
+		for (Entity e : entities) { if (e != player) e.render(); }
 		player.render();
 		
 		GL11.glLoadIdentity();

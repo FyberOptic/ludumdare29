@@ -20,10 +20,12 @@ public class Entity
 	
 	int facing = 1;
 	
-	GridChunk gridChunk = null;
+	GridChunk gridChunk = LD29.instance.gridChunk;
 	
 	boolean onGround = false;
 	boolean hitHead = false;
+	
+	public boolean destroyEntity = false;
 	
 	ArrayList<Vector2i> intercepts = new ArrayList<Vector2i>();
 	
@@ -262,11 +264,11 @@ public class Entity
 		
 		//yVel += 200 * delta;
 		
-		if (Keyboard.isKeyDown(Keyboard.KEY_SPACE)) yVel -= 400 * delta;
+		if (Keyboard.isKeyDown(Keyboard.KEY_W)) yVel -= 400 * delta;
 		else 
 		{
 			//if (!onGround) 
-				yVel += 200 * delta;
+				yVel += 300 * delta;
 		}
 		
 		if (yVel < -100) yVel = -100;
@@ -366,9 +368,9 @@ public class Entity
 	
 	public void tick()
 	{
-		if (Keyboard.isKeyDown(Keyboard.KEY_SPACE))
+		if (Keyboard.isKeyDown(Keyboard.KEY_W))
 		{
-			LD29.particles.add(new Particle(xPos, yPos));
+			LD29.instance.newentities.add(new Particle(xPos, yPos));			
 			float pitch = (float)(Math.random() * 0.20) + 1f;
 			pitch = 0.75f - (this.yVel / 2000) + (float)(Math.random() * 0.10);
 			LD29.soundThrust.playAsSoundEffect(pitch, 0.25f, false);

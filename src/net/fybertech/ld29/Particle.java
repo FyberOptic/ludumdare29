@@ -57,6 +57,11 @@ public class Particle extends Entity
 	
 	}
 	
+	@Override
+	public void update(int deltaTime)
+	{
+		
+	}
 	
 	@Override
 	public void tick()
@@ -68,6 +73,6 @@ public class Particle extends Entity
 		tileNum = 36;
 		if (decay < 4) tileNum = 37;
 		if (decay < 3) tileNum = 38;
-		//if (decay < 0) LD29.particles.remove(this);
+		if (decay < 0) destroyEntity = true;
 	}
 }
