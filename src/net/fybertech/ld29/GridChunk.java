@@ -79,7 +79,7 @@ public class GridChunk
 			}
 		}
 		
-		int gems = 100;
+		int gems = 200;
 		while (true)
 		{
 			int x = (int)(Math.random() * CHUNKWIDTH);
@@ -128,7 +128,7 @@ public class GridChunk
 	public void notifyTileUpdate(int x, int y)
 	{
 		int thisTile = getTile(x, y);
-		if (thisTile > 0) { setData(x, y, 0); return; }
+		if (thisTile > 0 && thisTile < 32) { setData(x, y, 0); return; }
 		
 		int data = 0;
 		
@@ -164,6 +164,9 @@ public class GridChunk
 		
 		int padding = 20;
 		
+		//GL11.glDisable(GL11.GL_TEXTURE_2D);
+		//GL11.glPolygonMode(GL11.GL_FRONT_AND_BACK, GL11.GL_LINE);
+		
 		GL11.glBegin(GL11.GL_QUADS);	
 		for (int y = -padding; y < CHUNKHEIGHT + padding; y++)
 		{
@@ -190,18 +193,11 @@ public class GridChunk
 				
 			}
 		}
-		GL11.glEnd();			
+		GL11.glEnd();	
 		
-//		GL11.glBegin(GL11.GL_QUADS);	
-//		GL11.glTexCoord2f(0,0);	
-//		GL11.glVertex2f(0,0);	
-//		GL11.glTexCoord2f(1,0);		
-//		GL11.glVertex2f(textureAtlas.getTextureWidth(),0);		
-//		GL11.glTexCoord2f(1,1);		
-//		GL11.glVertex2f(textureAtlas.getTextureWidth(),textureAtlas.getTextureHeight());		
-//		GL11.glTexCoord2f(0,1);
-//		GL11.glVertex2f(0,textureAtlas.getTextureHeight());	
-//		GL11.glEnd();			
+		//GL11.glEnable(GL11.GL_TEXTURE_2D);
+		//GL11.glPolygonMode(GL11.GL_FRONT_AND_BACK, GL11.GL_FILL);
+		
 		
 		GL11.glEndList();
 		

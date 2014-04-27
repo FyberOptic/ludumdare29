@@ -1,5 +1,6 @@
 package net.fybertech.ld29;
 
+import java.awt.Font;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -11,6 +12,11 @@ import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.DisplayMode;
 import org.lwjgl.opengl.GL11;
+import org.newdawn.slick.Color;
+import org.newdawn.slick.TrueTypeFont;
+import org.newdawn.slick.openal.Audio;
+import org.newdawn.slick.openal.AudioLoader;
+import org.newdawn.slick.openal.SoundStore;
 import org.newdawn.slick.opengl.Texture;
 import org.newdawn.slick.opengl.TextureLoader;
 import org.newdawn.slick.util.ResourceLoader;
@@ -34,6 +40,15 @@ public class LD29
 	
 	public static ArrayList<Particle> particles = new ArrayList<Particle>();
 	
+	public static Audio soundGem = null;
+	
+	Font awtFont;
+	public static TrueTypeFont font;
+	
+	public static int gemTotal = 0;
+	
+	public static boolean debugMode = false; 
+	public static boolean noClipping = false;
 	
 	/**
 	 * 
@@ -66,6 +81,8 @@ public class LD29
 		try {
 			textureAtlas = TextureLoader.getTexture("PNG", ResourceLoader.getResourceAsStream("res/atlas.png"));
 			textureAtlas.setTextureFilter(GL11.GL_NEAREST);
+			
+			soundGem = AudioLoader.getAudio("WAV", ResourceLoader.getResourceAsStream("res/gem.wav"));
 		}
 		catch(IOException e)
 		{
@@ -74,6 +91,7 @@ public class LD29
 		}
 		
 		keypressStart = new long[Keyboard.KEYBOARD_SIZE];
+		
 		
 		sizeDisplay();
 		
@@ -155,6 +173,8 @@ public class LD29
 			if (Display.wasResized()) sizeDisplay();
 			
 			if (gridChunk.dirty) gridChunk.renderToList();
+						
+			SoundStore.get().poll(0);
 			
 			fps++;
 		}
@@ -178,7 +198,12 @@ public class LD29
 				if (Keyboard.getEventKey() == Keyboard.KEY_ADD) this.userScale *= 2.0f;
 				if (Keyboard.getEventKey() == Keyboard.KEY_SUBTRACT) this.userScale /= 2.0f; 
 				
-			}			
+			}
+			else
+			{
+				if (Keyboard.getEventKey() == Keyboard.KEY_BACK) debugMode = !debugMode;
+				if (Keyboard.getEventKey() == Keyboard.KEY_N) noClipping = !noClipping;
+			}
 		}
 		
 		float scrollamount = (deltaTime / 1000.0f) * 150;
@@ -231,6 +256,9 @@ public class LD29
 			if (320 * (displayScale + 1) > Display.getWidth() || 240 * (displayScale + 1) > Display.getHeight()) break;
 			displayScale++;
 		}
+		
+		awtFont = new Font("Arial", Font.BOLD, 8 * displayScale);
+		font = new TrueTypeFont(awtFont, false);
 	}
 	
 	
@@ -242,25 +270,28 @@ public class LD29
 		GL11.glTranslatef((Display.getWidth() - (320.0f * displayScale * userScale)) / 2.0f, ( Display.getHeight() - (240.0f * displayScale * userScale)) / 2.0f,0);
 		GL11.glScalef(((float)displayScale / 1.0f) * userScale, ((float) displayScale / 1.0f) * userScale, 1);
 		
-		
+		textureAtlas.bind();
 		float scaleFactor;
 		
-		GL11.glPushMatrix();
-		scaleFactor = 0.5f;
-		GL11.glColor3f(0.25f,  0.25f,  0.25f);
-		GL11.glScalef(scaleFactor, scaleFactor, scaleFactor);
-		GL11.glTranslatef(scrollX * scaleFactor,  scrollY * scaleFactor,  0);		
-		GL11.glCallList(gridChunk.renderList);
-		GL11.glPopMatrix();
+		if (!debugMode)
+		{
 		
-		GL11.glPushMatrix();
-		scaleFactor = 0.75f;
-		GL11.glColor3f(0.5f,  0.5f,  0.5f);
-		GL11.glScalef(scaleFactor, scaleFactor, scaleFactor);
-		GL11.glTranslatef(scrollX * scaleFactor,  scrollY * scaleFactor,  0);		
-		GL11.glCallList(gridChunk.renderList);
-		GL11.glPopMatrix();
-		
+			GL11.glPushMatrix();
+			scaleFactor = 0.5f;
+			GL11.glColor3f(0.25f,  0.25f,  0.25f);
+			GL11.glScalef(scaleFactor, scaleFactor, scaleFactor);
+			GL11.glTranslatef(scrollX * scaleFactor,  scrollY * scaleFactor,  0);		
+			GL11.glCallList(gridChunk.renderList);
+			GL11.glPopMatrix();
+			
+			GL11.glPushMatrix();
+			scaleFactor = 0.75f;
+			GL11.glColor3f(0.5f,  0.5f,  0.5f);
+			GL11.glScalef(scaleFactor, scaleFactor, scaleFactor);
+			GL11.glTranslatef(scrollX * scaleFactor,  scrollY * scaleFactor,  0);		
+			GL11.glCallList(gridChunk.renderList);
+			GL11.glPopMatrix();
+		}
 
 				
 		GL11.glColor3f(1,1,1);
@@ -268,6 +299,11 @@ public class LD29
 		GL11.glCallList(gridChunk.renderList);
 		for (Particle p : particles) p.render();
 		player.render();
+		
+		GL11.glLoadIdentity();
+		//GL11.glScalef(((float)displayScale / 1.0f), ((float) displayScale / 1.0f), 1);
+		
+		font.drawString(5,5,"Gems: " + gemTotal, Color.white);
 	}
 	
 	

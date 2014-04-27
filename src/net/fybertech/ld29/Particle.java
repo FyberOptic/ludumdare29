@@ -61,6 +61,9 @@ public class Particle extends Entity
 	@Override
 	public void tick()
 	{
+		xPos += (Math.random() * 1) - 0.5;
+		yPos -= Math.random() * 2;
+		
 		decay--;
 		tileNum = 36;
 		if (decay < 4) tileNum = 37;

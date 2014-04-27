@@ -67,17 +67,24 @@ public class Entity
 		GL11.glEnd();
 		
 		
-		GL11.glColor3f(1, 0, 0);;
-		for (Vector2i v : intercepts)
+		if (LD29.debugMode)
 		{
-			GL11.glBegin(GL11.GL_QUADS);
-			GL11.glVertex2f(v.x * 16, v.y * 16);		 
-			GL11.glVertex2f(v.x * 16 + 16, v.y * 16);		 
-			GL11.glVertex2f(v.x * 16 + 16, v.y * 16 + 16);			 
-			GL11.glVertex2f(v.x * 16, v.y * 16 + 16);
-			GL11.glEnd();
+			GL11.glDisable(GL11.GL_TEXTURE_2D);
+			GL11.glPolygonMode(GL11.GL_FRONT_AND_BACK, GL11.GL_LINE);
+			GL11.glColor3f(1, 0, 0);
+			for (Vector2i v : intercepts)
+			{
+				GL11.glBegin(GL11.GL_QUADS);
+				GL11.glVertex2f(v.x * 16, v.y * 16);		 
+				GL11.glVertex2f(v.x * 16 + 16, v.y * 16);		 
+				GL11.glVertex2f(v.x * 16 + 16, v.y * 16 + 16);			 
+				GL11.glVertex2f(v.x * 16, v.y * 16 + 16);
+				GL11.glEnd();
+			}
+			GL11.glColor3f(1,1,1);
+			GL11.glEnable(GL11.GL_TEXTURE_2D);
+			GL11.glPolygonMode(GL11.GL_FRONT_AND_BACK, GL11.GL_FILL);
 		}
-		GL11.glColor3f(1,1,1);
 		
 		//GL11.glEnable(GL11.GL_TEXTURE_2D);
 		//GL11.glPolygonMode(GL11.GL_FRONT_AND_BACK, GL11.GL_FILL);
@@ -90,34 +97,75 @@ public class Entity
 	
 	public boolean boxOverlaps(BoundingBox bb1, BoundingBox bb2)
 	{
-		if (bb1.xMin > bb2.xMax) return false;
-		if (bb1.xMax < bb2.xMin) return false;
-		if (bb1.yMin > bb2.yMax) return false;
-		if (bb1.yMax < bb2.yMin) return false;	
-		return true;
+		if (bb1.xMin < bb2.xMax && bb1.xMax > bb2.xMin && bb1.yMin < bb2.yMax && bb1.yMax > bb2.yMin) return true;	
+		return false;
+	}
+	
+	public boolean boxOverlapsX(BoundingBox bb1, BoundingBox bb2)
+	{
+		if (bb1.xMin < bb2.xMax && bb1.xMax > bb2.xMin) return true;	
+		return false;
+	}
+	public boolean boxOverlapsY(BoundingBox bb1, BoundingBox bb2)
+	{
+		if (bb1.yMin < bb2.yMax && bb1.yMax > bb2.yMin) return true;	
+		return false;
 	}
 	
 	public BoundingBox bbFromGridPos(int x, int y)
 	{
-		return new BoundingBox(x * 16, y * 16, (x * 16) + 15f, (y * 16) + 15f);
+		return new BoundingBox(x * 16, y * 16, (x * 16) + 16f, (y * 16) + 16f);
 	}
 	
 	public BoundingBox getBB()
 	{
-		return new BoundingBox(xPos + 4, yPos, xPos + 15f - 4, yPos + 15f);
+		return new BoundingBox(xPos + 4, yPos, xPos + 16f - 4, yPos + 16f);
 	}
 	
 	
+//	public float getMaxMoveAmountX(BoundingBox bb, float x)
+//	{
+//		float currentDelta = x;
+//		if (x > 0)
+//		{
+//			for (Vector2i v : intercepts)
+//			{				
+//				BoundingBox gridbb = bbFromGridPos(v.x, v.y);
+//				if (!boxOverlapsY(bb,  gridbb)) continue;	
+//				//if (gridbb.xMin > bb.xMax) continue; 
+//				
+//				float thisDelta = gridbb.xMin - bb.xMax - 0.0001f;
+//				if (thisDelta < currentDelta) currentDelta = thisDelta;
+//			}
+//			return currentDelta;
+//		}
+//		else if (x < 0)
+//		{
+//			for (Vector2i v : intercepts)
+//			{
+//				BoundingBox gridbb = bbFromGridPos(v.x, v.y);				
+//				if (!boxOverlapsY(bb, gridbb)) continue;
+//				//if (gridbb.xMax > bb.xMin) continue;				
+//				
+//				float thisDelta = -(bb.xMin - gridbb.xMax - 0.0001f);
+//				if (thisDelta > currentDelta) currentDelta = thisDelta;
+//			}
+//			return currentDelta;		
+//		}
+//		
+//		return x;
+//	}
+
 	public float getMaxMoveAmountX(BoundingBox bb, float x)
 	{
 		float currentDelta = x;
 		if (x > 0)
 		{
 			for (Vector2i v : intercepts)
-			{				
+			{
 				BoundingBox gridbb = bbFromGridPos(v.x, v.y);
-				if (!boxOverlaps(bb,  gridbb)) continue;	
-				if (gridbb.xMin > bb.xMax) continue; 
+				if (!boxOverlapsY(bb,  gridbb)) continue;	
+				if (gridbb.xMin < bb.xMax) continue; 
 				
 				float thisDelta = gridbb.xMin - bb.xMax;
 				if (thisDelta < currentDelta) currentDelta = thisDelta;
@@ -126,11 +174,12 @@ public class Entity
 		}
 		else if (x < 0)
 		{
+			//currentDelta = -y;
 			for (Vector2i v : intercepts)
 			{
-				BoundingBox gridbb = bbFromGridPos(v.x, v.y);				
-				if (!boxOverlaps(bb, gridbb)) continue;
-				if (gridbb.xMax < bb.xMin) continue;				
+				BoundingBox gridbb = bbFromGridPos(v.x, v.y);
+				if (!boxOverlapsY(bb, gridbb)) continue;				
+				if (gridbb.xMin > bb.xMin) continue;					
 				
 				float thisDelta = gridbb.xMax - bb.xMin;
 				if (thisDelta > currentDelta) currentDelta = thisDelta;
@@ -140,8 +189,6 @@ public class Entity
 		
 		return x;
 	}
-
-	
 	
 	public float getMaxMoveAmountY(BoundingBox bb, float y)
 	{
@@ -151,8 +198,8 @@ public class Entity
 			for (Vector2i v : intercepts)
 			{
 				BoundingBox gridbb = bbFromGridPos(v.x, v.y);
-				if (!boxOverlaps(bb,  gridbb)) continue;	
-				if (gridbb.yMin > bb.yMax) continue; 
+				if (!boxOverlapsX(bb,  gridbb)) continue;	
+				if (gridbb.yMin < bb.yMax) continue; 
 				
 				float thisDelta = gridbb.yMin - bb.yMax;
 				if (thisDelta < currentDelta) currentDelta = thisDelta;
@@ -161,11 +208,12 @@ public class Entity
 		}
 		else if (y < 0)
 		{
+			//currentDelta = -y;
 			for (Vector2i v : intercepts)
 			{
 				BoundingBox gridbb = bbFromGridPos(v.x, v.y);
-				if (!boxOverlaps(bb, gridbb)) continue;
-				if (gridbb.yMax < bb.yMin) continue;	
+				if (!boxOverlapsX(bb, gridbb)) continue;				
+				if (gridbb.yMin > bb.yMin) continue;					
 				
 				float thisDelta = gridbb.yMax - bb.yMin;
 				if (thisDelta > currentDelta) currentDelta = thisDelta;
@@ -179,9 +227,9 @@ public class Entity
 	
 	public void getIntercepts(BoundingBox bb, ArrayList<Vector2i> list, boolean everything)
 	{
-		for (int y = (int)(Math.floor(bb.yMin)) >> 4; y <= (int)(Math.floor(bb.yMax)) >> 4; y++)
+		for (int y = (int)(Math.floor(bb.yMin)) >> 4; y <= (int)(Math.ceil(bb.yMax)) >> 4; y++)
 		{
-			for (int x = (int)(Math.floor(bb.xMin)) >> 4; x <= (int)(Math.floor(bb.xMax)) >> 4; x++)
+			for (int x = (int)(Math.floor(bb.xMin)) >> 4; x <= (int)(Math.ceil(bb.xMax)) >> 4; x++)
 			{
 				int tile = gridChunk.getTile(x, y);
 				if (tile > 0 && (tile < 32 || everything)) list.add(new Vector2i(x, y));
@@ -219,13 +267,21 @@ public class Entity
 		intercepts.clear();
 		getIntercepts(movebox, intercepts, false);
 		
-		moveY = getMaxMoveAmountY(this.getBB().translate(0, moveY), moveY);			
-		moveX = getMaxMoveAmountX(this.getBB().translate(moveX,  moveY), moveX);	
+		if (!LD29.noClipping)
+		{
+			moveY = getMaxMoveAmountY(this.getBB(), moveY);	
+			moveX = getMaxMoveAmountX(this.getBB().translate(0,  moveY), moveX);
+			//moveY = getMaxMoveAmountX(this.getBB().translate(moveX,  moveY), moveY);
+		}
+		//moveX = 0;
+		//if (moveX > 16 || moveX < -16) { System.out.println("MOVEX: " + moveX); moveX = 0; xVel = 0; }
+		//if (moveY > 16 || moveY < -16) { System.out.println("MOVEY: " + moveY + " VEL: " + yVel); moveY = 0; yVel = 0; }
 		
 		xPos = xPos + moveX;
 		yPos = yPos + moveY;		
 		if (startY != 0 && moveY != startY) { yVel = 0; }
-		
+		if (startX != 0 && moveX != startX) { xVel = 0; }
+		//System.out.println(xVel + " " + yVel);
 		
 		intercepts.clear();
 		getIntercepts(this.getBB(), intercepts, true);
@@ -238,6 +294,8 @@ public class Entity
 				BoundingBox bb = bbFromGridPos(v.x, v.y).expand(-8, -8);
 				if (boxOverlaps(this.getBB(), bb))
 				{			
+					LD29.gemTotal++;
+					LD29.soundGem.playAsSoundEffect((float) (Math.random() * 0.05) + 1f,  0.75f,  false);
 					gridChunk.setTile(v.x, v.y, 0);
 					gridChunk.dirty = true;
 				}
