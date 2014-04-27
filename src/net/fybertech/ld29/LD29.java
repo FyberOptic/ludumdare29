@@ -433,7 +433,7 @@ public class LD29
 		GL11.glTranslatef(0, -8, 0);
 
 		//GL11.glColor3f(1, 1, 1);
-		GL11.glColor3f(0.75f, 0.75f, 1f);
+		GL11.glColor3f(0.5f, 0.5f, 0.75f);
 		
 		int flashwidth =  4;
 		int flashheight = 3;
