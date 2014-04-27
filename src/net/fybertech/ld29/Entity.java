@@ -238,7 +238,7 @@ public class Entity
 	
 	public void tick()
 	{
-	
+		if (Keyboard.isKeyDown(Keyboard.KEY_SPACE)) LD29.particles.add(new Particle(xPos, yPos));
 		
 		xVel *= 0.5;
 		if (xVel < 0.1f && xVel > -0.1f) xVel = 0;

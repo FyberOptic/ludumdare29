@@ -1,7 +1,9 @@
 package net.fybertech.ld29;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Iterator;
 
 import org.lwjgl.LWJGLException;
 import org.lwjgl.Sys;
@@ -29,6 +31,8 @@ public class LD29
 	Entity player;// = new Entity(32);
 	
 	GridChunk gridChunk = null;
+	
+	public static ArrayList<Particle> particles = new ArrayList<Particle>();
 	
 	
 	/**
@@ -96,6 +100,8 @@ public class LD29
 		int ticks = 0;
 		int fps = 0;
 		
+		particles.add(new Particle(32, 32));
+		
 		while (gameRunning)			 
 		{			 
 			currentTime = getTime();
@@ -115,6 +121,13 @@ public class LD29
 				//if (Keyboard.isKeyDown(Keyboard.KEY_UP)) scrollY -= 2;
 				//if (Keyboard.isKeyDown(Keyboard.KEY_DOWN)) scrollY += 2;			
 				
+				//for (Particle p : particles) p.tick();
+				for (Iterator<Particle> iterator = particles.iterator(); iterator.hasNext();) 
+				{
+					Particle p = iterator.next();
+					p.tick();
+					if (p.decay < 0) iterator.remove();
+				}
 				player.tick();
 				
 				if (Keyboard.isKeyDown(Keyboard.KEY_ESCAPE)) gameRunning = false; 
@@ -247,11 +260,11 @@ public class LD29
 		GL11.glPopMatrix();
 		
 
-
-		
+				
 		GL11.glColor3f(1,1,1);
 		GL11.glTranslatef(scrollX,  scrollY,  0);
 		GL11.glCallList(gridChunk.renderList);
+		for (Particle p : particles) p.render();
 		player.render();
 	}
 	
