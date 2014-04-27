@@ -22,6 +22,9 @@ public class Entity
 	
 	GridChunk gridChunk = null;
 	
+	boolean onGround = false;
+	boolean hitHead = false;
+	
 	ArrayList<Vector2i> intercepts = new ArrayList<Vector2i>();
 	
 	public Entity()
@@ -251,10 +254,16 @@ public class Entity
 		//yVel += 200 * delta;
 		
 		if (Keyboard.isKeyDown(Keyboard.KEY_SPACE)) yVel -= 400 * delta;
-		else yVel += 200 * delta;
+		else 
+		{
+			//if (!onGround) 
+				yVel += 200 * delta;
+		}
 		
 		if (yVel < -100) yVel = -100;
 		if (yVel > 400) yVel = 400;
+		
+		
 
 		//if (Keyboard.isKeyDown(Keyboard.KEY_SPACE)) yVel -= 500* delta;
 		//if (yVel < -100) yVel = -100;
@@ -284,7 +293,38 @@ public class Entity
 		
 		xPos = xPos + moveX;
 		yPos = yPos + moveY;		
-		if (startY != 0 && moveY != startY) { yVel = 0; }
+		if (startY != 0 && moveY != startY) 
+		{ 
+			if (yVel > 0) 
+			{ 
+				if (!onGround) 
+				{ 
+					onGround = true; 
+					if (yVel > 200) LD29.soundHead.playAsSoundEffect((float)(Math.random() * 0.25) + 0.5f,  0.35f,  false);
+					else LD29.soundLand.playAsSoundEffect((float)(Math.random() * 0.25) + 0.5f,  0.35f,  false);  
+				} 
+			}
+			else if (yVel < 0)
+			{
+				if (!hitHead)
+				{
+					//System.out.println("SDFDSF");
+					hitHead = true;
+					LD29.soundHead.playAsSoundEffect((float)(Math.random() * 0.25) + 0.5f,  0.45f,  false);
+				}
+			}
+			//else onGround = false;
+			
+			yVel = 0; 
+		}
+		else if (startY != 0 && moveY == startY)
+		{
+			onGround = false;
+			hitHead = false;
+		}
+		
+		
+		
 		//if (startX != 0 && moveX != startX) { xVel = 0; }
 		//System.out.println(xVel + " " + yVel);
 		

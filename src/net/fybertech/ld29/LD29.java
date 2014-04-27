@@ -42,6 +42,8 @@ public class LD29
 	
 	public static Audio soundGem = null;
 	public static Audio soundThrust = null;
+	public static Audio soundLand = null;
+	public static Audio soundHead = null;
 	
 	Font awtFont;
 	public static TrueTypeFont font;
@@ -85,6 +87,8 @@ public class LD29
 			
 			soundGem = AudioLoader.getAudio("WAV", ResourceLoader.getResourceAsStream("res/gem.wav"));
 			soundThrust = AudioLoader.getAudio("WAV", ResourceLoader.getResourceAsStream("res/thrust.wav"));
+			soundLand = AudioLoader.getAudio("WAV", ResourceLoader.getResourceAsStream("res/land.wav"));
+			soundHead = AudioLoader.getAudio("WAV", ResourceLoader.getResourceAsStream("res/head.wav"));
 		}
 		catch(IOException e)
 		{
