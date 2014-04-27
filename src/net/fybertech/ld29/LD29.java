@@ -70,7 +70,8 @@ public class LD29
 	{
 		
 		
-		Display.setTitle("LD29 Project");
+		//Display.setTitle("LD29 Project");
+		Display.setTitle("Gems of the Deep (LD29 Entry)");
 		Display.setResizable(true);
 		
 		try {
@@ -185,6 +186,12 @@ public class LD29
 			fps++;
 		}
 	 
+		
+		
+		//soundGem.
+		//soundThrust
+		//soundLand
+		//soundHead
 		Display.destroy();
 	}
 	
@@ -324,3 +331,4 @@ public class LD29
 	}
 	
 }
+
