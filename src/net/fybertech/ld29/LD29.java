@@ -140,6 +140,8 @@ public class LD29
 		int ticks = 0;
 		int fps = 0;
 		
+		entities.add(new EntityBat(32, 32));
+		
 		//particles.add(new Particle(32, 32));
 		
 		while (gameRunning)			 
@@ -404,6 +406,7 @@ public class LD29
 		GL11.glCallList(gridChunk.renderList);
 		//for (Particle p : particles) p.render();
 		//player.render();
+		GL11.glColor3f(1, 1, 1);
 		for (Entity e : entities) { if (e != player) e.render(); }
 		player.render();
 		
