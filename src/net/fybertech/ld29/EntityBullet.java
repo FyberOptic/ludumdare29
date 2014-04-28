@@ -99,7 +99,19 @@ public class EntityBullet extends Entity
 			}
 		}
 		
-		
+		for (Entity e : LD29.instance.entities)
+		{
+			if (!(e instanceof EntityBat)) continue;
+			float dx = (e.xPos+8) - (xPos+8);
+			float dy = (e.yPos+8) - (yPos+8);
+			float dist = (float)Math.sqrt(dx * dx + dy * dy);
+			if (dist < 5)
+			{
+				e.destroyEntity = true;
+				this.destroyEntity = true;
+				LD29.soundSqueak.playAsSoundEffect((float)(Math.random() * 0.50) + 1f,  0.75f,  false);
+			}
+		}
 		
 		//if (startX != 0 && moveX != startX) { xVel = 0; }
 		//System.out.println(xVel + " " + yVel);

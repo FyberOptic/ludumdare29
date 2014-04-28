@@ -53,6 +53,7 @@ public class LD29
 	public static Audio soundShoot = null;
 	public static Audio soundShothit = null;
 	public static Audio soundDirtbreak = null;
+	public static Audio soundSqueak = null;
 	
 	Font awtFont;
 	public static TrueTypeFont font;
@@ -103,6 +104,7 @@ public class LD29
 			soundShoot = AudioLoader.getAudio("WAV", ResourceLoader.getResourceAsStream("res/shoot.wav"));
 			soundShothit = AudioLoader.getAudio("WAV", ResourceLoader.getResourceAsStream("res/shothit.wav"));
 			soundDirtbreak = AudioLoader.getAudio("WAV", ResourceLoader.getResourceAsStream("res/dirtbreak2.wav"));
+			soundSqueak = AudioLoader.getAudio("WAV", ResourceLoader.getResourceAsStream("res/squeak.wav"));
 		}
 		catch(IOException e)
 		{
@@ -140,7 +142,7 @@ public class LD29
 		int ticks = 0;
 		int fps = 0;
 		
-		entities.add(new EntityBat(32, 32));
+		
 		
 		//particles.add(new Particle(32, 32));
 		
@@ -157,6 +159,8 @@ public class LD29
 			{				
 				gameTickTime -= 50;
 				ticks++;
+				
+				if (getBatCount() < 20) addBat();
 				
 				//if (Keyboard.isKeyDown(Keyboard.KEY_LEFT)) scrollX -= 2;
 				//if (Keyboard.isKeyDown(Keyboard.KEY_RIGHT)) scrollX += 2;
@@ -227,6 +231,34 @@ public class LD29
 		//soundHead
 		Display.destroy();
 		AL.destroy();
+	}
+	
+	
+	public void addBat()
+	{
+		float batX = 0;
+		float batY = 0;
+		
+		while (true)
+		{
+			batX = (float)(Math.random() * (16 * GridChunk.CHUNKWIDTH));
+			batY = (float)(Math.random() * (16 * GridChunk.CHUNKHEIGHT));
+			
+			float dx = player.xPos - batX;
+			float dy = player.yPos - batY;
+			float dist = (float)Math.sqrt(dx * dx + dy * dy);
+			
+			if (dist > 200) break;
+		}
+		
+		entities.add(new EntityBat(batX, batY));
+	}
+	
+	public int getBatCount()
+	{
+		int count = 0;
+		for (Entity e : entities) if (e instanceof EntityBat) count++;
+		return count;
 	}
 	
 	
