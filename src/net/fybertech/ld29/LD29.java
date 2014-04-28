@@ -248,7 +248,7 @@ public class LD29
 			float dy = player.yPos - batY;
 			float dist = (float)Math.sqrt(dx * dx + dy * dy);
 			
-			if (dist > 200) break;
+			if (dist > 200 && dist < 1000) break;
 		}
 		
 		entities.add(new EntityBat(batX, batY));
@@ -393,7 +393,7 @@ public class LD29
 			displayScale++;
 		}
 		
-		awtFont = new Font("Arial", Font.BOLD, 8 * displayScale);
+		awtFont = new Font("Arial", Font.BOLD, 6 * displayScale);
 		font = new TrueTypeFont(awtFont, false);
 	}
 	
@@ -486,9 +486,44 @@ public class LD29
 		
 		GL11.glBlendFunc (GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
 		
-		//GL11.glScalef(((float)displayScale / 1.0f), ((float) displayScale / 1.0f), 1);
 		GL11.glLoadIdentity();
-		font.drawString(5,5,"Gems: " + gemTotal, Color.white);
+		GL11.glScalef(((float)displayScale / 1.0f), ((float) displayScale / 1.0f), 1);
+		GL11.glColor3f(1,1,1);
+		GL11.glBegin(GL11.GL_QUADS);
+		for (int n = 0; n < player.hitpoints; n++)
+		{
+			renderTileQuad(n * 10, 0, 40);
+		}
+		GL11.glEnd();
+		
+		
+		
+		GL11.glLoadIdentity();
+		font.drawString(displayScale * 4,displayScale * 15,"Gems: " + gemTotal, Color.white);
+	}
+	
+	
+	
+	public void renderTileQuad(int x, int y, int tilenum)
+	{
+		// 32 tiles per row in atlas (512x512, 16x16 tiles)
+		
+		if (tilenum == 0) return;
+		
+		float uvCalc = 1.0f / (512 / 16);
+		
+		float tileX = (float)(tilenum % 32) * uvCalc;
+		float tileY = (float)(tilenum / 32) * uvCalc;					
+		
+		GL11.glTexCoord2f(tileX + 0.0001f, tileY + 0.0001f);	
+		GL11.glVertex2f(x, y);					
+		GL11.glTexCoord2f(tileX + uvCalc - 0.0001f, tileY + 0.0001f); 
+		GL11.glVertex2f(x + 16, y);				
+		GL11.glTexCoord2f(tileX + uvCalc - 0.0001f, tileY + uvCalc - 0.0001f); 
+		GL11.glVertex2f(x  + 16, y + 16);				
+		GL11.glTexCoord2f(tileX + 0.0001f, tileY + uvCalc - 0.0001f); 
+		GL11.glVertex2f(x, y + 16);	
+
 	}
 	
 	

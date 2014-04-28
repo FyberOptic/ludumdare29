@@ -24,7 +24,21 @@ public class EntityBat extends Entity
 		if (frameTimer >= 0) tileNum = baseTile;
 		if (frameTimer >= 3) tileNum = baseTile + 1;
 		
-		Vector2f dist = new Vector2f(xPos - LD29.instance.player.xPos, yPos - LD29.instance.player.yPos);
+		Entity player = LD29.instance.player;
+		
+		Vector2f dist = new Vector2f((xPos + 8) - (LD29.instance.player.xPos+8), ((yPos) - LD29.instance.player.yPos));
+		float distfrom = (float)Math.sqrt(dist.x * dist.x + dist.y * dist.y);
+		
+		if (distfrom < 8)
+		{
+			if (player.hitCooldown == 0) 
+			{ 
+				player.hitpoints--; 
+				player.hitCooldown = 40;
+				LD29.soundHead.playAsSoundEffect((float)(Math.random() * 0.25) + 1.5f,  0.75f,  false);
+			}
+		}
+		
 		if (dist.x == 0 && dist.y == 0) 
 		{
 			xVel = 0;

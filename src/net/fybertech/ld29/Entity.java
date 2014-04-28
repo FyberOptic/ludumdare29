@@ -16,9 +16,13 @@ public class Entity
 	float xVel;
 	float yVel;
 	
+	int hitCooldown = 0;
+	
 	int tileNum;
 	
 	int facing = 1;
+	
+	int hitpoints = 10;
 	
 	GridChunk gridChunk = LD29.instance.gridChunk;
 	
@@ -371,6 +375,9 @@ public class Entity
 	
 	public void tick()
 	{
+		hitCooldown--;
+		if (hitCooldown < 0) hitCooldown = 0;
+		
 		if (!jumping && Keyboard.isKeyDown(Keyboard.KEY_SPACE))
 		{
 			LD29.instance.newentities.add(new Particle(xPos + (facing == 1 ? -1 : 0), yPos));			
