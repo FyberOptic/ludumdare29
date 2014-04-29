@@ -142,39 +142,7 @@ public class Entity
 		return new BoundingBox(xPos + 4, yPos, xPos + 15f - 4, yPos + 15f);
 	}
 	
-	
-//	public float getMaxMoveAmountX(BoundingBox bb, float x)
-//	{
-//		float currentDelta = x;
-//		if (x > 0)
-//		{
-//			for (Vector2i v : intercepts)
-//			{				
-//				BoundingBox gridbb = bbFromGridPos(v.x, v.y);
-//				if (!boxOverlapsY(bb,  gridbb)) continue;	
-//				//if (gridbb.xMin > bb.xMax) continue; 
-//				
-//				float thisDelta = gridbb.xMin - bb.xMax - 0.0001f;
-//				if (thisDelta < currentDelta) currentDelta = thisDelta;
-//			}
-//			return currentDelta;
-//		}
-//		else if (x < 0)
-//		{
-//			for (Vector2i v : intercepts)
-//			{
-//				BoundingBox gridbb = bbFromGridPos(v.x, v.y);				
-//				if (!boxOverlapsY(bb, gridbb)) continue;
-//				//if (gridbb.xMax > bb.xMin) continue;				
-//				
-//				float thisDelta = -(bb.xMin - gridbb.xMax - 0.0001f);
-//				if (thisDelta > currentDelta) currentDelta = thisDelta;
-//			}
-//			return currentDelta;		
-//		}
-//		
-//		return x;
-//	}
+
 
 	public float getMaxMoveAmountX(BoundingBox bb, float x)
 	{

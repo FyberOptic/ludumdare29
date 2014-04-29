@@ -142,10 +142,7 @@ public class LD29
 		int ticks = 0;
 		int fps = 0;
 		
-		
-		
-		//particles.add(new Particle(32, 32));
-		
+	
 		while (gameRunning)			 
 		{			 
 			currentTime = getTime();
@@ -161,19 +158,6 @@ public class LD29
 				ticks++;
 				
 				if (getBatCount() < 20) addBat();
-				
-				//if (Keyboard.isKeyDown(Keyboard.KEY_LEFT)) scrollX -= 2;
-				//if (Keyboard.isKeyDown(Keyboard.KEY_RIGHT)) scrollX += 2;
-				//if (Keyboard.isKeyDown(Keyboard.KEY_UP)) scrollY -= 2;
-				//if (Keyboard.isKeyDown(Keyboard.KEY_DOWN)) scrollY += 2;			
-				
-				//for (Particle p : particles) p.tick();
-//				for (Iterator<Particle> iterator = particles.iterator(); iterator.hasNext();) 
-//				{
-//					Particle p = iterator.next();
-//					p.tick();
-//					if (p.decay < 0) iterator.remove();
-//				}
 
 				for (Iterator<Entity> iterator = entities.iterator(); iterator.hasNext();) 
 				{
@@ -198,8 +182,6 @@ public class LD29
 				fps = 0;
 			}
 			
-			//player.update(deltaTime);
-			//for (Entity p : entities) p.update(deltaTime);
 			for (Iterator<Entity> iterator = entities.iterator(); iterator.hasNext();) 
 			{
 				Entity e = iterator.next();
@@ -221,14 +203,8 @@ public class LD29
 			SoundStore.get().poll(0);
 			
 			fps++;
-		}
-	 
+		}		
 		
-		
-		//soundGem.
-		//soundThrust
-		//soundLand
-		//soundHead
 		Display.destroy();
 		AL.destroy();
 	}
