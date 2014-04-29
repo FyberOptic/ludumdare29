@@ -79,7 +79,7 @@ public class EntityBullet extends Entity
 				{					
 					BoundingBox bb = bbFromGridPos(v.x, v.y);
 					BoundingBox bbb = new BoundingBox(xPos, yPos, xPos + 15f, yPos + 15f);
-					if (boxOverlaps(bbb, bb))
+					if (bb.boxOverlaps(bbb))
 					{			
 						int data = gridChunk.getData(v.x, v.y);
 						data++;
@@ -125,7 +125,7 @@ public class EntityBullet extends Entity
 			if (tile == 96)
 			{
 				BoundingBox bb = bbFromGridPos(v.x, v.y).expand(-8, -8);
-				if (boxOverlaps(this.getBB(), bb))
+				if (bb.boxOverlaps(this.getBB()))
 				{			
 					LD29.gemTotal++;
 					LD29.soundGem.playAsSoundEffect((float) (Math.random() * 0.05) + 1f,  0.75f,  false);

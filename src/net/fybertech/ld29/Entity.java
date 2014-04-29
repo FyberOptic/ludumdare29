@@ -113,24 +113,6 @@ public class Entity
 	
 	
 	
-
-	
-	public boolean boxOverlaps(BoundingBox bb1, BoundingBox bb2)
-	{
-		if (bb1.xMin < bb2.xMax && bb1.xMax > bb2.xMin && bb1.yMin < bb2.yMax && bb1.yMax > bb2.yMin) return true;	
-		return false;
-	}
-	
-	public boolean boxOverlapsX(BoundingBox bb1, BoundingBox bb2)
-	{
-		if (bb1.xMin < bb2.xMax && bb1.xMax > bb2.xMin) return true;	
-		return false;
-	}
-	public boolean boxOverlapsY(BoundingBox bb1, BoundingBox bb2)
-	{
-		if (bb1.yMin < bb2.yMax && bb1.yMax > bb2.yMin) return true;	
-		return false;
-	}
 	
 	public BoundingBox bbFromGridPos(int x, int y)
 	{
@@ -152,7 +134,7 @@ public class Entity
 			for (Vector2i v : intercepts)
 			{
 				BoundingBox gridbb = bbFromGridPos(v.x, v.y);
-				if (!boxOverlapsY(bb,  gridbb)) continue;	
+				if (!gridbb.boxOverlapsY(bb)) continue;	
 				if (gridbb.xMin < bb.xMax) continue; 
 				
 				float thisDelta = gridbb.xMin - bb.xMax;
@@ -168,7 +150,7 @@ public class Entity
 			for (Vector2i v : intercepts)
 			{
 				BoundingBox gridbb = bbFromGridPos(v.x, v.y);
-				if (!boxOverlapsY(bb, gridbb)) continue;				
+				if (!gridbb.boxOverlapsY(bb)) continue;				
 				if (gridbb.xMin > bb.xMin) continue;					
 				//System.out.print(".");
 				float thisDelta = gridbb.xMax - bb.xMin;
@@ -190,7 +172,7 @@ public class Entity
 			for (Vector2i v : intercepts)
 			{
 				BoundingBox gridbb = bbFromGridPos(v.x, v.y);
-				if (!boxOverlapsX(bb,  gridbb)) continue;	
+				if (!gridbb.boxOverlapsX(bb)) continue;	
 				if (gridbb.yMin < bb.yMax) continue; 
 				
 				float thisDelta = gridbb.yMin - bb.yMax;
@@ -204,7 +186,7 @@ public class Entity
 			for (Vector2i v : intercepts)
 			{
 				BoundingBox gridbb = bbFromGridPos(v.x, v.y);
-				if (!boxOverlapsX(bb, gridbb)) continue;				
+				if (!gridbb.boxOverlapsX(bb)) continue;				
 				if (gridbb.yMin > bb.yMin) continue;					
 				
 				float thisDelta = gridbb.yMax - bb.yMin;
@@ -323,7 +305,7 @@ public class Entity
 			if (tile == 96)
 			{
 				BoundingBox bb = bbFromGridPos(v.x, v.y).expand(-8, -8);
-				if (boxOverlaps(this.getBB(), bb))
+				if (bb.boxOverlaps(this.getBB()))
 				{			
 					LD29.gemTotal++;
 					LD29.soundGem.playAsSoundEffect((float) (Math.random() * 0.05) + 1f,  0.75f,  false);

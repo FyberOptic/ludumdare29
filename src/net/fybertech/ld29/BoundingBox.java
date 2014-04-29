@@ -54,5 +54,24 @@ public class BoundingBox
 		return this;
 	}
 	
+
+
+	
+	public boolean boxOverlaps(BoundingBox bb)
+	{
+		if (this.xMin < bb.xMax && this.xMax > bb.xMin && this.yMin < bb.yMax && this.yMax > bb.yMin) return true;	
+		return false;
+	}
+	
+	public boolean boxOverlapsX(BoundingBox bb)
+	{
+		if (this.xMin < bb.xMax && this.xMax > bb.xMin) return true;	
+		return false;
+	}
+	public boolean boxOverlapsY(BoundingBox bb)
+	{
+		if (this.yMin < bb.yMax && this.yMax > bb.yMin) return true;	
+		return false;
+	}
 	
 }
