@@ -164,10 +164,21 @@ public class GridChunk
 		int tileUp = getTile(x, y - 1);
 		int tileDown = getTile(x, y + 1);
 		
+		int tileUpLeft = getTile(x - 1, y - 1);
+		int tileUpRight = getTile(x + 1, y - 1);
+		int tileDownLeft = getTile(x - 1, y + 1);
+		int tileDownRight = getTile(x + 1, y + 1);
+		
 		boolean isLeft = tileLeft > 0 && tileLeft < 32;
 		boolean isRight = tileRight > 0 && tileRight < 32;
 		boolean isUp = tileUp > 0 && tileUp < 32;
 		boolean isDown = tileDown > 0 && tileDown < 32;
+		
+		boolean isUpLeft = tileUpLeft > 0 && tileUpLeft < 32;
+		boolean isUpRight = tileUpRight > 0 && tileUpRight < 32;
+		boolean isDownLeft = tileDownLeft > 0 && tileDownLeft < 32;
+		boolean isDownRight = tileDownRight > 0 && tileDownRight < 32;
+
 		
 		int data = getData(x,y) & 0xF0;		
 		
@@ -179,10 +190,10 @@ public class GridChunk
 			//if (!isLeft && !isDown) { setTileDirect(x, y, 9); } //setData(x - 1, y, 0); setData(x, y + 1, 0); }
 			//if (!isRight && !isDown) { setTileDirect(x, y, 10); } // setData(x + 1, y, 0); setData(x, y + 1, 0); }		
 			
-			if (!isLeft && !isUp) data |= 1;
-			if (!isRight && !isUp) data |= 2;
-			if (!isLeft && !isDown) data |= 4;
-			if (!isRight && !isDown) data |= 8;
+			if (!isLeft && !isUp && !isUpLeft) data |= 1;
+			if (!isRight && !isUp && !isUpRight) data |= 2;
+			if (!isLeft && !isDown && !isDownLeft) data |= 4;
+			if (!isRight && !isDown && !isDownRight) data |= 8;
 			
 			//return; 
 		}
@@ -232,14 +243,11 @@ public class GridChunk
 			GL11.glEndList();
 		}
 		
-		
-
-		
+						
 		// Render main map
 		
 		GL11.glNewList(renderListNum, GL11.GL_COMPILE);
 			
-		
 		GL11.glCallList(paddingRenderList);
 		
 		//GL11.glDisable(GL11.GL_TEXTURE_2D);
@@ -274,8 +282,7 @@ public class GridChunk
 					if ((tiledata >> 4) == 2) renderMultiTileQuad(x, y, 72, cornerbase);
 					if ((tiledata >> 4) == 3) renderMultiTileQuad(x, y, 73, cornerbase);
 					
-				}
-				
+				}				
 				
 			}
 		}
