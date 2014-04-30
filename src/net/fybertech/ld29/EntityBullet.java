@@ -82,9 +82,13 @@ public class EntityBullet extends Entity
 					if (bb.boxOverlaps(bbb))
 					{			
 						int data = gridChunk.getData(v.x, v.y);
-						data++;
+						int damage = data >> 4;
+						damage++;
+						System.out.println(damage);
+						data &= 0xF;
+						data |= (damage << 4);
 						gridChunk.setData(v.x, v.y, data);
-						if (data > 3) 
+						if (damage > 3) 
 						{
 							gridChunk.setTile(v.x,  v.y,  0);
 							LD29.soundDirtbreak.playAsSoundEffect((float)(Math.random() * 0.50) + 1f,  0.5f,  false);

@@ -14,6 +14,8 @@ import org.lwjgl.openal.AL;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.DisplayMode;
 import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL12;
+import org.lwjgl.opengl.GL13;
 import org.newdawn.slick.Color;
 import org.newdawn.slick.TrueTypeFont;
 import org.newdawn.slick.openal.Audio;
@@ -114,6 +116,8 @@ public class LD29
 		
 		keypressStart = new long[Keyboard.KEYBOARD_SIZE];
 		
+		int texunits = GL11.glGetInteger(GL13.GL_MAX_TEXTURE_UNITS);
+		System.out.println("Texture units available: " + texunits);
 		
 		sizeDisplay();
 		
@@ -122,7 +126,31 @@ public class LD29
 		GL11.glEnable(GL11.GL_BLEND);
 		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
 		
+		GL13.glActiveTexture(GL13.GL_TEXTURE1);
+		GL11.glEnable(GL11.GL_TEXTURE_2D); 
 		textureAtlas.bind();
+		
+		// This will invert alpha
+		//GL11.glTexEnvi(GL11.GL_TEXTURE_ENV, GL11.GL_TEXTURE_ENV_MODE, GL13.GL_COMBINE);
+		//GL11.glTexEnvi (GL11.GL_TEXTURE_ENV, GL13.GL_COMBINE_RGB, GL13.GL_INTERPOLATE);
+		//GL11.glTexEnvi (GL11.GL_TEXTURE_ENV, GL13.GL_COMBINE_ALPHA, GL11.GL_MODULATE);
+		//GL11.glTexEnvi (GL11.GL_TEXTURE_ENV, GL13.GL_OPERAND0_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);		
+		
+		GL11.glTexEnvi(GL11.GL_TEXTURE_ENV, GL11.GL_TEXTURE_ENV_MODE, GL13.GL_COMBINE);
+		GL11.glTexEnvi (GL11.GL_TEXTURE_ENV, GL13.GL_COMBINE_RGB, GL13.GL_INTERPOLATE);
+		GL11.glTexEnvi (GL11.GL_TEXTURE_ENV, GL13.GL_COMBINE_ALPHA, GL11.GL_MODULATE);
+		GL11.glTexEnvi (GL11.GL_TEXTURE_ENV, GL13.GL_OPERAND0_ALPHA, GL11.GL_SRC_ALPHA);
+		
+		GL13.glActiveTexture(GL13.GL_TEXTURE0);
+		GL11.glEnable(GL11.GL_TEXTURE_2D); 
+		textureAtlas.bind();
+		GL11.glTexEnvi(GL11.GL_TEXTURE_ENV, GL11.GL_TEXTURE_ENV_MODE, GL11.GL_MODULATE);
+		//GL11.glTexEnvf(GL11.GL_TEXTURE_ENV, GL13.GL_COMBINE_ALPHA, GL11.GL_MODULATE);
+		
+		
+		//GL13.glActiveTexture(GL13.GL_TEXTURE1);
+		//GL11.glDisable(GL11.GL_TEXTURE_2D); 
+		//GL13.glActiveTexture(GL13.GL_TEXTURE0);
 		
 		gridChunk = new GridChunk();
 		gridChunk.renderToList(gridChunk.initialRenderList);
@@ -387,6 +415,10 @@ public class LD29
 		textureAtlas.bind();
 		float scaleFactor;
 		
+		GL13.glActiveTexture(GL13.GL_TEXTURE1);
+		GL11.glEnable(GL11.GL_TEXTURE_2D); 
+		GL13.glActiveTexture(GL13.GL_TEXTURE0);
+		
 		if (!debugMode)
 		{
 		
@@ -412,8 +444,11 @@ public class LD29
 		GL11.glColor3f(0.75f, 0.75f, 0.75f);
 		GL11.glTranslatef(scrollX,  scrollY,  0);
 		GL11.glCallList(gridChunk.renderList);
-		//for (Particle p : particles) p.render();
-		//player.render();
+		
+		GL13.glActiveTexture(GL13.GL_TEXTURE1);
+		GL11.glDisable(GL11.GL_TEXTURE_2D); 
+		GL13.glActiveTexture(GL13.GL_TEXTURE0);		
+		
 		GL11.glColor3f(1, 1, 1);
 		for (Entity e : entities) { if (e != player) e.render(); }
 		player.render();

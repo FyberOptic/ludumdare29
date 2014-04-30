@@ -1,6 +1,7 @@
 package net.fybertech.ld29;
 
 import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL13;
 
 public class GridChunk
 {
@@ -168,21 +169,26 @@ public class GridChunk
 		boolean isUp = tileUp > 0 && tileUp < 32;
 		boolean isDown = tileDown > 0 && tileDown < 32;
 		
+		int data = getData(x,y) & 0xF0;		
+		
 		if (thisTile > 0 && thisTile < 32)// && firstGeneration) 
 		{ 
 			//setData(x, y, 0); 
-			if (!isLeft && !isUp) { setTileDirect(x, y, 7); } //setData(x - 1, y, 0); setData(x, y - 1, 0);}
-			if (!isRight && !isUp) { setTileDirect(x, y, 8); } //setData(x + 1, y, 0); setData(x, y - 1, 0); }
-			if (!isLeft && !isDown) { setTileDirect(x, y, 9); } //setData(x - 1, y, 0); setData(x, y + 1, 0); }
-			if (!isRight && !isDown) { setTileDirect(x, y, 10); } // setData(x + 1, y, 0); setData(x, y + 1, 0); }
-			return; 
+			//if (!isLeft && !isUp) { setTileDirect(x, y, 7); } //setData(x - 1, y, 0); setData(x, y - 1, 0);}
+			//if (!isRight && !isUp) { setTileDirect(x, y, 8); } //setData(x + 1, y, 0); setData(x, y - 1, 0); }
+			//if (!isLeft && !isDown) { setTileDirect(x, y, 9); } //setData(x - 1, y, 0); setData(x, y + 1, 0); }
+			//if (!isRight && !isDown) { setTileDirect(x, y, 10); } // setData(x + 1, y, 0); setData(x, y + 1, 0); }		
+			
+			if (!isLeft && !isUp) data |= 1;
+			if (!isRight && !isUp) data |= 2;
+			if (!isLeft && !isDown) data |= 4;
+			if (!isRight && !isDown) data |= 8;
+			
+			//return; 
 		}
-		
-		int data = 0;		
-		
-		if (thisTile == 0)
+		else if (thisTile == 0)
 		{			
-			if (isLeft && isUp) data |= 1;		
+			if (isLeft && isUp) data |= 1;
 			if (isRight && isUp) data |= 2;
 			if (isLeft && isDown) data |= 4;
 			if (isRight && isDown) data |= 8;
@@ -199,6 +205,8 @@ public class GridChunk
 	 */
 	public void renderToList(int renderListNum)
 	{
+		
+
 		
 		// Pre-render border blocks
 		
@@ -243,14 +251,15 @@ public class GridChunk
 			for (int x = 0; x < CHUNKWIDTH ; x++)
 			{
 				int tilenum = tiles[(y * CHUNKWIDTH) + x] & 0xFF;			
-				
-				renderTileQuad(x, y, tilenum);
-				
-				// Render rounded corners
 				int tiledata = data[(y * CHUNKWIDTH) + x] & 0xFF;
+				
+								
+				// Render rounded corners
+				
 				
 				if (tilenum == 0)
 				{
+					// Render outer rounded edges in empty block spaces
 					if ((tiledata & 1) > 0) renderTileQuad(x, y, 64);
 					if ((tiledata & 2) > 0) renderTileQuad(x, y, 65);
 					if ((tiledata & 4) > 0) renderTileQuad(x, y, 66);
@@ -258,9 +267,12 @@ public class GridChunk
 				}
 				else
 				{
-					if (tiledata == 1) renderTileQuad(x, y, 71);
-					if (tiledata == 2) renderTileQuad(x, y, 72);
-					if (tiledata == 3) renderTileQuad(x, y, 73);
+					renderMultiTileQuad(x, y, tilenum, (14 * 32) + (tiledata & 0xF));
+					
+					// Render block break progress
+					if ((tiledata >> 4) == 1) renderTileQuad(x, y, 71);
+					else if ((tiledata >> 4) == 2) renderTileQuad(x, y, 72);
+					else if ((tiledata >> 4) == 3) renderTileQuad(x, y, 73);
 				}
 				
 				
@@ -271,12 +283,14 @@ public class GridChunk
 		//GL11.glEnable(GL11.GL_TEXTURE_2D);
 		//GL11.glPolygonMode(GL11.GL_FRONT_AND_BACK, GL11.GL_FILL);
 		
-		
+
 		GL11.glEndList();
 		
+
 		
 		this.dirty = false;
 	}
+	
 	
 	
 	public void renderTileQuad(int x, int y, int tilenum)
@@ -289,14 +303,57 @@ public class GridChunk
 		
 		float tileX = (float)(tilenum % 32) * uvCalc;
 		float tileY = (float)(tilenum / 32) * uvCalc;					
+					
 		
-		GL11.glTexCoord2f(tileX + 0.0001f, tileY + 0.0001f);	
+		
+		GL11.glTexCoord2f(tileX + 0.0001f, tileY + 0.0001f);
 		GL11.glVertex2f(x * 16, y * 16);					
-		GL11.glTexCoord2f(tileX + uvCalc - 0.0001f, tileY + 0.0001f); 
+		
+		GL11.glTexCoord2f(tileX + uvCalc - 0.0001f, tileY + 0.0001f);		
 		GL11.glVertex2f(x * 16 + 16, y * 16);				
-		GL11.glTexCoord2f(tileX + uvCalc - 0.0001f, tileY + uvCalc - 0.0001f); 
+		
+		GL11.glTexCoord2f(tileX + uvCalc - 0.0001f, tileY + uvCalc - 0.0001f);		
 		GL11.glVertex2f(x * 16 + 16, y * 16 + 16);				
-		GL11.glTexCoord2f(tileX + 0.0001f, tileY + uvCalc - 0.0001f); 
+		
+		GL11.glTexCoord2f(tileX + 0.0001f, tileY + uvCalc - 0.0001f);		
+		GL11.glVertex2f(x * 16, y * 16 + 16);	
+
+	}
+	
+	public void renderMultiTileQuad(int x, int y, int tilenum, int tilenum2)
+	{
+		// 32 tiles per row in atlas (512x512, 16x16 tiles)
+		
+		if (tilenum == 0) return;
+		
+		float uvCalc = 1.0f / (512 / 16);
+		
+		float tileX = (float)(tilenum % 32) * uvCalc;
+		float tileY = (float)(tilenum / 32) * uvCalc;					
+		
+		//tilenum2 = 64; //7;
+		float tileX2 = (float)(tilenum2 % 32) * uvCalc;
+		float tileY2 = (float)(tilenum2 / 32) * uvCalc;					
+		
+		
+		//GL11.glTexCoord2f(tileX + 0.0001f, tileY + 0.0001f);
+		GL13.glMultiTexCoord2f(GL13.GL_TEXTURE0, tileX + 0.0001f, tileY + 0.0001f);
+		GL13.glMultiTexCoord2f(GL13.GL_TEXTURE1, tileX2 + 0.0001f, tileY2 + 0.0001f);
+		GL11.glVertex2f(x * 16, y * 16);					
+		
+		//GL11.glTexCoord2f(tileX + uvCalc - 0.0001f, tileY + 0.0001f);
+		GL13.glMultiTexCoord2f(GL13.GL_TEXTURE0, tileX + uvCalc - 0.0001f, tileY + 0.0001f);
+		GL13.glMultiTexCoord2f(GL13.GL_TEXTURE1, tileX2 + uvCalc - 0.0001f, tileY2 + 0.0001f);
+		GL11.glVertex2f(x * 16 + 16, y * 16);				
+		
+		//GL11.glTexCoord2f(tileX + uvCalc - 0.0001f, tileY + uvCalc - 0.0001f);
+		GL13.glMultiTexCoord2f(GL13.GL_TEXTURE0, tileX + uvCalc - 0.0001f, tileY + uvCalc - 0.0001f);
+		GL13.glMultiTexCoord2f(GL13.GL_TEXTURE1, tileX2 + uvCalc - 0.0001f, tileY2 + uvCalc - 0.0001f);
+		GL11.glVertex2f(x * 16 + 16, y * 16 + 16);				
+		
+		//GL11.glTexCoord2f(tileX + 0.0001f, tileY + uvCalc - 0.0001f);
+		GL13.glMultiTexCoord2f(GL13.GL_TEXTURE0, tileX + 0.0001f, tileY + uvCalc - 0.0001f);
+		GL13.glMultiTexCoord2f(GL13.GL_TEXTURE1, tileX2 + 0.0001f, tileY2 + uvCalc - 0.0001f);
 		GL11.glVertex2f(x * 16, y * 16 + 16);	
 
 	}
