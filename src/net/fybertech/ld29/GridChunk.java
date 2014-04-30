@@ -256,23 +256,24 @@ public class GridChunk
 								
 				// Render rounded corners
 				
-				
+				int cornerbase = (14 * 32);
 				if (tilenum == 0)
 				{
 					// Render outer rounded edges in empty block spaces
-					if ((tiledata & 1) > 0) renderTileQuad(x, y, 64);
-					if ((tiledata & 2) > 0) renderTileQuad(x, y, 65);
-					if ((tiledata & 4) > 0) renderTileQuad(x, y, 66);
-					if ((tiledata & 8) > 0) renderTileQuad(x, y, 67);
+					if ((tiledata & 1) > 0) renderMultiTileQuad(x, y, 64, cornerbase);
+					if ((tiledata & 2) > 0) renderMultiTileQuad(x, y, 65, cornerbase);
+					if ((tiledata & 4) > 0) renderMultiTileQuad(x, y, 66, cornerbase);
+					if ((tiledata & 8) > 0) renderMultiTileQuad(x, y, 67, cornerbase);
 				}
 				else
-				{
-					renderMultiTileQuad(x, y, tilenum, (14 * 32) + (tiledata & 0xF));
+				{					
+					renderMultiTileQuad(x, y, tilenum, cornerbase + (tiledata & 0xF));
 					
 					// Render block break progress
-					if ((tiledata >> 4) == 1) renderTileQuad(x, y, 71);
-					else if ((tiledata >> 4) == 2) renderTileQuad(x, y, 72);
-					else if ((tiledata >> 4) == 3) renderTileQuad(x, y, 73);
+					if ((tiledata >> 4) == 1) renderMultiTileQuad(x, y, 71, cornerbase);
+					if ((tiledata >> 4) == 2) renderMultiTileQuad(x, y, 72, cornerbase);
+					if ((tiledata >> 4) == 3) renderMultiTileQuad(x, y, 73, cornerbase);
+					
 				}
 				
 				
