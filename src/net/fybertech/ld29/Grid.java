@@ -20,9 +20,13 @@ public class Grid
 	
 	boolean firstGeneration = true;
 	
-	public float displayScale = 1;
+	public float globalScale = 1;
+	public float localScale = 1;
+	
 	public float scrollX = 0;
 	public float scrollY = 0;
+	
+	public boolean isBackground = false;
 	
 	public Grid()
 	{
@@ -194,9 +198,14 @@ public class Grid
 		
 	}
 	
-	public void setDisplayScale(float scale)
+	public void setGlobalScale(float scale)
 	{
-		this.displayScale = scale; 
+		this.globalScale = scale; 
+	}
+	
+	public void setLocalScale(float scale)
+	{
+		this.localScale = scale; 
 	}
 	
 	public void setScroll(float x, float y)
@@ -207,17 +216,17 @@ public class Grid
 	
 	public void render()
 	{		
-		float screenWidth = Display.getWidth() / this.displayScale;
-		float screenHeight = Display.getHeight() / this.displayScale;			
-		float screenLeft = scrollX - (screenWidth / 2);
-		float screenTop = scrollY - (screenHeight / 2);
+		float screenWidth = ((Display.getWidth()) / this.globalScale);// / localScale;
+		float screenHeight = ((Display.getHeight()) / this.globalScale);// / localScale;			
+		float screenLeft = (scrollX - (screenWidth / 2));
+		float screenTop = (scrollY  - (screenHeight / 2));
 		
 		int leftChunk = (int)(Math.floor(screenLeft)) / (16 * 16);
 		int rightChunk = (int)(Math.ceil(screenLeft + screenWidth)) / (16 * 16);
 		int topChunk = (int)(Math.floor(screenTop)) / (16 * 16);
 		int bottomChunk = (int)(Math.ceil(screenTop + screenHeight)) / (16 * 16);		
 		
-		//System.out.println(screenLeft + " " + screenTop + " " + screenHeight);
+		//if (isBackground) System.out.println(screenLeft + " " + screenTop + " " + screenWidth + " " + screenHeight);
 		
 		for (int n = 0; n < GRIDWIDTH * GRIDHEIGHT; n++)
 		{	

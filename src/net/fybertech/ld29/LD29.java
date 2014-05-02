@@ -52,6 +52,7 @@ public class LD29
 	//GridChunk gridChunk = null;
 	Grid grid = null;
 	Grid backgroundGrid = null;
+	Grid backgroundGrid2 = null;
 	
 	//public static ArrayList<Particle> particles = new ArrayList<Particle>();
 	public ArrayList<Entity> entities = new ArrayList<Entity>();
@@ -177,6 +178,9 @@ public class LD29
 		System.out.println("Creating tile grids");
 		grid = new Grid();
 		backgroundGrid = new Grid();
+		backgroundGrid.isBackground = true;
+		backgroundGrid2 = new Grid();
+		backgroundGrid2.isBackground = true;
 		
 		System.out.println("Adding player");
 		player = new Entity(grid, 32);
@@ -482,7 +486,7 @@ public class LD29
 		textureAtlas.bind();
 		float scaleFactor;
 		
-		grid.setDisplayScale(displayScale * userScale);
+		grid.setGlobalScale(displayScale * userScale);
 		
 		GL13.glActiveTexture(GL13.GL_TEXTURE1);
 		GL11.glEnable(GL11.GL_TEXTURE_2D); 
@@ -496,31 +500,32 @@ public class LD29
 		
 		
 		grid.setScroll(scrollX, scrollY);
-		grid.setDisplayScale(displayScale * userScale);
+		grid.setGlobalScale(displayScale * userScale);
 		
-//		if (!debugMode)
-//		{
-//		
-//			GL11.glPushMatrix();
-//			scaleFactor = 0.5f;
-//			GL11.glColor3f(0.25f,  0.25f,  0.25f);
-//			GL11.glScalef(scaleFactor, scaleFactor, scaleFactor);
-//			GL11.glTranslatef((160 - scrollX) * scaleFactor, (120 - scrollY) * scaleFactor,  0);
-//			backgroundGrid.setScroll(scrollX * scaleFactor,  scrollY * scaleFactor);
-//			backgroundGrid.setDisplayScale(displayScale * userScale * scaleFactor);
-//			backgroundGrid.render();
-//			GL11.glPopMatrix();
-//			
-//			GL11.glPushMatrix();
-//			scaleFactor = 0.75f;
-//			GL11.glColor3f(0.5f,  0.5f,  0.5f);
-//			GL11.glScalef(scaleFactor, scaleFactor, scaleFactor);			
-//			GL11.glTranslatef((160 - scrollX) * scaleFactor, (120 - scrollY) * scaleFactor,  0);
-//			backgroundGrid.setScroll(scrollX * scaleFactor,  scrollY * scaleFactor);
-//			backgroundGrid.setDisplayScale(displayScale * userScale * scaleFactor);
-//			backgroundGrid.render();
-//			GL11.glPopMatrix();
-//		}
+		if (!debugMode)
+		{
+		
+			GL11.glPushMatrix();
+			scaleFactor = 0.5f;
+			GL11.glColor3f(0.25f, 0.25f, 0.25f);
+			GL11.glScalef(scaleFactor, scaleFactor, scaleFactor);			
+			GL11.glTranslatef((160 / scaleFactor) - scrollX,  (120 / scaleFactor) - scrollY, 0);
+			backgroundGrid.setScroll(scrollX,  scrollY);
+			backgroundGrid.setGlobalScale(displayScale * userScale * scaleFactor);			
+			backgroundGrid.render();
+			GL11.glPopMatrix();
+
+			
+			GL11.glPushMatrix();
+			scaleFactor = 0.75f;
+			GL11.glColor3f(0.5f, 0.5f, 0.5f);
+			GL11.glScalef(scaleFactor, scaleFactor, scaleFactor);			
+			GL11.glTranslatef((160 / scaleFactor) - scrollX,  (120 / scaleFactor) - scrollY, 0);
+			backgroundGrid2.setScroll(scrollX,  scrollY);
+			backgroundGrid2.setGlobalScale(displayScale * userScale * scaleFactor);			
+			backgroundGrid2.render();
+			GL11.glPopMatrix();
+		}
 
 		
 		
