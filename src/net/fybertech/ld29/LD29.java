@@ -2,10 +2,13 @@ package net.fybertech.ld29;
 
 import java.awt.Font;
 import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.nio.FloatBuffer;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 
+import org.lwjgl.BufferUtils;
 import org.lwjgl.LWJGLException;
 import org.lwjgl.Sys;
 import org.lwjgl.input.Keyboard;
@@ -16,6 +19,10 @@ import org.lwjgl.opengl.DisplayMode;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
 import org.lwjgl.opengl.GL13;
+import org.lwjgl.opengl.GL31;
+import org.lwjgl.opengl.GL32;
+import org.lwjgl.opengl.GL40;
+import org.lwjgl.opengl.GL43;
 import org.newdawn.slick.Color;
 import org.newdawn.slick.TrueTypeFont;
 import org.newdawn.slick.openal.Audio;
@@ -490,9 +497,29 @@ public class LD29
 		}
 
 				
-		GL11.glColor3f(1,1,1);
-		GL11.glColor3f(0.75f, 0.75f, 0.75f);
 		GL11.glTranslatef(scrollX,  scrollY,  0);
+		
+		float bordersize = 1f;
+		GL11.glColor4f(0f,0f,0f,0.25f);
+		GL11.glPushMatrix();
+		GL11.glTranslatef(bordersize , 0, 0);
+		GL11.glCallList(gridChunk.renderList);
+		GL11.glPopMatrix();
+		GL11.glPushMatrix();
+		GL11.glTranslatef(-bordersize ,0, 0);
+		GL11.glCallList(gridChunk.renderList);
+		GL11.glPopMatrix();GL11.glPushMatrix();
+		GL11.glTranslatef(0, bordersize , 0);
+		GL11.glCallList(gridChunk.renderList);
+		GL11.glPopMatrix();
+		GL11.glPushMatrix();
+		GL11.glTranslatef(0, -bordersize , 0);
+		GL11.glCallList(gridChunk.renderList);
+		GL11.glPopMatrix();
+		
+		
+		GL11.glColor3f(1,1,1);
+		GL11.glColor3f(0.75f, 0.75f, 0.75f);		
 		GL11.glCallList(gridChunk.renderList);
 		
 		GL13.glActiveTexture(GL13.GL_TEXTURE1);
@@ -557,7 +584,13 @@ public class LD29
 		}
 		GL11.glEnd();
 		
+		//GL11.glEnable(GL11.GL_ALPHA_TEST);
+		//GL11.glAlphaFunc(GL11.GL_EQUAL, 1);
 		
+		//GL11.glTexParameter(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_BORDER_COLOR, asFloatBuffer(new float[]{0.0f, 0.0f, 0.0f, 0.0f}));
+		//GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_S, GL12.GL_CLAMP_TO_EDGE);
+		//GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_T, GL12.GL_CLAMP_TO_EDGE);
+		//GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL12.GL_TEXTURE_WRAP_R, GL13.GL_CLAMP_TO_BORDER);
 		
 		GL11.glLoadIdentity();
 		font.drawString(displayScale * 4,displayScale * 15,"Gems: " + gemTotal, Color.white);
@@ -574,6 +607,13 @@ public class LD29
 		}
 	}
 	
+	
+	private static FloatBuffer asFloatBuffer(float... values){
+		FloatBuffer buffer = BufferUtils.createFloatBuffer(values.length);
+		buffer.put(values);
+		buffer.flip();
+		return buffer;
+	}
 	
 	
 	public void renderTileQuad(int x, int y, int tilenum)
