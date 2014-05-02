@@ -190,14 +190,14 @@ public class GridChunk
 			//if (!isLeft && !isDown) { setTileDirect(x, y, 9); } //setData(x - 1, y, 0); setData(x, y + 1, 0); }
 			//if (!isRight && !isDown) { setTileDirect(x, y, 10); } // setData(x + 1, y, 0); setData(x, y + 1, 0); }		
 			
-			if (!isLeft && !isUp && !isUpLeft) data |= 1;
-			if (!isRight && !isUp && !isUpRight) data |= 2;
+			if (!isLeft && !isUp && !isUpLeft && isDown) data |= 1;
+			if (!isRight && !isUp && !isUpRight && isDown) data |= 2;
 			if (!isLeft && !isDown && !isDownLeft) data |= 4;
 			if (!isRight && !isDown && !isDownRight) data |= 8;
 			
 			//return; 
 		}
-		else if (thisTile == 0)
+		else if (thisTile == 0 || thisTile == 96)
 		{			
 			if (isLeft && isUp) data |= 1;
 			if (isRight && isUp) data |= 2;
@@ -265,14 +265,20 @@ public class GridChunk
 				// Render rounded corners
 				
 				int cornerbase = (14 * 32);
-				if (tilenum == 0)
+				
+				// Draw outer rounded edges for empty spaces and gems
+				if (tilenum == 0 || tilenum == 96)
 				{
+					// If it's a gem, put it here too
+					if (tilenum == 96) renderMultiTileQuad(x, y, tilenum, cornerbase + (tiledata & 0xF));
+					
 					// Render outer rounded edges in empty block spaces
 					if ((tiledata & 1) > 0) renderMultiTileQuad(x, y, 64, cornerbase);
 					if ((tiledata & 2) > 0) renderMultiTileQuad(x, y, 65, cornerbase);
 					if ((tiledata & 4) > 0) renderMultiTileQuad(x, y, 66, cornerbase);
 					if ((tiledata & 8) > 0) renderMultiTileQuad(x, y, 67, cornerbase);
 				}
+				// else draw regular tile
 				else
 				{					
 					renderMultiTileQuad(x, y, tilenum, cornerbase + (tiledata & 0xF));

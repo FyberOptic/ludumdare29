@@ -65,6 +65,16 @@ public class LD29
 	public static boolean debugMode = false; 
 	public static boolean noClipping = false;
 	
+	
+	public boolean leftMouseDown = false;
+	public boolean rightMouseDown = false;
+	public int leftMouseDuration = 0;
+	public int rightMouseDuration = 0;
+	
+	
+	public boolean isScreenGrabbed = false;
+	
+	
 	/**
 	 * 
 	 * @return
@@ -197,7 +207,6 @@ public class LD29
 				newentities.clear();
 				
 				
-				if (Keyboard.isKeyDown(Keyboard.KEY_ESCAPE)) gameRunning = false; 
 			}
 			
 			secondTickTime += deltaTime;
@@ -282,15 +291,22 @@ public class LD29
 				
 				if (Keyboard.getEventKey() == Keyboard.KEY_ADD) this.userScale *= 2.0f;
 				if (Keyboard.getEventKey() == Keyboard.KEY_SUBTRACT) this.userScale /= 2.0f; 
-
 				
-			}
-			else
-			{
+				if (Keyboard.getEventKey() == Keyboard.KEY_ESCAPE) 
+				{
+					if (isScreenGrabbed)
+					{
+						isScreenGrabbed = false;
+						Mouse.setGrabbed(false);
+					}
+					else this.gameRunning = false;
+				}
+
 				if (Keyboard.getEventKey() == Keyboard.KEY_BACK) debugMode = !debugMode;
 				if (Keyboard.getEventKey() == Keyboard.KEY_N) noClipping = !noClipping;
 				
 			}
+			
 		}
 		
 		//if (Keyboard.getEventKey() == Keyboard.KEY_SPACE)
@@ -341,17 +357,48 @@ public class LD29
 		
 		// Handle mouse
 		
-		while (Mouse.next())
-		{
-			if (Mouse.getEventButton() == 0 && Mouse.getEventButtonState())
+		if (Mouse.isButtonDown(0))
+		{			
+			if (!isScreenGrabbed)
 			{
-				int mx = Mouse.getEventX();
-				int my = Mouse.getEventY();
+				isScreenGrabbed = true;
+				Mouse.setGrabbed(true);
+			}
+			
+			
+			boolean fireShot = false;
+			boolean firstShot = false;
+			int shootDelay = 150;
+					
+			if (leftMouseDown)
+			{
+				leftMouseDuration += deltaTime;
+				
+				if (leftMouseDuration >= shootDelay)
+				{
+					leftMouseDuration -= shootDelay;
+					fireShot = true;
+				}			
+			}
+			else
+			{
+				leftMouseDuration = 0;
+				leftMouseDown = true;
+				fireShot = true;
+				firstShot = true;
+			}
+			
+			if (fireShot)
+			{
+				int mx = Mouse.getX();
+				int my = Mouse.getY();
 				my = Display.getHeight() - my -  1;
 				
 				int dx = (Display.getWidth() / 2) - mx;
 				int dy = (Display.getHeight() / 2) - my;
 				double angle = Math.atan2(-dy, -dx) * 180 / Math.PI;
+				
+				if (!firstShot) angle += ((Math.random() * 4) - 2);
 				
 				//System.out.println("CLICK " + mx + " " + my + " " + angle);
 				
@@ -366,7 +413,10 @@ public class LD29
 				newentities.add(new EntityBullet(player.xPos, player.yPos, xv, yv));
 				LD29.soundShoot.playAsSoundEffect((float)(Math.random() * 0.05) + 1f,  0.55f,  false);
 			}
+			
 		}
+		else leftMouseDown = false;
+	
 		
 		int mx = Mouse.getX();
 		int my = Mouse.getY();
@@ -511,6 +561,17 @@ public class LD29
 		
 		GL11.glLoadIdentity();
 		font.drawString(displayScale * 4,displayScale * 15,"Gems: " + gemTotal, Color.white);
+		
+		if (isScreenGrabbed)
+		{
+			textureAtlas.bind();
+			GL11.glLoadIdentity();
+			GL11.glScalef(((float)displayScale / 1.0f), ((float) displayScale / 1.0f), 1);
+			GL11.glColor3f(1,1,1);
+			GL11.glBegin(GL11.GL_QUADS);
+			renderTileQuad((Mouse.getX() / displayScale) - 3, ((Display.getHeight() - Mouse.getY()) / displayScale) - 3, 41);		
+			GL11.glEnd();
+		}
 	}
 	
 	
