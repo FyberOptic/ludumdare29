@@ -39,18 +39,19 @@ public class LD29
 	
 	public boolean gameRunning = true;	
 	public Texture textureAtlas = null;
-	int displayScale = 1;
-	float userScale = 1;
+	public static int displayScale = 1;
+	public static float userScale = 1;
 	
 	long[] keypressStart = null;
 	
-	float scrollX = 0;
-	float scrollY = 0;
+	//public float scrollX = 0;
+	//public float scrollY = 0;
 	
 	Entity player;// = new Entity(32);
 	
 	//GridChunk gridChunk = null;
 	Grid grid = null;
+	Grid backgroundGrid = null;
 	
 	//public static ArrayList<Particle> particles = new ArrayList<Particle>();
 	public ArrayList<Entity> entities = new ArrayList<Entity>();
@@ -173,8 +174,11 @@ public class LD29
 		//gridChunk = new GridChunk();
 		//gridChunk.renderToList(gridChunk.initialRenderList);
 		//gridChunk.renderToList(gridChunk.renderList);
+		System.out.println("Creating tile grids");
 		grid = new Grid();
+		backgroundGrid = new Grid();
 		
+		System.out.println("Adding player");
 		player = new Entity(grid, 32);
 		player.xPos = 32;
 		player.yPos = 32;
@@ -189,7 +193,8 @@ public class LD29
 		int ticks = 0;
 		int fps = 0;
 		
-	
+		System.out.println("Starting game loop");
+		
 		while (gameRunning)			 
 		{			 
 			currentTime = getTime();
@@ -265,8 +270,8 @@ public class LD29
 		
 		while (true)
 		{
-			batX = (float)(Math.random() * (16 * Grid.CHUNKWIDTH));
-			batY = (float)(Math.random() * (16 * Grid.CHUNKHEIGHT));
+			batX = (float)(Math.random() * (16 * Grid.TILEGRIDWIDTH));
+			batY = (float)(Math.random() * (16 * Grid.TILEGRIDHEIGHT));
 			
 			float dx = player.xPos - batX;
 			float dy = player.yPos - batY;
@@ -336,10 +341,11 @@ public class LD29
 		else player.jumping = false;
 		
 		float scrollamount = (deltaTime / 1000.0f) * 150;
-		if (Keyboard.isKeyDown(Keyboard.KEY_NUMPAD4)) scrollX -= scrollamount; 
-		if (Keyboard.isKeyDown(Keyboard.KEY_NUMPAD6)) scrollX += scrollamount;
-		if (Keyboard.isKeyDown(Keyboard.KEY_NUMPAD8)) scrollY -= scrollamount;
-		if (Keyboard.isKeyDown(Keyboard.KEY_NUMPAD2)) scrollY += scrollamount;
+		
+		//if (Keyboard.isKeyDown(Keyboard.KEY_NUMPAD4)) scrollX -= scrollamount; 
+		//if (Keyboard.isKeyDown(Keyboard.KEY_NUMPAD6)) scrollX += scrollamount;
+		//if (Keyboard.isKeyDown(Keyboard.KEY_NUMPAD8)) scrollY -= scrollamount;
+		//if (Keyboard.isKeyDown(Keyboard.KEY_NUMPAD2)) scrollY += scrollamount;
 		
 		//float moveamount = (deltaTime / 1000.0f) * 10;
 		//if (Keyboard.isKeyDown(Keyboard.KEY_LEFT)) player.xPos -= moveamount; 
@@ -354,13 +360,13 @@ public class LD29
 		//if (Keyboard.isKeyDown(Keyboard.KEY_S)) player.yVel = playervel;	
 		
 				
-		scrollX = 160 + -player.xPos - 8;
-		scrollY = 120 + -player.yPos - 8;
+		//scrollX = 160 + -player.xPos - 8;
+		//scrollY = 120 + -player.yPos - 8;
 		
 		if (Keyboard.isKeyDown(Keyboard.KEY_TAB)) 
 		{ 
-			scrollX += (Math.random() * 8) - 4; 
-			scrollY += (Math.random() * 8) - 4;
+//			scrollX += (Math.random() * 8) - 4; 
+			//scrollY += (Math.random() * 8) - 4;
 		} 
 		
 		
@@ -476,32 +482,49 @@ public class LD29
 		textureAtlas.bind();
 		float scaleFactor;
 		
+		grid.setDisplayScale(displayScale * userScale);
+		
 		GL13.glActiveTexture(GL13.GL_TEXTURE1);
 		GL11.glEnable(GL11.GL_TEXTURE_2D); 
 		GL13.glActiveTexture(GL13.GL_TEXTURE0);
 		
-		if (!debugMode)
-		{
 		
-			GL11.glPushMatrix();
-			scaleFactor = 0.5f;
-			GL11.glColor3f(0.25f,  0.25f,  0.25f);
-			GL11.glScalef(scaleFactor, scaleFactor, scaleFactor);
-			GL11.glTranslatef(scrollX * scaleFactor,  scrollY * scaleFactor,  0);		
-			grid.renderBackground();
-			GL11.glPopMatrix();
-			
-			GL11.glPushMatrix();
-			scaleFactor = 0.75f;
-			GL11.glColor3f(0.5f,  0.5f,  0.5f);
-			GL11.glScalef(scaleFactor, scaleFactor, scaleFactor);
-			GL11.glTranslatef(scrollX * scaleFactor,  scrollY * scaleFactor,  0);		
-			grid.renderBackground();
-			GL11.glPopMatrix();
-		}
+		//float scrollX = 160 + -player.xPos - 8;; //LD29.instance.player.xPos + 8;
+		//float scrollY = 120 + -player.yPos - 8;; //LD29.instance.player.yPos + 8;
+		float scrollX = LD29.instance.player.xPos + 8;
+		float scrollY = LD29.instance.player.yPos + 8;
+		
+		
+		grid.setScroll(scrollX, scrollY);
+		grid.setDisplayScale(displayScale * userScale);
+		
+//		if (!debugMode)
+//		{
+//		
+//			GL11.glPushMatrix();
+//			scaleFactor = 0.5f;
+//			GL11.glColor3f(0.25f,  0.25f,  0.25f);
+//			GL11.glScalef(scaleFactor, scaleFactor, scaleFactor);
+//			GL11.glTranslatef((160 - scrollX) * scaleFactor, (120 - scrollY) * scaleFactor,  0);
+//			backgroundGrid.setScroll(scrollX * scaleFactor,  scrollY * scaleFactor);
+//			backgroundGrid.setDisplayScale(displayScale * userScale * scaleFactor);
+//			backgroundGrid.render();
+//			GL11.glPopMatrix();
+//			
+//			GL11.glPushMatrix();
+//			scaleFactor = 0.75f;
+//			GL11.glColor3f(0.5f,  0.5f,  0.5f);
+//			GL11.glScalef(scaleFactor, scaleFactor, scaleFactor);			
+//			GL11.glTranslatef((160 - scrollX) * scaleFactor, (120 - scrollY) * scaleFactor,  0);
+//			backgroundGrid.setScroll(scrollX * scaleFactor,  scrollY * scaleFactor);
+//			backgroundGrid.setDisplayScale(displayScale * userScale * scaleFactor);
+//			backgroundGrid.render();
+//			GL11.glPopMatrix();
+//		}
 
-				
-		GL11.glTranslatef(scrollX,  scrollY,  0);
+		
+		
+		GL11.glTranslatef(160 - scrollX,  120 - scrollY,  0);
 		
 		float bordersize = 1f;
 		GL11.glColor4f(0f,0f,0f,1f);
