@@ -74,27 +74,27 @@ public class EntityBullet extends Entity
 			
 			for (Vector2i v : intercepts)
 			{
-				int tile = gridChunk.getTile(v.x,  v.y);
+				int tile = grid.getTile(v.x,  v.y);
 				if (tile > 0 && tile < 32)
 				{					
 					BoundingBox bb = bbFromGridPos(v.x, v.y);
 					BoundingBox bbb = new BoundingBox(xPos, yPos, xPos + 15f, yPos + 15f);
 					if (bb.boxOverlaps(bbb))
 					{			
-						int data = gridChunk.getData(v.x, v.y);
+						int data = grid.getData(v.x, v.y);
 						int damage = data >> 4;
 						damage++;
-						System.out.println(damage);
+						//System.out.println(damage);
 						data &= 0xF;
 						data |= (damage << 4);
-						gridChunk.setData(v.x, v.y, data);
+						grid.setData(v.x, v.y, data);
 						if (damage > 3) 
 						{
-							gridChunk.setTile(v.x,  v.y,  0);
+							grid.setTile(v.x,  v.y,  0);
 							LD29.soundDirtbreak.playAsSoundEffect((float)(Math.random() * 0.50) + 1f,  0.5f,  false);
 						}
 						
-						gridChunk.dirty = true;					
+						//gridChunk.dirty = true;					
 						
 						
 						break;
@@ -125,7 +125,7 @@ public class EntityBullet extends Entity
 		
 		for (Vector2i v : intercepts)
 		{
-			int tile = gridChunk.getTile(v.x,  v.y);
+			int tile = grid.getTile(v.x,  v.y);
 			if (tile == 96)
 			{
 				BoundingBox bb = bbFromGridPos(v.x, v.y).expand(-8, -8);
@@ -133,8 +133,7 @@ public class EntityBullet extends Entity
 				{			
 					LD29.gemTotal++;
 					LD29.soundGem.playAsSoundEffect((float) (Math.random() * 0.05) + 1f,  0.75f,  false);
-					gridChunk.setTile(v.x, v.y, 0);
-					gridChunk.dirty = true;
+					grid.setTile(v.x, v.y, 0);					
 				}
 			}
 		}

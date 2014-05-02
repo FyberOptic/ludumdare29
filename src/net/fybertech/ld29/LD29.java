@@ -49,7 +49,8 @@ public class LD29
 	
 	Entity player;// = new Entity(32);
 	
-	GridChunk gridChunk = null;
+	//GridChunk gridChunk = null;
+	Grid grid = null;
 	
 	//public static ArrayList<Particle> particles = new ArrayList<Particle>();
 	public ArrayList<Entity> entities = new ArrayList<Entity>();
@@ -169,11 +170,12 @@ public class LD29
 		//GL11.glDisable(GL11.GL_TEXTURE_2D); 
 		//GL13.glActiveTexture(GL13.GL_TEXTURE0);
 		
-		gridChunk = new GridChunk();
-		gridChunk.renderToList(gridChunk.initialRenderList);
-		gridChunk.renderToList(gridChunk.renderList);
+		//gridChunk = new GridChunk();
+		//gridChunk.renderToList(gridChunk.initialRenderList);
+		//gridChunk.renderToList(gridChunk.renderList);
+		grid = new Grid();
 		
-		player = new Entity(gridChunk, 32);
+		player = new Entity(grid, 32);
 		player.xPos = 32;
 		player.yPos = 32;
 		entities.add(player);
@@ -233,6 +235,8 @@ public class LD29
 				if (e.destroyEntity) iterator.remove();
 			}
 			
+			grid.update(deltaTime);
+			
 			GL11.glClear(GL11.GL_COLOR_BUFFER_BIT);
 			GL11.glLoadIdentity();
 			render();
@@ -242,7 +246,7 @@ public class LD29
 			
 			if (Display.wasResized()) sizeDisplay();
 			
-			if (gridChunk.dirty) gridChunk.renderToList(gridChunk.renderList);
+			//if (gridChunk.dirty) gridChunk.renderToList(gridChunk.renderList);
 						
 			SoundStore.get().poll(0);
 			
@@ -261,8 +265,8 @@ public class LD29
 		
 		while (true)
 		{
-			batX = (float)(Math.random() * (16 * GridChunk.CHUNKWIDTH));
-			batY = (float)(Math.random() * (16 * GridChunk.CHUNKHEIGHT));
+			batX = (float)(Math.random() * (16 * Grid.CHUNKWIDTH));
+			batY = (float)(Math.random() * (16 * Grid.CHUNKHEIGHT));
 			
 			float dx = player.xPos - batX;
 			float dy = player.yPos - batY;
@@ -484,7 +488,7 @@ public class LD29
 			GL11.glColor3f(0.25f,  0.25f,  0.25f);
 			GL11.glScalef(scaleFactor, scaleFactor, scaleFactor);
 			GL11.glTranslatef(scrollX * scaleFactor,  scrollY * scaleFactor,  0);		
-			GL11.glCallList(gridChunk.initialRenderList);
+			grid.renderBackground();
 			GL11.glPopMatrix();
 			
 			GL11.glPushMatrix();
@@ -492,7 +496,7 @@ public class LD29
 			GL11.glColor3f(0.5f,  0.5f,  0.5f);
 			GL11.glScalef(scaleFactor, scaleFactor, scaleFactor);
 			GL11.glTranslatef(scrollX * scaleFactor,  scrollY * scaleFactor,  0);		
-			GL11.glCallList(gridChunk.initialRenderList);
+			grid.renderBackground();
 			GL11.glPopMatrix();
 		}
 
@@ -500,27 +504,27 @@ public class LD29
 		GL11.glTranslatef(scrollX,  scrollY,  0);
 		
 		float bordersize = 1f;
-		GL11.glColor4f(0f,0f,0f,0.25f);
+		GL11.glColor4f(0f,0f,0f,1f);
 		GL11.glPushMatrix();
 		GL11.glTranslatef(bordersize , 0, 0);
-		GL11.glCallList(gridChunk.renderList);
+		grid.render();
 		GL11.glPopMatrix();
 		GL11.glPushMatrix();
 		GL11.glTranslatef(-bordersize ,0, 0);
-		GL11.glCallList(gridChunk.renderList);
+		grid.render();
 		GL11.glPopMatrix();GL11.glPushMatrix();
 		GL11.glTranslatef(0, bordersize , 0);
-		GL11.glCallList(gridChunk.renderList);
+		grid.render();
 		GL11.glPopMatrix();
 		GL11.glPushMatrix();
 		GL11.glTranslatef(0, -bordersize , 0);
-		GL11.glCallList(gridChunk.renderList);
+		grid.render();
 		GL11.glPopMatrix();
 		
 		
 		GL11.glColor3f(1,1,1);
 		GL11.glColor3f(0.75f, 0.75f, 0.75f);		
-		GL11.glCallList(gridChunk.renderList);
+		grid.render();
 		
 		GL13.glActiveTexture(GL13.GL_TEXTURE1);
 		GL11.glDisable(GL11.GL_TEXTURE_2D); 

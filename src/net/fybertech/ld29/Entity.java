@@ -24,7 +24,8 @@ public class Entity
 	
 	int hitpoints = 10;
 	
-	GridChunk gridChunk = LD29.instance.gridChunk;
+	//GridChunk gridChunk = LD29.instance.gridChunk;
+	Grid grid = LD29.instance.grid;
 	
 	boolean onGround = false;
 	boolean hitHead = false;
@@ -39,9 +40,9 @@ public class Entity
 	{		
 	}
 	
-	public Entity(GridChunk gc, int tn)
+	public Entity(Grid g, int tn)
 	{
-		gridChunk = gc;
+		grid = g;
 		tileNum = tn;
 	}
 	
@@ -206,7 +207,7 @@ public class Entity
 		{
 			for (int x = (int)(Math.floor(bb.xMin)) >> 4; x <= (int)(Math.ceil(bb.xMax)) >> 4; x++)
 			{
-				int tile = gridChunk.getTile(x, y);
+				int tile = grid.getTile(x, y);
 				if (tile > 0 && (tile < 32 || everything)) list.add(new Vector2i(x, y));
 			}
 		}		
@@ -301,7 +302,7 @@ public class Entity
 		
 		for (Vector2i v : intercepts)
 		{
-			int tile = gridChunk.getTile(v.x,  v.y);
+			int tile = grid.getTile(v.x,  v.y);
 			if (tile == 96)
 			{
 				BoundingBox bb = bbFromGridPos(v.x, v.y).expand(-8, -8);
@@ -309,8 +310,7 @@ public class Entity
 				{			
 					LD29.gemTotal++;
 					LD29.soundGem.playAsSoundEffect((float) (Math.random() * 0.05) + 1f,  0.75f,  false);
-					gridChunk.setTile(v.x, v.y, 0);
-					gridChunk.dirty = true;
+					grid.setTile(v.x, v.y, 0);					
 				}
 			}
 		}
