@@ -47,15 +47,17 @@ public class Grid
 			
 		}
 		
+		int cornerdistance = 8;
+		
 		System.out.println("  Generating caves");
 		for (int caves = 0; caves < 4; caves++)
 		{				
 			float startX = (int)(Math.random() * Grid.TILEGRIDWIDTH);
 			float startY = (int)(Math.random() * Grid.TILEGRIDHEIGHT);
-			if (caves == 0) { startX = 2; startY = 2; }
-			else if (caves == 1) { startX = 2; startY = Grid.TILEGRIDHEIGHT - 2; }
-			else if (caves == 2) { startX = Grid.TILEGRIDWIDTH - 2; startY = 2; }
-			else if (caves == 3) { startX = Grid.TILEGRIDWIDTH - 2; startY = Grid.TILEGRIDHEIGHT - 2; }
+			if (caves == 0) { startX = cornerdistance; startY = cornerdistance; }
+			else if (caves == 1) { startX = cornerdistance; startY = Grid.TILEGRIDHEIGHT - cornerdistance; }
+			else if (caves == 2) { startX = Grid.TILEGRIDWIDTH - cornerdistance; startY = cornerdistance; }
+			else if (caves == 3) { startX = Grid.TILEGRIDWIDTH - cornerdistance; startY = Grid.TILEGRIDHEIGHT - cornerdistance; }
 			int length = (int)(Math.random() * 400) + 400;
 			float dir = (int)(Math.random() * 360);
 			//dir = 45;
@@ -63,7 +65,10 @@ public class Grid
 			float lastX = startX;
 			float lastY = startY;
 			
-			for (int n = 0; n < length; n++)
+			int blocksDestroyed = 0;
+			
+			//for (int n = 0; n < length; n++)
+			while (blocksDestroyed < 10000)
 			{
 				startX += Math.cos(Math.toRadians(dir));
 				startY += Math.sin(Math.toRadians(dir));				
@@ -75,11 +80,11 @@ public class Grid
 				
 				boolean hitEdge = false;
 				
-				if (!setTile(intX, intY, 0)) hitEdge = true;
-				if (!setTile(intX+1, intY, 0)) hitEdge = true;
-				if (!setTile(intX-1, intY, 0)) hitEdge = true;
-				if (!setTile(intX, intY+1, 0)) hitEdge = true;
-				if (!setTile(intX, intY-1, 0)) hitEdge = true;
+				if (!setTile(intX, intY, 0)) hitEdge = true; else blocksDestroyed++;
+				if (!setTile(intX+1, intY, 0)) hitEdge = true; else blocksDestroyed++;
+				if (!setTile(intX-1, intY, 0)) hitEdge = true; else blocksDestroyed++;
+				if (!setTile(intX, intY+1, 0)) hitEdge = true; else blocksDestroyed++;
+				if (!setTile(intX, intY-1, 0)) hitEdge = true; else blocksDestroyed++;
 				
 				if (hitEdge) 
 				{ 
@@ -92,6 +97,7 @@ public class Grid
 					startX = lastX;
 					startY = lastY; 
 					dir += 90; //(int)(Math.random() * 360);
+					//length--;
 				}
 				else 
 				{ 
@@ -123,12 +129,21 @@ public class Grid
 	
 	public boolean setTile(int x, int y, int tilenum)
 	{			
+		while (x < 0) x += TILEGRIDWIDTH;
+		while (y < 0) y += TILEGRIDHEIGHT;
+		while (x >= TILEGRIDWIDTH) x -= TILEGRIDWIDTH;
+		while (y >= TILEGRIDHEIGHT) y -= TILEGRIDHEIGHT;
+
+		
 		int cx = x >> 4;
 		int cy = y >> 4;		
 		int ctx = x & 0xF;
 		int cty = y & 0xF;
 		
 		if (cx < 0 || cy < 0 || cx >= GRIDWIDTH || cy >= GRIDHEIGHT) return false;
+		
+		// Protection border
+		//if (x < 2 || y < 2 || x >= TILEGRIDWIDTH - 2 || y >= TILEGRIDHEIGHT - 2) return false;
 		
 		if (!gridChunks[(cy * GRIDWIDTH) + cx].setTile(ctx, cty, tilenum)) return false;		
 		
@@ -143,6 +158,12 @@ public class Grid
 	
 	public boolean setTileDirect(int x, int y, int tilenum)
 	{			
+		while (x < 0) x += TILEGRIDWIDTH;
+		while (y < 0) y += TILEGRIDHEIGHT;
+		while (x >= TILEGRIDWIDTH) x -= TILEGRIDWIDTH;
+		while (y >= TILEGRIDHEIGHT) y -= TILEGRIDHEIGHT;
+
+		
 		int cx = x >> 4;
 		int cy = y >> 4;		
 		int ctx = x & 0xF;
@@ -155,7 +176,13 @@ public class Grid
 	
 	
 	public int getTile(int x, int y)
-	{
+	{		
+		while (x < 0) x += TILEGRIDWIDTH;
+		while (y < 0) y += TILEGRIDHEIGHT;
+		while (x >= TILEGRIDWIDTH) x -= TILEGRIDWIDTH;
+		while (y >= TILEGRIDHEIGHT) y -= TILEGRIDHEIGHT;
+
+		
 		int cx = x >> 4;
 		int cy = y >> 4;
 		
@@ -169,6 +196,12 @@ public class Grid
 	
 	public void setData(int x, int y, int tileNum)
 	{
+		while (x < 0) x += TILEGRIDWIDTH;
+		while (y < 0) y += TILEGRIDHEIGHT;
+		while (x >= TILEGRIDWIDTH) x -= TILEGRIDWIDTH;
+		while (y >= TILEGRIDHEIGHT) y -= TILEGRIDHEIGHT;
+
+		
 		int cx = x >> 4;
 		int cy = y >> 4;
 		
@@ -182,6 +215,11 @@ public class Grid
 	
 	public int getData(int x, int y)
 	{
+		while (x < 0) x += TILEGRIDWIDTH;
+		while (y < 0) y += TILEGRIDHEIGHT;
+		while (x >= TILEGRIDWIDTH) x -= TILEGRIDWIDTH;
+		while (y >= TILEGRIDHEIGHT) y -= TILEGRIDHEIGHT;
+		
 		int cx = x >> 4;
 		int cy = y >> 4;
 		
@@ -223,21 +261,48 @@ public class Grid
 		int topChunk = (int)(Math.floor(screenTop)) / (16 * 16);
 		int bottomChunk = (int)(Math.ceil(screenTop + screenHeight)) / (16 * 16);		
 		
-		//if (isBackground) System.out.println(screenLeft + " " + screenTop + " " + screenWidth + " " + screenHeight);
+		//if (!isBackground) System.out.println(screenLeft + " " + screenTop + " " + screenWidth + " " + screenHeight);
+		//if (!isBackground) System.out.println(leftChunk + " " + rightChunk + " " + topChunk + " " + bottomChunk);
 		
-		for (int n = 0; n < GRIDWIDTH * GRIDHEIGHT; n++)
-		{	
-			int x = n % GRIDWIDTH;
-			int y = n / GRIDWIDTH;
+		if (screenLeft < 0) leftChunk--;
+		if (screenTop < 0) topChunk--;
+		//if (leftChunk < 0) leftChunk--;
+		//if (topChunk < 0) topChunk--;
 		
-			if (!(x >= leftChunk && x <= rightChunk)) continue;
-			if (!(y >= topChunk && y <= bottomChunk)) continue;
-			
-			GL11.glPushMatrix();
-			GL11.glTranslatef(x * CHUNKWIDTH * 16, y * CHUNKHEIGHT * 16,  0);			
-			gridChunks[n].render();
-			GL11.glPopMatrix();
+		for (int y = topChunk; y <= bottomChunk; y++)
+		{
+			for (int x = leftChunk; x <= rightChunk; x++)
+			{
+				int cx = x;
+				int cy = y;
+				
+				//if (x < 0 || y < 0) System.out.println("RENDERING NEGATIVE");
+				
+				while (cx < 0) cx += GRIDWIDTH;
+				while (cy < 0) cy += GRIDHEIGHT;
+				while (cx >= GRIDWIDTH) cx -= GRIDWIDTH;
+				while (cy >= GRIDHEIGHT) cy -= GRIDHEIGHT;
+				
+				GL11.glPushMatrix();
+				GL11.glTranslatef(x * CHUNKWIDTH * 16, y * CHUNKHEIGHT * 16,  0);			
+				gridChunks[(cy * GRIDWIDTH) + cx].render();
+				GL11.glPopMatrix();
+			}
 		}
+		
+//		for (int n = 0; n < GRIDWIDTH * GRIDHEIGHT; n++)
+//		{	
+//			int x = n % GRIDWIDTH;
+//			int y = n / GRIDWIDTH;
+//			
+//			if (!(x >= leftChunk && x <= rightChunk)) continue;
+//			if (!(y >= topChunk && y <= bottomChunk)) continue;
+//			
+//			GL11.glPushMatrix();
+//			GL11.glTranslatef(x * CHUNKWIDTH * 16, y * CHUNKHEIGHT * 16,  0);			
+//			gridChunks[n].render();
+//			GL11.glPopMatrix();
+//		}
 	}
 	
 	public void renderBackground()

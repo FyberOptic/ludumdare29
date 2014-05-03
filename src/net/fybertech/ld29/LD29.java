@@ -184,8 +184,8 @@ public class LD29
 		
 		System.out.println("Adding player");
 		player = new Entity(grid, 32);
-		player.xPos = 32;
-		player.yPos = 32;
+		player.xPos = 8 * 16;
+		player.yPos = 8 * 16;
 		entities.add(player);
 		
 		long currentTime = getTime();
@@ -499,9 +499,7 @@ public class LD29
 		float scrollY = LD29.instance.player.yPos + 8;
 		
 		
-		grid.setScroll(scrollX, scrollY);
-		grid.setGlobalScale(displayScale * userScale);
-		
+	
 		if (!debugMode)
 		{
 		
@@ -528,8 +526,13 @@ public class LD29
 		}
 
 		
+
+		
+		grid.setScroll(scrollX, scrollY);
+		grid.setGlobalScale(displayScale * userScale);		
 		
 		GL11.glTranslatef(160 - scrollX,  120 - scrollY,  0);
+		
 		
 		float bordersize = 1f;
 		GL11.glColor4f(0f,0f,0f,1f);
