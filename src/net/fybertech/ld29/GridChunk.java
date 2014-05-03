@@ -41,7 +41,9 @@ public class GridChunk
 		
 		textureID = GL11.glGenTextures();
 		GL11.glBindTexture(GL11.GL_TEXTURE_2D,  textureID);
-		GL11.glTexImage2D(GL11.GL_TEXTURE_2D,  0, GL11.GL_RGBA8, 256, 256, 0, GL11.GL_RGBA, GL11.GL_BYTE, (ByteBuffer)null);
+		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_NEAREST);
+        GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_NEAREST);
+		GL11.glTexImage2D(GL11.GL_TEXTURE_2D,  0, GL11.GL_RGBA, 256, 256, 0, GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE, (ByteBuffer)null);
 		
 		
 		renderList = GL11.glGenLists(1);
@@ -249,25 +251,27 @@ public class GridChunk
 	{
 		GL11.glPushMatrix();
 		
-		GL11.glViewport(0, 0, 256, 256);;
+		//GL11.glViewport(0, 0, 256, 256);;
+		GL11.glColor3f(1,1,1);
 		GL11.glLoadIdentity();		
 		this.renderToList(this.renderList);
 		
-		GL11.glClearColor(1.0f, 0, 0, 1.0f);
+		//GL11.glClearColor(1.0f, 0, 0, 1.0f);
 		GL11.glClear(GL11.GL_COLOR_BUFFER_BIT);
 		GL11.glCallList(this.renderList);		
 		
 		//GL11.glClear(GL11.GL_COLOR_BUFFER_BIT);
-		GL11.glClearColor(0.0f, 0, 0, 1.0f);
+		GL11.glClearColor(0.0f, 0, 0, 0.0f);
 		
 		
 		//GL11.glReadBuffer(GL11.GL_AUX2);
 		GL11.glBindTexture(GL11.GL_TEXTURE_2D,  textureID);		
 		//GL11.glCopyTexImage2D(GL11.GL_TEXTURE_2D, 0, GL11.GL_RGBA, 0, 0, 256, 256, 0);
-		GL11.glReadBuffer(GL11.GL_BACK);
+		//GL11.glReadBuffer(GL11.GL_BACK_LEFT);
 		GL11.glCopyTexSubImage2D(GL11.GL_TEXTURE_2D, 0, 0, 0, 0, Display.getHeight() - 256, 256, 256);
-		System.out.println(GL11.glGetError());
-		GL11.glViewport(0,0,Display.getWidth(), Display.getHeight());		
+		//System.out.println(GL11.glGetError());
+		GL11.glViewport(0,0,Display.getWidth(), Display.getHeight());
+		//GL11.glViewport(256, 256, 256, 256);
 		GL11.glPopMatrix();
 		
 		
@@ -275,13 +279,13 @@ public class GridChunk
 		GL11.glNewList(this.renderList, GL11.GL_COMPILE);
 		
 		GL11.glBegin(GL11.GL_QUADS);			
-		GL11.glTexCoord2f(0.0001f, 0.0001f);		
+		GL11.glTexCoord2f(0.0001f, 1.0f - 0.0001f);		
 		GL11.glVertex2f(0, 0);
-		GL11.glTexCoord2f(1.0f - 0.0001f, 0.0001f);			
+		GL11.glTexCoord2f(1.0f - 0.0001f, 1.0f - 0.0001f);			
 		GL11.glVertex2f(256, 0);
-		GL11.glTexCoord2f(1.0f - 0.0001f, 1.0f - 0.0001f);
+		GL11.glTexCoord2f(1.0f - 0.0001f, 0);
 		GL11.glVertex2f(256, 256);
-		GL11.glTexCoord2f(0.0001f, 1.0f - 0.0001f);
+		GL11.glTexCoord2f(0.0001f, 0);
 		GL11.glVertex2f(0, 256);		
 		GL11.glEnd();		
 		
