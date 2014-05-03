@@ -200,9 +200,9 @@ public class GridChunk
 					renderMultiTileQuad(x, y, tilenum, cornerbase + (tiledata & 0xF));
 					
 					// Render block break progress
-					if ((tiledata >> 4) == 1) renderMultiTileQuad(x, y, 71, cornerbase);
-					if ((tiledata >> 4) == 2) renderMultiTileQuad(x, y, 72, cornerbase);
-					if ((tiledata >> 4) == 3) renderMultiTileQuad(x, y, 73, cornerbase);
+					if ((tiledata >> 4) == 1) renderMultiTileQuad(x, y, 74, cornerbase);
+					if ((tiledata >> 4) == 2) renderMultiTileQuad(x, y, 75, cornerbase);
+					if ((tiledata >> 4) == 3) renderMultiTileQuad(x, y, 76, cornerbase);
 					
 				}				
 				
