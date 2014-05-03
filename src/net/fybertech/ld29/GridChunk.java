@@ -3,6 +3,7 @@ package net.fybertech.ld29;
 import java.nio.ByteBuffer;
 
 import org.lwjgl.BufferUtils;
+import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
 import org.lwjgl.opengl.GL13;
@@ -17,14 +18,16 @@ public class GridChunk
 	int gridY;
 	byte[] tiles;
 	byte[] data;
-	int initialRenderList = -1;
+	//int initialRenderList = -1;
 	int renderList = -1;
-	int paddingRenderList = -1;
+	//int paddingRenderList = -1;
 	boolean dirty = true;
 	
 	ByteBuffer geometryBuffer = null;
 	int verticeCount = 0;
 	int bufferID = -1;
+	
+	int textureID = -1;
 	
 	public GridChunk()
 	{
@@ -36,8 +39,13 @@ public class GridChunk
 		
 		bufferID = GL15.glGenBuffers();
 		
+		textureID = GL11.glGenTextures();
+		GL11.glBindTexture(GL11.GL_TEXTURE_2D,  textureID);
+		GL11.glTexImage2D(GL11.GL_TEXTURE_2D,  0, GL11.GL_RGBA8, 256, 256, 0, GL11.GL_RGBA, GL11.GL_BYTE, (ByteBuffer)null);
+		
+		
 		renderList = GL11.glGenLists(1);
-		initialRenderList = GL11.glGenLists(1);
+		//initialRenderList = GL11.glGenLists(1);
 		
 		dirty = true;
 		
@@ -222,7 +230,7 @@ public class GridChunk
 		GL11.glVertexPointer(2, GL11.GL_FLOAT, 8 + 8 + 8, 16);			
 		
 		GL11.glNewList(renderListNum, GL11.GL_COMPILE);
-		GL11.glCallList(paddingRenderList);		
+		//GL11.glCallList(paddingRenderList);		
 		GL11.glDrawArrays(GL11.GL_QUADS, 0, verticeCount);			
 		GL11.glEndList();
 		
@@ -237,6 +245,51 @@ public class GridChunk
 	}
 	
 	
+	public void renderToTexture()
+	{
+		GL11.glPushMatrix();
+		
+		GL11.glViewport(0, 0, 256, 256);;
+		GL11.glLoadIdentity();		
+		this.renderToList(this.renderList);
+		
+		GL11.glClearColor(1.0f, 0, 0, 1.0f);
+		GL11.glClear(GL11.GL_COLOR_BUFFER_BIT);
+		GL11.glCallList(this.renderList);		
+		
+		//GL11.glClear(GL11.GL_COLOR_BUFFER_BIT);
+		GL11.glClearColor(0.0f, 0, 0, 1.0f);
+		
+		
+		//GL11.glReadBuffer(GL11.GL_AUX2);
+		GL11.glBindTexture(GL11.GL_TEXTURE_2D,  textureID);		
+		//GL11.glCopyTexImage2D(GL11.GL_TEXTURE_2D, 0, GL11.GL_RGBA, 0, 0, 256, 256, 0);
+		GL11.glReadBuffer(GL11.GL_BACK);
+		GL11.glCopyTexSubImage2D(GL11.GL_TEXTURE_2D, 0, 0, 0, 0, Display.getHeight() - 256, 256, 256);
+		System.out.println(GL11.glGetError());
+		GL11.glViewport(0,0,Display.getWidth(), Display.getHeight());		
+		GL11.glPopMatrix();
+		
+		
+		
+		GL11.glNewList(this.renderList, GL11.GL_COMPILE);
+		
+		GL11.glBegin(GL11.GL_QUADS);			
+		GL11.glTexCoord2f(0.0001f, 0.0001f);		
+		GL11.glVertex2f(0, 0);
+		GL11.glTexCoord2f(1.0f - 0.0001f, 0.0001f);			
+		GL11.glVertex2f(256, 0);
+		GL11.glTexCoord2f(1.0f - 0.0001f, 1.0f - 0.0001f);
+		GL11.glVertex2f(256, 256);
+		GL11.glTexCoord2f(0.0001f, 1.0f - 0.0001f);
+		GL11.glVertex2f(0, 256);		
+		GL11.glEnd();		
+		
+		GL11.glEndList();
+		
+		
+	}
+	
 	
 //	public void renderBackground()
 //	{
@@ -245,10 +298,24 @@ public class GridChunk
 	
 	
 	public void render()
-	{
-		if (this.dirty) this.renderToList(this.renderList);; 
+	{		 
+//		if (this.dirty) this.renderToTexture();
+//		
+//		GL13.glActiveTexture(GL13.GL_TEXTURE1);
+//		GL11.glDisable(GL11.GL_TEXTURE_2D); 
+//		GL13.glActiveTexture(GL13.GL_TEXTURE0);	
+//		
+//		GL11.glBindTexture(GL11.GL_TEXTURE_2D,  textureID);
+//		GL11.glCallList(this.renderList);
+//		GL11.glBindTexture(GL11.GL_TEXTURE_2D,  LD29.instance.textureAtlas.getTextureID());
+//		
+//		GL13.glActiveTexture(GL13.GL_TEXTURE1);
+//		GL11.glEnable(GL11.GL_TEXTURE_2D); 
+//		GL13.glActiveTexture(GL13.GL_TEXTURE0);
 		
+		if (this.dirty) this.renderToList(this.renderList);;
 		GL11.glCallList(this.renderList);
+
 	}
 	
 	
