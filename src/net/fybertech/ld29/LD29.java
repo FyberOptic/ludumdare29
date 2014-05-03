@@ -81,6 +81,7 @@ public class LD29
 	public int leftMouseDuration = 0;
 	public int rightMouseDuration = 0;
 	
+	public static int gridsRendered = 0;
 	
 	public boolean isScreenGrabbed = false;
 	
@@ -184,8 +185,20 @@ public class LD29
 		
 		System.out.println("Adding player");
 		player = new Entity(grid, 32);
-		player.xPos = 8 * 16;
-		player.yPos = 8 * 16;
+		while (true)
+		{
+			int x = (int)(Math.random() * 16);
+			int y = (int)(Math.random() * 16);
+			int tileBelow = grid.getTile(x,  y + 1);
+			if (grid.getTile(x,  y) == 0 && tileBelow > 0 && tileBelow < 32)
+			{
+				player.xPos = x * 16;
+				player.yPos = y * 16;
+				break;
+			}
+		}
+		//player.xPos = 8 * 16;
+		//player.yPos = 8 * 16;
 		entities.add(player);
 		
 		long currentTime = getTime();
@@ -480,6 +493,8 @@ public class LD29
 	 */
 	public void render()
 	{
+		gridsRendered = 0;
+		
 		GL11.glTranslatef((Display.getWidth() - (320.0f * displayScale * userScale)) / 2.0f, ( Display.getHeight() - (240.0f * displayScale * userScale)) / 2.0f,0);
 		GL11.glScalef(((float)displayScale / 1.0f) * userScale, ((float) displayScale / 1.0f) * userScale, 1);
 		

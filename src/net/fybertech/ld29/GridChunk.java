@@ -317,8 +317,15 @@ public class GridChunk
 //		GL11.glEnable(GL11.GL_TEXTURE_2D); 
 //		GL13.glActiveTexture(GL13.GL_TEXTURE0);
 		
-		if (this.dirty) this.renderToList(this.renderList);;
-		GL11.glCallList(this.renderList);
+		if (this.dirty) 
+		{
+			if (LD29.gridsRendered < 5)
+			{
+				this.renderToList(this.renderList);;
+				LD29.gridsRendered++;
+			}
+		}
+		else GL11.glCallList(this.renderList);
 
 	}
 	
