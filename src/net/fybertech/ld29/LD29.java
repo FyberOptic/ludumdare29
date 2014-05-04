@@ -47,7 +47,7 @@ public class LD29
 	//public float scrollX = 0;
 	//public float scrollY = 0;
 	
-	Entity player;// = new Entity(32);
+	EntityPlayer player;// = new Entity(32);
 	
 	//GridChunk gridChunk = null;
 	Grid grid = null;
@@ -73,8 +73,7 @@ public class LD29
 	public static int gemTotal = 0;
 	
 	public static boolean debugMode = false; 
-	public static boolean noClipping = false;
-	
+		
 	
 	public boolean leftMouseDown = false;
 	public boolean rightMouseDown = false;
@@ -184,7 +183,7 @@ public class LD29
 		backgroundGrid2.isBackground = true;
 		
 		System.out.println("Adding player");
-		player = new Entity(grid, 32);
+		player = new EntityPlayer();
 		while (true)
 		{
 			int x = (int)(Math.random() * 16);
@@ -336,7 +335,7 @@ public class LD29
 				}
 
 				if (Keyboard.getEventKey() == Keyboard.KEY_BACK) debugMode = !debugMode;
-				if (Keyboard.getEventKey() == Keyboard.KEY_N) noClipping = !noClipping;
+				if (Keyboard.getEventKey() == Keyboard.KEY_N) player.noClipping = !player.noClipping;
 				
 			}
 			

@@ -7,6 +7,7 @@ public class EntityBullet extends Entity
 	double direction;
 	int decay = 8;
 	
+	boolean hitObject = false;
 	
 	public EntityBullet(float x, float y, float xV, float yV)
 	{
@@ -43,32 +44,13 @@ public class EntityBullet extends Entity
 	@Override
 	public void update(int deltaTime)
 	{
-		float delta = deltaTime / 1000.0f;		
-	
-		float moveX = xVel * delta;
-		float moveY = yVel * delta;
+		doMove(deltaTime);
 		
-		float startX = moveX;
-		float startY = moveY;
-		
-		BoundingBox playerbox = this.getBB();		
-		
-		BoundingBox movebox = playerbox.copy().addCoord(moveX, moveY);
-		intercepts.clear();
-		getIntercepts(movebox, intercepts, false);
-		
-		if (!LD29.noClipping)
-		{
-			moveY = getMaxMoveAmountY(this.getBB(), moveY);	
-			moveX = getMaxMoveAmountX(this.getBB().translate(0,  moveY), moveX);			
-		}
-		
-		xPos = xPos + moveX;
-		yPos = yPos + moveY;		
-		if ((startY != 0 && moveY != startY) || (startX != 0 && moveX != startX) && !hitHead) 
+
+		if ((xCollide || yCollide) && !hitObject) 
 		{ 						
 			destroyEntity = true;
-			hitHead = true;
+			hitObject = true;
 			LD29.soundShothit.playAsSoundEffect((float)(Math.random() * 0.25) + 0.35f,  0.2f,  false);
 			//System.out.println("HIT");
 			
@@ -103,26 +85,24 @@ public class EntityBullet extends Entity
 			}
 		}
 		
+		
+		// Check for entity collisions
 		for (Entity e : LD29.instance.entities)
 		{
 			if (!(e instanceof EntityBat)) continue;
 			float dx = (e.xPos+8) - (xPos+8);
 			float dy = (e.yPos+8) - (yPos+8);
 			float dist = (float)Math.sqrt(dx * dx + dy * dy);
-			if (dist < 5)
+			if (dist < 32 && e.getBB().boxOverlaps(this.getBB()))
 			{
 				e.destroyEntity = true;
 				this.destroyEntity = true;
 				LD29.soundSqueak.playAsSoundEffect((float)(Math.random() * 0.50) + 1f,  0.75f,  false);
 			}
 		}
+				
 		
-		//if (startX != 0 && moveX != startX) { xVel = 0; }
-		//System.out.println(xVel + " " + yVel);
-		
-		intercepts.clear();
-		getIntercepts(this.getBB(), intercepts, true);
-		
+		// Check if struck a gem
 		for (Vector2i v : intercepts)
 		{
 			int tile = grid.getTile(v.x,  v.y);

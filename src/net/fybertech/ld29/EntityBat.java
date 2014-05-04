@@ -10,9 +10,17 @@ public class EntityBat extends Entity
 	
 	public EntityBat(float xp, float yp)
 	{
+		noClipping = true;
 		xPos = xp;
 		yPos = yp;
 		tileNum = baseTile;
+	}
+	
+	
+	@Override
+	public BoundingBox getBB()
+	{
+		return new BoundingBox(xPos + 2, yPos+4, xPos + 15f - 2, yPos + 15f - 4);
 	}
 	
 	
@@ -58,60 +66,8 @@ public class EntityBat extends Entity
 	@Override
 	public void update(int deltaTime)
 	{
-		float delta = deltaTime / 1000.0f;
 		
-		//yVel += 200 * delta;
-		
-		if (!jumping && Keyboard.isKeyDown(Keyboard.KEY_SPACE)) yVel -= 400 * delta;
-		else 
-		{
-			//if (!onGround) 
-			if (jumping && jumpcounter < 500) yVel += 100 * delta;
-			else yVel += 300 * delta;
-		}
-		
-		if (yVel < -100) yVel = -100;
-		if (yVel > 400) yVel = 400;
-		
-		
-
-		//if (Keyboard.isKeyDown(Keyboard.KEY_SPACE)) yVel -= 500* delta;
-		//if (yVel < -100) yVel = -100;
-		
-		
-		float moveX = xVel * delta;
-		float moveY = yVel * delta;
-		
-		float startX = moveX;
-		float startY = moveY;
-		
-		BoundingBox playerbox = this.getBB();		
-		
-		BoundingBox movebox = playerbox.copy().addCoord(moveX, moveY);
-		intercepts.clear();
-		getIntercepts(movebox, intercepts, false);
-		
-		
-		//moveY = getMaxMoveAmountY(this.getBB(), moveY);	
-		//moveX = getMaxMoveAmountX(this.getBB().translate(0,  moveY), moveX);
-		
-		
-		xPos = xPos + moveX;
-		yPos = yPos + moveY;		
-		if (startY != 0 && moveY != startY) 
-		{ 			
-			yVel = 0; 
-		}
-		else if (startY != 0 && moveY == startY)
-		{
-			onGround = false;
-			hitHead = false;
-		}
-		
-		
-		
-	
-		
+		doMove(deltaTime);		
 		
 	}
 }

@@ -30,6 +30,10 @@ public class Entity
 	boolean onGround = false;
 	boolean hitHead = false;
 	boolean jumping = false;
+	boolean xCollide = false;
+	boolean yCollide = false;
+	boolean noClipping = false;
+	
 	int jumpcounter = 0;
 	
 	public boolean destroyEntity = false;
@@ -215,25 +219,11 @@ public class Entity
 	}
 	
 	
-	public void update(int deltaTime)
+	public void doMove(int deltaTime)
 	{
 		float delta = deltaTime / 1000.0f;
 		
-		//yVel += 200 * delta;
-		
-		if (!jumping && Keyboard.isKeyDown(Keyboard.KEY_SPACE)) yVel -= 400 * delta;
-		else 
-		{
-			//if (!onGround) 
-			if (jumping && jumpcounter < 500) yVel += 100 * delta;
-			else yVel += 300 * delta;
-		}
-		
-		if (yVel < -100) yVel = -100;
-		if (yVel > 400) yVel = 400;
-		
-		
-
+	
 		//if (Keyboard.isKeyDown(Keyboard.KEY_SPACE)) yVel -= 500* delta;
 		//if (yVel < -100) yVel = -100;
 		
@@ -250,36 +240,37 @@ public class Entity
 		intercepts.clear();
 		getIntercepts(movebox, intercepts, false);
 		
-		if (!LD29.noClipping)
+		if (!this.noClipping)
 		{
 			moveY = getMaxMoveAmountY(this.getBB(), moveY);	
 			moveX = getMaxMoveAmountX(this.getBB().translate(0,  moveY), moveX);
 			//moveY = getMaxMoveAmountX(this.getBB().translate(moveX,  moveY), moveY);
 		}
-		//moveX = 0;
-		//if (moveX > 16 || moveX < -16) { System.out.println("MOVEX: " + moveX); moveX = 0; xVel = 0; }
-		//if (moveY > 16 || moveY < -16) { System.out.println("MOVEY: " + moveY + " VEL: " + yVel); moveY = 0; yVel = 0; }
 		
 		xPos = xPos + moveX;
 		yPos = yPos + moveY;		
+		
+		xCollide = false;
+		yCollide = false;
+		
+		if (startX != 0 && moveX != startX) xCollide = true;
+			
 		if (startY != 0 && moveY != startY) 
 		{ 
+			yCollide = true;
+			
 			if (yVel > 0) 
 			{ 
 				if (!onGround) 
 				{ 
-					onGround = true; 
-					if (yVel > 200) LD29.soundHead.playAsSoundEffect((float)(Math.random() * 0.25) + 0.5f,  0.35f,  false);
-					else LD29.soundLand.playAsSoundEffect((float)(Math.random() * 0.25) + 0.5f,  0.35f,  false);  
+					onGround = true; 					
 				} 
 			}
 			else if (yVel < 0)
 			{
 				if (!hitHead)
-				{
-					//System.out.println("SDFDSF");
-					hitHead = true;
-					LD29.soundHead.playAsSoundEffect((float)(Math.random() * 0.25) + 0.5f,  0.45f,  false);
+				{					
+					hitHead = true;					
 				}
 			}
 			//else onGround = false;
@@ -292,31 +283,14 @@ public class Entity
 			hitHead = false;
 		}
 		
-		
-		
-		//if (startX != 0 && moveX != startX) { xVel = 0; }
-		//System.out.println(xVel + " " + yVel);
-		
 		intercepts.clear();
 		getIntercepts(this.getBB(), intercepts, true);
-		
-		for (Vector2i v : intercepts)
-		{
-			int tile = grid.getTile(v.x,  v.y);
-			if (tile == 96)
-			{
-				BoundingBox bb = bbFromGridPos(v.x, v.y).expand(-8, -8);
-				if (bb.boxOverlaps(this.getBB()))
-				{			
-					LD29.gemTotal++;
-					LD29.soundGem.playAsSoundEffect((float) (Math.random() * 0.05) + 1f,  0.75f,  false);
-					grid.setTile(v.x, v.y, 0);					
-				}
-			}
-		}
-		
-		//if (!intercepts.isEmpty()) yVel = 0;
-		
+	}
+	
+	
+	public void update(int deltaTime)
+	{
+		doMove(deltaTime);
 		
 	}
 	
