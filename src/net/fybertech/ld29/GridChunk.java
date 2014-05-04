@@ -322,13 +322,13 @@ public class GridChunk
 		
 		if (this.dirty) 
 		{
-			//if (LD29.gridsRendered < 5)
+			if (LD29.gridsRendered < 5)
 			{
 				this.renderToList(this.renderList);;
 				LD29.gridsRendered++;
 			}
 		}
-		else GL11.glCallList(this.renderList);
+		if (!this.dirty) GL11.glCallList(this.renderList);
 		
 		if (LD29.debugMode) 
 		{
