@@ -29,6 +29,7 @@ import org.newdawn.slick.openal.Audio;
 import org.newdawn.slick.openal.AudioLoader;
 import org.newdawn.slick.openal.SoundStore;
 import org.newdawn.slick.opengl.Texture;
+import org.newdawn.slick.opengl.TextureImpl;
 import org.newdawn.slick.opengl.TextureLoader;
 import org.newdawn.slick.util.ResourceLoader;
 
@@ -84,6 +85,7 @@ public class LD29
 	
 	public boolean isScreenGrabbed = false;
 	
+	PixelFont pixelFont = null;
 	
 	int currentFPS = 0;
 	
@@ -173,6 +175,7 @@ public class LD29
 		//Display.setTitle("LD29 Project");
 		Display.setTitle("Gems of the Deep");
 		Display.setResizable(true);
+		//Display.setIcon(arg0)
 		
 		try {
 			Display.setDisplayMode(new DisplayMode(800, 480));
@@ -209,6 +212,8 @@ public class LD29
 		
 		sizeDisplay();
 		
+		pixelFont = new PixelFont();
+		
 		GL11.glEnable(GL11.GL_TEXTURE_2D);              
 		GL11.glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 		GL11.glEnable(GL11.GL_BLEND);
@@ -216,6 +221,7 @@ public class LD29
 		
 		GL13.glActiveTexture(GL13.GL_TEXTURE1);
 		GL11.glEnable(GL11.GL_TEXTURE_2D); 
+		TextureImpl.unbind();
 		textureAtlas.bind();
 		
 		// This will invert alpha
@@ -231,6 +237,7 @@ public class LD29
 		
 		GL13.glActiveTexture(GL13.GL_TEXTURE0);
 		GL11.glEnable(GL11.GL_TEXTURE_2D); 
+		TextureImpl.unbind();
 		textureAtlas.bind();
 		GL11.glTexEnvi(GL11.GL_TEXTURE_ENV, GL11.GL_TEXTURE_ENV_MODE, GL11.GL_MODULATE);
 		//GL11.glTexEnvf(GL11.GL_TEXTURE_ENV, GL13.GL_COMBINE_ALPHA, GL11.GL_MODULATE);
@@ -577,7 +584,10 @@ public class LD29
 		GL11.glTranslatef((Display.getWidth() - (320.0f * displayScale * userScale)) / 2.0f, ( Display.getHeight() - (240.0f * displayScale * userScale)) / 2.0f,0);
 		GL11.glScalef(((float)displayScale / 1.0f) * userScale, ((float) displayScale / 1.0f) * userScale, 1);
 		
+		TextureImpl.unbind();
 		textureAtlas.bind();
+		//GL11.glBindTexture(GL11.GL_TEXTURE_2D,  textureAtlas.getTextureID());
+		
 		float scaleFactor;
 		
 		grid.setGlobalScale(displayScale * userScale);
@@ -655,8 +665,9 @@ public class LD29
 		
 		GL13.glActiveTexture(GL13.GL_TEXTURE1);
 		GL11.glDisable(GL11.GL_TEXTURE_2D); 
-		GL13.glActiveTexture(GL13.GL_TEXTURE0);		
-		
+		GL13.glActiveTexture(GL13.GL_TEXTURE0);
+		//GL11.glEnable(GL11.GL_TEXTURE_2D);
+
 		GL11.glColor3f(1, 1, 1);
 		for (Entity e : entities) 
 		{ 
@@ -667,10 +678,12 @@ public class LD29
 	
 		player.renderWithBorder();
 		
+		//if (true) return;
+		
 		//GL11.glBlendFunc( GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
 		//GL11.glBlendFunc (GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
 		
-		GL11.glBlendFunc (GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+		//GL11.glBlendFunc (GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
 		
 		GL11.glLoadIdentity();
 		GL11.glTranslatef(Display.getWidth() / 2, (Display.getHeight() / 2), 0);
@@ -709,10 +722,10 @@ public class LD29
 		GL11.glVertex2f(x * 16, y * 16 + 16);	
 		GL11.glEnd();
 		
-		GL11.glBlendFunc (GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+		//GL11.glBlendFunc (GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
 		
 		GL11.glLoadIdentity();
-		GL11.glScalef(((float)displayScale / 1.0f), ((float) displayScale / 1.0f), 1);
+		GL11.glScalef(((float)displayScale * 1), ((float) displayScale * 1), 1);
 		GL11.glColor3f(1,1,1);
 		
 		for (int n = 0; n < player.hitpoints; n++)
@@ -729,18 +742,28 @@ public class LD29
 		//GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_T, GL12.GL_CLAMP_TO_EDGE);
 		//GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL12.GL_TEXTURE_WRAP_R, GL13.GL_CLAMP_TO_BORDER);
 		
+		// Show gem count
+		renderTileQuadWithBorder(-1, 16, (3 * 32));			
+		
+		//GL11.glLoadIdentity();
+		//GL11.glScalef(((float)displayScale * 2), ((float) displayScale * 2), 1);
+		pixelFont.putStringWithBorder("" + gemTotal, 14,  21);
+		
+		
 		GL11.glLoadIdentity();
-		font.drawString(displayScale * 4,displayScale * 15,"Gems: " + gemTotal, Color.white);
+		//font.drawString(displayScale * 14f ,displayScale * 20.5f, "" + gemTotal, Color.white);
 		
-		if (debugMode)
-		{
-			font.drawString(displayScale * 4, displayScale * 25,"X: " + player.xPos + " Y: " + player.yPos, Color.white);
-			font.drawString(displayScale * 4, displayScale * 35,"FPS: " + currentFPS, Color.white);
-		}
+//		if (debugMode)
+//		{
+//			font.drawString(displayScale * 4, displayScale * 25,"X: " + player.xPos + " Y: " + player.yPos, Color.white);
+//			font.drawString(displayScale * 4, displayScale * 35,"FPS: " + currentFPS, Color.white);
+//		}
 		
+		
+		TextureImpl.unbind();
+		textureAtlas.bind();
 		if (isScreenGrabbed)
-		{
-			textureAtlas.bind();
+		{			
 			GL11.glLoadIdentity();
 			GL11.glScalef(((float)displayScale / 1.0f), ((float) displayScale / 1.0f), 1);
 			GL11.glColor3f(1,1,1);			
