@@ -70,5 +70,35 @@ public class EntityPlayer extends Entity
 		}
 	}
 	
+	
+	@Override
+	public void tick()
+	{
+		super.tick();
+		
+		if (!jumping && Keyboard.isKeyDown(Keyboard.KEY_SPACE))
+		{
+			LD29.instance.newentities.add(new ParticleThrust(xPos + (facing == 1 ? -1 : 0), yPos));			
+			float pitch = (float)(Math.random() * 0.20) + 1f;
+			pitch = 0.75f - (this.yVel / 2000) + (float)(Math.random() * 0.10);
+			LD29.soundThrust.playAsSoundEffect(pitch, 0.25f, false);
+		}
+		
+		xVel *= 0.5;
+		if (xVel < 0.1f && xVel > -0.1f) xVel = 0;
+		
+		if (xVel > 0) facing = 1;
+		if (xVel < 0) facing = -1;
+		
+		if (xVel != 0) animating = true; else animating = false;
+		if (animating) frameTimer++;
+		if (frameTimer > 2)
+		{
+			tileNum++;
+			if (tileNum > 34) tileNum = 32;
+			
+			frameTimer = 0;
+		}
+	}
 
 }

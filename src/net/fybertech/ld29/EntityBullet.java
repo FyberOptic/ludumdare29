@@ -74,6 +74,16 @@ public class EntityBullet extends Entity
 						{
 							grid.setTile(v.x,  v.y,  0);
 							LD29.soundDirtbreak.playAsSoundEffect((float)(Math.random() * 0.50) + 1f,  0.5f,  false);
+							
+							for (int n = 0; n < 8; n++)
+							{
+								ParticleDebris debris = new ParticleDebris(17, 30);
+								debris.xPos = v.x * 16 ;
+								debris.yPos = v.y * 16 ;							
+								debris.yVel = -50 - (int)(Math.random() * 50);
+								debris.xVel = (int)(Math.random() * 100) - 50;							
+								LD29.instance.newentities.add(debris);
+							}
 						}
 						
 						//gridChunk.dirty = true;					

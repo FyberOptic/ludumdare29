@@ -9,13 +9,11 @@ public class Particle extends Entity
 	
 	
 	public Particle()
-	{
-		tileNum = 37;		
+	{		
 	}
 	
 	public Particle(float x, float y)
-	{
-		tileNum = 37;
+	{		
 		xPos = x;
 		yPos = y;
 	}
@@ -24,22 +22,14 @@ public class Particle extends Entity
 	
 	@Override
 	public void render()
-	{
-		
+	{		
 		float uvCalc = 1.0f / (512 / 16);
 		
 		float tileX = (float)(tileNum % 32) * uvCalc;
-		float tileY = (float)(tileNum / 32) * uvCalc;					
-		
-		
-		
-		//GL11.glDisable(GL11.GL_TEXTURE_2D);
-		//GL11.glPolygonMode(GL11.GL_FRONT_AND_BACK, GL11.GL_LINE);
+		float tileY = (float)(tileNum / 32) * uvCalc;				
 		
 		float uvLeft = tileX + 0.0001f;
 		float uvRight = tileX + uvCalc - 0.0001f;
-		
-		if (facing == -1) { uvLeft = tileX + uvCalc - 0.0001f; uvRight = tileX + 0.0001f; }
 		
 		GL11.glBegin(GL11.GL_QUADS);
 		GL11.glTexCoord2f(uvLeft, tileY + 0.0001f);	
@@ -66,13 +56,7 @@ public class Particle extends Entity
 	@Override
 	public void tick()
 	{
-		xPos += (Math.random() * 1) - 0.5;
-		yPos -= Math.random() * 2;
-		
 		decay--;
-		tileNum = 36;
-		if (decay < 4) tileNum = 37;
-		if (decay < 3) tileNum = 38;
 		if (decay < 0) destroyEntity = true;
 	}
 }

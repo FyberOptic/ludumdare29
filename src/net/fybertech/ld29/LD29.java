@@ -647,7 +647,7 @@ public class LD29
 		for (Entity e : entities) 
 		{ 
 			if (e == player) continue;
-			if (e instanceof Particle) e.render();
+			if (e instanceof ParticleThrust) e.render();
 			else e.renderWithBorder();
 		}		
 	
