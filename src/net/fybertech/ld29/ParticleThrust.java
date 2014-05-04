@@ -25,4 +25,10 @@ public class ParticleThrust extends Particle
 		if (decay < 4) tileNum = 37;
 		if (decay < 3) tileNum = 38;		
 	}
+	
+	@Override
+	public void update(int deltaTime)
+	{
+		
+	}
 }

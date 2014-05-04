@@ -108,6 +108,12 @@ public class EntityBullet extends Entity
 				e.destroyEntity = true;
 				this.destroyEntity = true;
 				LD29.soundSqueak.playAsSoundEffect((float)(Math.random() * 0.50) + 1f,  0.75f,  false);
+				
+				ParticleBatCorpse corpse = new ParticleBatCorpse(e.xPos, e.yPos);				
+				corpse.yVel = -50 - (int)(Math.random() * 50);
+				corpse.xVel = (int)(Math.random() * 100) - 50;	
+				corpse.decay = 30;
+				LD29.instance.newentities.add(corpse);
 			}
 		}
 				

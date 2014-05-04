@@ -6,6 +6,7 @@ public class Particle extends Entity
 {
 
 	int decay = 5;
+	float gravity = 300;
 	
 	
 	public Particle()
@@ -50,7 +51,11 @@ public class Particle extends Entity
 	@Override
 	public void update(int deltaTime)
 	{
+		float delta = deltaTime / 1000.0f;
+		yVel += gravity * delta;
 		
+		xPos += xVel * delta;
+		yPos += yVel * delta;
 	}
 	
 	@Override
