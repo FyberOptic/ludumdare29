@@ -27,10 +27,14 @@ public class GridChunk
 	int verticeCount = 0;
 	int bufferID = -1;
 	
+	Grid grid;
+	
 	int textureID = -1;
 	
-	public GridChunk()
+	public GridChunk(Grid g)
 	{
+		grid = g;
+		
 		tiles = new byte[Grid.CHUNKWIDTH*Grid.CHUNKHEIGHT];
 		data = new byte[Grid.CHUNKWIDTH*Grid.CHUNKHEIGHT];
 		
@@ -232,7 +236,6 @@ public class GridChunk
 		GL11.glVertexPointer(2, GL11.GL_FLOAT, 8 + 8 + 8, 16);			
 		
 		GL11.glNewList(renderListNum, GL11.GL_COMPILE);
-		//GL11.glCallList(paddingRenderList);		
 		GL11.glDrawArrays(GL11.GL_QUADS, 0, verticeCount);			
 		GL11.glEndList();
 		
@@ -319,13 +322,28 @@ public class GridChunk
 		
 		if (this.dirty) 
 		{
-			if (LD29.gridsRendered < 5)
+			//if (LD29.gridsRendered < 5)
 			{
 				this.renderToList(this.renderList);;
 				LD29.gridsRendered++;
 			}
 		}
 		else GL11.glCallList(this.renderList);
+		
+		if (LD29.debugMode) 
+		{
+			GL11.glPushAttrib(GL11.GL_CURRENT_BIT);
+			GL11.glColor3f(0,1,0);
+			GL11.glPolygonMode( GL11.GL_FRONT_AND_BACK, GL11.GL_LINE);
+			GL11.glBegin(GL11.GL_QUADS);			
+			GL11.glVertex2f(0, 0);
+			GL11.glVertex2f(256, 0);
+			GL11.glVertex2f(256, 256);
+			GL11.glVertex2f(0, 256);		
+			GL11.glEnd();		
+			GL11.glPolygonMode( GL11.GL_FRONT_AND_BACK, GL11.GL_FILL);
+			GL11.glPopAttrib();
+		}
 
 	}
 	

@@ -32,7 +32,7 @@ public class Grid
 	{
 		gridChunks = new GridChunk[GRIDWIDTH * GRIDHEIGHT];
 		
-		for (int n = 0; n < GRIDWIDTH * GRIDHEIGHT; n++) gridChunks[n] = new GridChunk();
+		for (int n = 0; n < GRIDWIDTH * GRIDHEIGHT; n++) gridChunks[n] = new GridChunk(this);
 		
 		
 		System.out.println("  Randomizing tiles");

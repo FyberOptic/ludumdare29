@@ -547,24 +547,26 @@ public class LD29
 		
 		GL11.glTranslatef(160 - scrollX,  120 - scrollY,  0);
 		
-		
-		float bordersize = 1f;
-		GL11.glColor4f(0f,0f,0f,1f);
-		GL11.glPushMatrix();
-		GL11.glTranslatef(bordersize , 0, 0);
-		grid.render();
-		GL11.glPopMatrix();
-		GL11.glPushMatrix();
-		GL11.glTranslatef(-bordersize ,0, 0);
-		grid.render();
-		GL11.glPopMatrix();GL11.glPushMatrix();
-		GL11.glTranslatef(0, bordersize , 0);
-		grid.render();
-		GL11.glPopMatrix();
-		GL11.glPushMatrix();
-		GL11.glTranslatef(0, -bordersize , 0);
-		grid.render();
-		GL11.glPopMatrix();
+		if (!debugMode)
+		{		
+			float bordersize = 1f;
+			GL11.glColor4f(0f,0f,0f,1f);
+			GL11.glPushMatrix();
+			GL11.glTranslatef(bordersize , 0, 0);
+			grid.render();
+			GL11.glPopMatrix();
+			GL11.glPushMatrix();
+			GL11.glTranslatef(-bordersize ,0, 0);
+			grid.render();
+			GL11.glPopMatrix();GL11.glPushMatrix();
+			GL11.glTranslatef(0, bordersize , 0);
+			grid.render();
+			GL11.glPopMatrix();
+			GL11.glPushMatrix();
+			GL11.glTranslatef(0, -bordersize , 0);
+			grid.render();
+			GL11.glPopMatrix();
+		}
 		
 		
 		GL11.glColor3f(1,1,1);
@@ -643,6 +645,11 @@ public class LD29
 		
 		GL11.glLoadIdentity();
 		font.drawString(displayScale * 4,displayScale * 15,"Gems: " + gemTotal, Color.white);
+		
+		if (debugMode)
+		{
+			font.drawString(displayScale * 4, displayScale * 25,"X: " + player.xPos + " Y: " + player.yPos, Color.white);
+		}
 		
 		if (isScreenGrabbed)
 		{
