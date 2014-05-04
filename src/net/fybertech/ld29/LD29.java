@@ -40,7 +40,7 @@ public class LD29
 	public boolean gameRunning = true;	
 	public Texture textureAtlas = null;
 	public static int displayScale = 1;
-	public static float userScale = 1;
+	public static float userScale = 2;
 	
 	long[] keypressStart = null;
 	
@@ -95,6 +95,71 @@ public class LD29
 	}
 	
 	
+	
+	/**
+	 * Set the display mode to be used 
+	 * 
+	 * @param width The width of the display required
+	 * @param height The height of the display required
+	 * @param fullscreen True if we want fullscreen mode
+	 */
+	public void setDisplayMode(int width, int height, boolean fullscreen) {
+
+	    // return if requested DisplayMode is already set
+	    if ((Display.getDisplayMode().getWidth() == width) && 
+	        (Display.getDisplayMode().getHeight() == height) && 
+		(Display.isFullscreen() == fullscreen)) {
+		    return;
+	    }
+
+	    try {
+	        DisplayMode targetDisplayMode = null;
+			
+		if (fullscreen) {
+		    DisplayMode[] modes = Display.getAvailableDisplayModes();
+		    int freq = 0;
+					
+		    for (int i=0;i<modes.length;i++) {
+		        DisplayMode current = modes[i];
+						
+			if ((current.getWidth() == width) && (current.getHeight() == height)) {
+			    if ((targetDisplayMode == null) || (current.getFrequency() >= freq)) {
+			        if ((targetDisplayMode == null) || (current.getBitsPerPixel() > targetDisplayMode.getBitsPerPixel())) {
+				    targetDisplayMode = current;
+				    freq = targetDisplayMode.getFrequency();
+	                        }
+	                    }
+
+			    // if we've found a match for bpp and frequence against the 
+			    // original display mode then it's probably best to go for this one
+			    // since it's most likely compatible with the monitor
+			    if ((current.getBitsPerPixel() == Display.getDesktopDisplayMode().getBitsPerPixel()) &&
+	                        (current.getFrequency() == Display.getDesktopDisplayMode().getFrequency())) {
+	                            targetDisplayMode = current;
+	                            break;
+	                    }
+	                }
+	            }
+	        } else {
+	            targetDisplayMode = new DisplayMode(width,height);
+	        }
+
+	        if (targetDisplayMode == null) {
+	            System.out.println("Failed to find value mode: "+width+"x"+height+" fs="+fullscreen);
+	            return;
+	        }
+
+	        Display.setDisplayMode(targetDisplayMode);
+	        Display.setFullscreen(fullscreen);
+				
+	    } catch (LWJGLException e) {
+	        System.out.println("Unable to setup mode "+width+"x"+height+" fullscreen="+fullscreen + e);
+	    }
+	}
+	
+	
+	
+	
 	/**
 	 * 
 	 */
@@ -104,12 +169,13 @@ public class LD29
 		instance = this;
 		
 		//Display.setTitle("LD29 Project");
-		Display.setTitle("Gems of the Deep (LD29 Entry)");
+		Display.setTitle("Gems of the Deep");
 		Display.setResizable(true);
 		
 		try {
 			Display.setDisplayMode(new DisplayMode(640, 480));
-			Display.create();
+			//setDisplayMode(1440,900,true);
+			Display.create();			
 		} catch (LWJGLException e) {
 			e.printStackTrace();
 			System.exit(0);
@@ -578,8 +644,14 @@ public class LD29
 		GL13.glActiveTexture(GL13.GL_TEXTURE0);		
 		
 		GL11.glColor3f(1, 1, 1);
-		for (Entity e : entities) { if (e != player) e.render(); }
-		player.render();
+		for (Entity e : entities) 
+		{ 
+			if (e == player) continue;
+			if (e instanceof Particle) e.render();
+			else e.renderWithBorder();
+		}		
+	
+		player.renderWithBorder();
 		
 		//GL11.glBlendFunc( GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
 		//GL11.glBlendFunc (GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
@@ -628,12 +700,12 @@ public class LD29
 		GL11.glLoadIdentity();
 		GL11.glScalef(((float)displayScale / 1.0f), ((float) displayScale / 1.0f), 1);
 		GL11.glColor3f(1,1,1);
-		GL11.glBegin(GL11.GL_QUADS);
+		
 		for (int n = 0; n < player.hitpoints; n++)
 		{
-			renderTileQuad(n * 10, 0, 40);
+			renderTileQuadWithBorder(n * 10, 0, 40);
 		}
-		GL11.glEnd();
+		
 		
 		//GL11.glEnable(GL11.GL_ALPHA_TEST);
 		//GL11.glAlphaFunc(GL11.GL_EQUAL, 1);
@@ -656,10 +728,8 @@ public class LD29
 			textureAtlas.bind();
 			GL11.glLoadIdentity();
 			GL11.glScalef(((float)displayScale / 1.0f), ((float) displayScale / 1.0f), 1);
-			GL11.glColor3f(1,1,1);
-			GL11.glBegin(GL11.GL_QUADS);
-			renderTileQuad((Mouse.getX() / displayScale) - 3, ((Display.getHeight() - Mouse.getY()) / displayScale) - 3, 41);		
-			GL11.glEnd();
+			GL11.glColor3f(1,1,1);			
+			renderTileQuad((Mouse.getX() / displayScale) - 3, ((Display.getHeight() - Mouse.getY()) / displayScale) - 3, 41);			
 		}
 	}
 	
@@ -683,6 +753,7 @@ public class LD29
 		float tileX = (float)(tilenum % 32) * uvCalc;
 		float tileY = (float)(tilenum / 32) * uvCalc;					
 		
+		GL11.glBegin(GL11.GL_QUADS);
 		GL11.glTexCoord2f(tileX + 0.0001f, tileY + 0.0001f);	
 		GL11.glVertex2f(x, y);					
 		GL11.glTexCoord2f(tileX + uvCalc - 0.0001f, tileY + 0.0001f); 
@@ -691,7 +762,32 @@ public class LD29
 		GL11.glVertex2f(x  + 16, y + 16);				
 		GL11.glTexCoord2f(tileX + 0.0001f, tileY + uvCalc - 0.0001f); 
 		GL11.glVertex2f(x, y + 16);	
-
+		GL11.glEnd();
+	}
+	
+	public void renderTileQuadWithBorder(int x, int y, int tilenum)
+	{
+		if (!LD29.debugMode)
+		{
+			GL11.glPushAttrib(GL11.GL_CURRENT_BIT);
+			GL11.glColor3f(0,0,0);
+			for (int n = 0; n < 4; n++)
+			{
+				GL11.glPushMatrix();
+				switch (n)
+				{
+					case 0: GL11.glTranslatef(-1,0,0); break;
+					case 1: GL11.glTranslatef(1,0,0); break;
+					case 2: GL11.glTranslatef(0,1,0); break;
+					case 3: GL11.glTranslatef(0,-1,0); break;			
+				}			
+				renderTileQuad(x, y, tilenum);
+				GL11.glPopMatrix();
+			}
+			GL11.glPopAttrib();
+		}
+		
+		renderTileQuad(x,y,tilenum);
 	}
 	
 	

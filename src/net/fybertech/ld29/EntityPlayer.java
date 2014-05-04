@@ -12,6 +12,14 @@ public class EntityPlayer extends Entity
 	
 	
 	@Override
+	public BoundingBox getBB()
+	{
+		return new BoundingBox(xPos + 4, yPos, xPos + 15f - 4, yPos + 16f);
+	}
+
+	
+	
+	@Override
 	public void update(int deltaTime)
 	{
 		float delta = deltaTime / 1000.0f;

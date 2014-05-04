@@ -116,6 +116,30 @@ public class Entity
 	}
 	
 	
+	public void renderWithBorder()
+	{
+		if (!LD29.debugMode)
+		{
+			GL11.glPushAttrib(GL11.GL_CURRENT_BIT);
+			GL11.glColor3f(0,0,0);
+			for (int n = 0; n < 4; n++)
+			{
+				GL11.glPushMatrix();
+				switch (n)
+				{
+					case 0: GL11.glTranslatef(-1,0,0); break;
+					case 1: GL11.glTranslatef(1,0,0); break;
+					case 2: GL11.glTranslatef(0,1,0); break;
+					case 3: GL11.glTranslatef(0,-1,0); break;			
+				}			
+				render();
+				GL11.glPopMatrix();
+			}
+			GL11.glPopAttrib();
+		}		
+				
+		render(); 
+	}
 	
 	
 	
