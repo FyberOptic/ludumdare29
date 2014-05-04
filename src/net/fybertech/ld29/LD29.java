@@ -87,6 +87,8 @@ public class LD29
 	
 	PixelFont pixelFont = null;
 	
+	GUI activeGUI = null;
+	
 	int currentFPS = 0;
 	
 	/**
@@ -283,6 +285,10 @@ public class LD29
 		long secondTickTime = 0;
 		int ticks = 0;
 		int fps = 0;
+		
+		activeGUI = new GUI(null);
+		activeGUI.addChild(new GUIButton(activeGUI).setPosition(16*0, 16*3 - 4));
+		activeGUI.addChild(new GUIButton(activeGUI).setText("99999").setPosition(16*0, 16*4 + 4));
 		
 		System.out.println("Starting game loop");
 		
@@ -725,7 +731,7 @@ public class LD29
 		//GL11.glBlendFunc (GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
 		
 		GL11.glLoadIdentity();
-		GL11.glScalef(((float)displayScale * 1), ((float) displayScale * 1), 1);
+		GL11.glScalef(((float)displayScale * 1f), ((float) displayScale * 1f), 1);
 		GL11.glColor3f(1,1,1);
 		
 		for (int n = 0; n < player.hitpoints; n++)
@@ -750,7 +756,7 @@ public class LD29
 		pixelFont.putStringWithBorder("" + gemTotal, 14,  21);
 		
 		
-		GL11.glLoadIdentity();
+		//GL11.glLoadIdentity();
 		//font.drawString(displayScale * 14f ,displayScale * 20.5f, "" + gemTotal, Color.white);
 		
 //		if (debugMode)
@@ -759,6 +765,14 @@ public class LD29
 //			font.drawString(displayScale * 4, displayScale * 35,"FPS: " + currentFPS, Color.white);
 //		}
 		
+		GL11.glLoadIdentity();
+		GL11.glScalef(((float)displayScale * 2f), ((float) displayScale * 2f), 1);
+		float guiX = (Display.getWidth() / (displayScale * 2f) - 160) / 2;
+		float guiY = (Display.getHeight() / (displayScale * 2f) - 120) / 2;
+		GL11.glTranslatef(guiX,  guiY,  0);;
+		activeGUI.render();
+		
+		GL11.glLoadIdentity();
 		
 		TextureImpl.unbind();
 		textureAtlas.bind();
@@ -780,7 +794,7 @@ public class LD29
 	}
 	
 	
-	public void renderTileQuad(int x, int y, int tilenum)
+	public static void renderTileQuad(float x, float y, int tilenum)
 	{
 		// 32 tiles per row in atlas (512x512, 16x16 tiles)
 		
@@ -803,7 +817,7 @@ public class LD29
 		GL11.glEnd();
 	}
 	
-	public void renderTileQuadWithBorder(int x, int y, int tilenum)
+	public static void renderTileQuadWithBorder(float x, float y, int tilenum)
 	{
 		if (!LD29.debugMode)
 		{
