@@ -46,6 +46,7 @@ public class EntityBat extends Entity
 				LD29.soundHead.playAsSoundEffect((float)(Math.random() * 0.25) + 1.5f,  0.75f,  false);
 			}
 		}
+		else if (distfrom > 1200) this.destroyEntity = true;
 		
 		if (dist.x == 0 && dist.y == 0) 
 		{

@@ -85,6 +85,8 @@ public class LD29
 	public boolean isScreenGrabbed = false;
 	
 	
+	int currentFPS = 0;
+	
 	/**
 	 * 
 	 * @return
@@ -173,7 +175,7 @@ public class LD29
 		Display.setResizable(true);
 		
 		try {
-			Display.setDisplayMode(new DisplayMode(640, 480));
+			Display.setDisplayMode(new DisplayMode(800, 480));
 			//setDisplayMode(1440,900,true);
 			Display.create();			
 		} catch (LWJGLException e) {
@@ -311,6 +313,7 @@ public class LD29
 				//System.out.println("TICKS: " + ticks);
 				ticks = 0;
 				secondTickTime -= 1000;
+				currentFPS = fps;
 				System.out.println("FPS: " + fps); 
 				fps = 0;
 			}
@@ -337,6 +340,7 @@ public class LD29
 						
 			SoundStore.get().poll(0);
 			
+			//currentfps++;
 			fps++;
 		}		
 		
@@ -350,17 +354,27 @@ public class LD29
 		float batX = 0;
 		float batY = 0;
 		
-		while (true)
-		{
-			batX = (float)(Math.random() * (16 * Grid.TILEGRIDWIDTH));
-			batY = (float)(Math.random() * (16 * Grid.TILEGRIDHEIGHT));
-			
-			float dx = player.xPos - batX;
-			float dy = player.yPos - batY;
-			float dist = (float)Math.sqrt(dx * dx + dy * dy);
-			
-			if (dist > 200 && dist < 1000) break;
-		}
+		//System.out.println("Adding bat");
+		
+		batX = (float)(Math.random() * 800) + 200;
+		batY = (float)(Math.random() * 800) + 200;
+		if (Math.random() > 0.5f) batX = -batX;
+		if (Math.random() > 0.5f) batY = -batY;
+		
+		batX += player.xPos;
+		batY += player.yPos;
+		
+//		while (true)
+//		{
+//			batX = (float)(Math.random() * (16 * Grid.TILEGRIDWIDTH));
+//			batY = (float)(Math.random() * (16 * Grid.TILEGRIDHEIGHT));
+//			
+//			float dx = player.xPos - batX;
+//			float dy = player.yPos - batY;
+//			float dist = (float)Math.sqrt(dx * dx + dy * dy);
+//			
+//			if (dist > 200 && dist < 1000) break;
+//		}
 		
 		entities.add(new EntityBat(batX, batY));
 	}
@@ -721,6 +735,7 @@ public class LD29
 		if (debugMode)
 		{
 			font.drawString(displayScale * 4, displayScale * 25,"X: " + player.xPos + " Y: " + player.yPos, Color.white);
+			font.drawString(displayScale * 4, displayScale * 35,"FPS: " + currentFPS, Color.white);
 		}
 		
 		if (isScreenGrabbed)
