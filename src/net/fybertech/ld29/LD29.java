@@ -279,9 +279,9 @@ public class LD29
 		
 		long currentTime = getTime();
 		long lastTime = getTime();
-		int deltaTime = 0;
+		float deltaTime = 0;
 		
-		long gameTickTime = 0;
+		float gameTickTime = 0;
 		long secondTickTime = 0;
 		int ticks = 0;
 		int fps = 0;
@@ -296,7 +296,11 @@ public class LD29
 			deltaTime = (int)(currentTime - lastTime);
 			lastTime = currentTime;
 			
+			//deltaTime /= 4.0f;
 			
+			//if (deltaTime == 0) continue;
+			
+			//deltaTime = 100;
 			//deltaTime *= 0.9f;
 			
 			handleInput(deltaTime);		
@@ -360,7 +364,7 @@ public class LD29
 						
 			SoundStore.get().poll(0);
 			
-			//Display.sync(60);
+			//Display.sync(30);
 			
 			//currentfps++;
 			fps++;
@@ -415,7 +419,7 @@ public class LD29
 	 * 
 	 * @param deltaTime
 	 */
-	public void handleInput(int deltaTime)
+	public void handleInput(float deltaTime)
 	{
 		// Handle keyboard
 		
@@ -465,7 +469,7 @@ public class LD29
 			//else if (!player.jumping) { player.jumping = true; player.jumpcounter = 500; }
 			else if (player.jumping) 
 			{ 
-				int delta = deltaTime;
+				//int delta = deltaTime;
 				player.jumpcounter += deltaTime;
 				//if (player.jumpcounter < 500) player.yVel -= 300 * (delta / 1000.0f);
 				//if (player.jumpcounter > 500) player.jumping = false;

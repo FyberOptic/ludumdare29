@@ -49,7 +49,7 @@ public class Particle extends Entity
 	}
 	
 	@Override
-	public void update(int deltaTime)
+	public void update(float deltaTime)
 	{
 		float delta = deltaTime / 1000.0f;
 		yVel += gravity * delta;

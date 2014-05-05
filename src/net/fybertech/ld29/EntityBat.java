@@ -68,7 +68,7 @@ public class EntityBat extends Entity
 	
 	
 	@Override
-	public void update(int deltaTime)
+	public void update(float deltaTime)
 	{
 		
 		doMove(deltaTime);		

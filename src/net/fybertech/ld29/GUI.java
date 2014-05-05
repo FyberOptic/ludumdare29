@@ -71,7 +71,7 @@ public class GUI
 		childGUIs.add(child);
 	}
 	
-	public void update(int deltaTime)
+	public void update(float deltaTime)
 	{
 		while (Mouse.next())
 		{

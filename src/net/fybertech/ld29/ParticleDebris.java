@@ -50,7 +50,7 @@ public class ParticleDebris extends Particle
 	
 	
 	@Override
-	public void update(int deltaTime)
+	public void update(float deltaTime)
 	{
 		float delta = deltaTime / 1000.0f;
 		yVel += 500 * delta;

@@ -231,7 +231,7 @@ public class Grid
 		return gridChunks[(cy * GRIDWIDTH) + cx].getData(ctx, cty);
 	}
 	
-	public void update(int deltaTime)
+	public void update(float deltaTime)
 	{
 		
 	}

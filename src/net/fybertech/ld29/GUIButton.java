@@ -155,7 +155,7 @@ public class GUIButton extends GUI
 	}
 	
 	@Override
-	public void update(int deltaTime)
+	public void update(float deltaTime)
 	{
 		
 	}

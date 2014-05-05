@@ -95,7 +95,7 @@ public class Entity
 			GL11.glDisable(GL11.GL_TEXTURE_2D);
 			GL11.glPolygonMode(GL11.GL_FRONT_AND_BACK, GL11.GL_LINE);
 			GL11.glColor3f(1, 0, 0);
-			for (Vector2i v : intercepts)
+			for (Vector2i v : this.closestTileIntercepts)
 			{
 				GL11.glBegin(GL11.GL_QUADS);
 				GL11.glVertex2f(v.x * 16, v.y * 16);		 
@@ -105,25 +105,25 @@ public class Entity
 				GL11.glEnd();
 			}
 			
-			GL11.glColor3f(0,1,0);
-			if (closestXIntercept != null)
-			{
-				GL11.glBegin(GL11.GL_QUADS);
-				GL11.glVertex2f(closestXIntercept.x * 16, closestXIntercept.y * 16);		 
-				GL11.glVertex2f(closestXIntercept.x * 16 + 16, closestXIntercept.y * 16);		 
-				GL11.glVertex2f(closestXIntercept.x * 16 + 16, closestXIntercept.y * 16 + 16);			 
-				GL11.glVertex2f(closestXIntercept.x * 16, closestXIntercept.y * 16 + 16);
-				GL11.glEnd();
-			}
-			if (closestYIntercept != null)
-			{
-				GL11.glBegin(GL11.GL_QUADS);
-				GL11.glVertex2f(closestYIntercept.x * 16, closestYIntercept.y * 16);		 
-				GL11.glVertex2f(closestYIntercept.x * 16 + 16, closestYIntercept.y * 16);		 
-				GL11.glVertex2f(closestYIntercept.x * 16 + 16, closestYIntercept.y * 16 + 16);			 
-				GL11.glVertex2f(closestYIntercept.x * 16, closestYIntercept.y * 16 + 16);
-				GL11.glEnd();
-			}
+//			GL11.glColor3f(0,1,0);
+//			if (closestXIntercept != null)
+//			{
+//				GL11.glBegin(GL11.GL_QUADS);
+//				GL11.glVertex2f(closestXIntercept.x * 16, closestXIntercept.y * 16);		 
+//				GL11.glVertex2f(closestXIntercept.x * 16 + 16, closestXIntercept.y * 16);		 
+//				GL11.glVertex2f(closestXIntercept.x * 16 + 16, closestXIntercept.y * 16 + 16);			 
+//				GL11.glVertex2f(closestXIntercept.x * 16, closestXIntercept.y * 16 + 16);
+//				GL11.glEnd();
+//			}
+//			if (closestYIntercept != null)
+//			{
+//				GL11.glBegin(GL11.GL_QUADS);
+//				GL11.glVertex2f(closestYIntercept.x * 16, closestYIntercept.y * 16);		 
+//				GL11.glVertex2f(closestYIntercept.x * 16 + 16, closestYIntercept.y * 16);		 
+//				GL11.glVertex2f(closestYIntercept.x * 16 + 16, closestYIntercept.y * 16 + 16);			 
+//				GL11.glVertex2f(closestYIntercept.x * 16, closestYIntercept.y * 16 + 16);
+//				GL11.glEnd();
+//			}
 			
 			GL11.glColor3f(1,1,1);			
 			BoundingBox bb = this.getBB();
@@ -193,12 +193,20 @@ public class Entity
 	}
 	
 
-	Vector2i closestXIntercept = null;
-	Vector2i closestYIntercept = null;
+	ArrayList<Vector2i> closestXIntercept = new ArrayList<Vector2i>();
+	ArrayList<Vector2i> closestYIntercept = new ArrayList<Vector2i>();
+	ArrayList<Vector2i> closestTileIntercepts = new ArrayList<Vector2i>();
+	
+	
+	public void addWithoutRepeat(ArrayList<Vector2i> list, Vector2i v)
+	{
+		for (Vector2i oldv : list) { if (oldv.x == v.x && oldv.y == v.y) return; }
+		list.add(v);
+	}
 	
 	public float getMaxMoveAmountX(BoundingBox bb, float x)
 	{
-		closestXIntercept = null;
+		//closestXIntercept = null;
 		
 		float currentDelta = x;
 		if (x > 0)
@@ -211,7 +219,8 @@ public class Entity
 				if (gridbb.xMax <= bb.xMin) continue; 
 				
 				float thisDelta = gridbb.xMin - bb.xMax;				
-				if (thisDelta < currentDelta) { currentDelta = thisDelta; closestXIntercept = v; } 
+				if (thisDelta < currentDelta) { currentDelta = thisDelta; closestXIntercept.clear(); addWithoutRepeat(closestXIntercept, v); }
+				if (thisDelta == currentDelta) { addWithoutRepeat(closestXIntercept, v); }
 			}
 			//return (currentDelta > 0 ? currentDelta : 0);
 			return currentDelta;
@@ -230,7 +239,8 @@ public class Entity
 				float thisDelta = gridbb.xMax - bb.xMin;
 				//thisDelta -= Math.ulp(thisDelta);
 				//thisDelta -= 0.00001f;
-				if (thisDelta > currentDelta) { currentDelta = thisDelta; closestXIntercept = v; } 
+				if (thisDelta > currentDelta) { currentDelta = thisDelta; closestXIntercept.clear(); addWithoutRepeat(closestXIntercept, v); }
+				if (thisDelta == currentDelta) { addWithoutRepeat(closestXIntercept, v); }
 			}
 			//System.out.println("DELTA2-END: " + currentDelta);
 			//return (currentDelta < 0 ? currentDelta : 0);
@@ -242,7 +252,7 @@ public class Entity
 	
 	public float getMaxMoveAmountY(BoundingBox bb, float y)
 	{
-		closestYIntercept = null;
+		//closestYIntercept = null;
 		
 		float currentDelta = y;
 		if (y > 0)
@@ -255,7 +265,8 @@ public class Entity
 				if (gridbb.yMax <= bb.yMin) continue; 
 				
 				float thisDelta = gridbb.yMin - bb.yMax;
-				if (thisDelta < currentDelta) { currentDelta = thisDelta; closestYIntercept = v; } 
+				if (thisDelta < currentDelta) { currentDelta = thisDelta; closestYIntercept.clear(); addWithoutRepeat(closestYIntercept, v); }
+				if (thisDelta == currentDelta) { addWithoutRepeat(closestYIntercept, v); }
 			}
 			//return (currentDelta > 0 ? currentDelta : 0);
 			return currentDelta;
@@ -271,7 +282,8 @@ public class Entity
 				if (gridbb.yMin >= bb.yMax) continue;	
 				
 				float thisDelta = gridbb.yMax - bb.yMin;
-				if (thisDelta > currentDelta) { currentDelta = thisDelta;  closestYIntercept = v; } 
+				if (thisDelta > currentDelta) { currentDelta = thisDelta;  closestYIntercept.clear(); addWithoutRepeat(closestYIntercept, v); } 
+				if (thisDelta == currentDelta) { addWithoutRepeat(closestYIntercept, v); } 
 			}
 			//return (currentDelta < 0 ? currentDelta : 0);
 			return currentDelta;
@@ -301,11 +313,14 @@ public class Entity
 	
 	BoundingBox movebox = new BoundingBox();
 	
-	public void doMove(int deltaTime)
+	public void doMove(float deltaTime)
 	{
 		float delta = deltaTime / 1000.0f;
 		
-	
+		closestXIntercept.clear();
+		closestYIntercept.clear();
+		closestTileIntercepts.clear();
+		
 		//if (Keyboard.isKeyDown(Keyboard.KEY_SPACE)) yVel -= 500* delta;
 		//if (yVel < -100) yVel = -100;
 		
@@ -341,18 +356,20 @@ public class Entity
 		xPos = xPos + moveX;
 		yPos = yPos + moveY;	
 		
-		if (Math.abs(startX - moveX) < Math.abs(startY - moveY) && closestXIntercept != null) closestYIntercept = null; 
+		//if (Math.abs(startX - moveX) < Math.abs(startY - moveY) && closestXIntercept.size() > 0) closestYIntercept = null; 
 		
 		//System.out.println(lastX + " -> " + xPos + " " + lastY + " -> " + yPos);
 		
 		xCollide = false;
 		yCollide = false;
 		
-		if (startX != 0 && moveX != startX) xCollide = true;
+		if (startX != 0 && moveX != startX) { xCollide = true; closestTileIntercepts.addAll(closestXIntercept);  }
 			
 		if (startY != 0 && moveY != startY) 
 		{ 
 			yCollide = true;
+			
+			closestTileIntercepts.addAll(closestYIntercept);
 			
 			if (yVel > 0) 
 			{ 
@@ -383,14 +400,22 @@ public class Entity
 	}
 	
 	
-	public void update(int deltaTime)
+	
+	
+	
+	public void update(float deltaTime)
 	{
 		doMove(deltaTime);
 		
 	}
 	
+	
+	
+	
 	int frameTimer = 0;
 	public boolean animating = false;
+	
+	
 	
 	public void tick()
 	{

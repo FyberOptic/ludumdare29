@@ -26,7 +26,7 @@ public class GUIEscapeMenu extends GUI {
 	
 
 	@Override
-	public void update(int deltaTime)
+	public void update(float deltaTime)
 	{
 		super.update(deltaTime);
 	}	

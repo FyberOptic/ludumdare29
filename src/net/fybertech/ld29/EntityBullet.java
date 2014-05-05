@@ -45,7 +45,7 @@ public class EntityBullet extends Entity
 	
 	
 	@Override
-	public void update(int deltaTime)
+	public void update(float deltaTime)
 	{
 		doMove(deltaTime);
 		
@@ -58,16 +58,34 @@ public class EntityBullet extends Entity
 			//System.out.println("HIT");
 			
 			//for (Vector2i v : intercepts)
-			Vector2i v = closestXIntercept;
-			if (v == null) v = closestYIntercept;
+			//Vector2i v = closestXIntercept;
+			//if (v == null) v = closestYIntercept;			
+			//if (v != null)
+			
+			Vector2i v = null;			
+			float shortest = -1;
+			
+			for (Vector2i vc : closestTileIntercepts)
+			{
+				float dx = ((vc.x * 16) - 8) - xPos;
+				float dy = ((vc.y * 16) - 8) - yPos;
+				float dist = dx * dx + dy * dy;
+				
+				if (v == null || dist < shortest) { v = vc; shortest = dist; }				
+				
+			}
 			
 			if (v != null)
 			{				
 				int tile = grid.getTile(v.x,  v.y);
+				
+				//System.out.println("TESTING " + v.x + " " + v.y);
+				
 				if (tile > 0 && tile < 32)
 				{					
 					//BoundingBox bb = bbFromGridPos(v.x, v.y);
-					//BoundingBox bbb = new BoundingBox(xPos, yPos, xPos + 15f, yPos + 15f);
+					///BoundingBox bbb = new BoundingBox(xPos, yPos, xPos + 16f, yPos + 16f);
+					//BoundingBox bbb = this.getBB();
 					//if (bb.boxOverlaps(bbb))
 					{			
 						int data = grid.getData(v.x, v.y);
