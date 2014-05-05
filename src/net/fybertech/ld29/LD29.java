@@ -286,7 +286,7 @@ public class LD29
 		int ticks = 0;
 		int fps = 0;
 		
-		
+		entities.add(new EntitySpider());
 		
 		System.out.println("Starting game loop");
 		
