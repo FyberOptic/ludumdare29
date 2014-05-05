@@ -17,13 +17,16 @@ public class EntityBullet extends Entity
 		//direction = dir;
 		xVel = xV;
 		yVel = yV;
+		
+		width = 4;
+		height = 4;
 	}
 	
-	@Override
-	public BoundingBox getBB()
-	{
-		return new BoundingBox(xPos + 6, yPos + 6, xPos + 15f - 6, yPos + 15f - 6);
-	}
+//	@Override
+//	public BoundingBox getBB()
+//	{
+//		return new BoundingBox(xPos + 6, yPos + 6, xPos + 15f - 6, yPos + 15f - 6);
+//	}
 	
 	@Override
 	public void tick()
@@ -54,18 +57,22 @@ public class EntityBullet extends Entity
 			LD29.soundShothit.playAsSoundEffect((float)(Math.random() * 0.25) + 0.35f,  0.2f,  false);
 			//System.out.println("HIT");
 			
-			for (Vector2i v : intercepts)
-			{
+			//for (Vector2i v : intercepts)
+			Vector2i v = closestXIntercept;
+			if (v == null) v = closestYIntercept;
+			
+			if (v != null)
+			{				
 				int tile = grid.getTile(v.x,  v.y);
 				if (tile > 0 && tile < 32)
 				{					
-					BoundingBox bb = bbFromGridPos(v.x, v.y);
-					BoundingBox bbb = new BoundingBox(xPos, yPos, xPos + 15f, yPos + 15f);
-					if (bb.boxOverlaps(bbb))
+					//BoundingBox bb = bbFromGridPos(v.x, v.y);
+					//BoundingBox bbb = new BoundingBox(xPos, yPos, xPos + 15f, yPos + 15f);
+					//if (bb.boxOverlaps(bbb))
 					{			
 						int data = grid.getData(v.x, v.y);
 						int damage = data >> 4;
-						damage++;
+						damage++;;
 						//System.out.println(damage);
 						data &= 0xF;
 						data |= (damage << 4);
@@ -89,7 +96,7 @@ public class EntityBullet extends Entity
 						//gridChunk.dirty = true;					
 						
 						
-						break;
+						//break;
 					}
 				}
 			}
@@ -100,8 +107,8 @@ public class EntityBullet extends Entity
 		for (Entity e : LD29.instance.entities)
 		{
 			if (!(e instanceof EntityBat)) continue;
-			float dx = (e.xPos+8) - (xPos+8);
-			float dy = (e.yPos+8) - (yPos+8);
+			float dx = (e.xPos) - (xPos);
+			float dy = (e.yPos) - (yPos);
 			float dist = (float)Math.sqrt(dx * dx + dy * dy);
 			if (dist < 32 && e.getBB().boxOverlaps(this.getBB()))
 			{

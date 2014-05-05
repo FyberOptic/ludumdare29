@@ -8,7 +8,10 @@ public class ParticleThrust extends Particle
 	{
 		xPos = x;
 		yPos = y;
-		tileNum = 37;		
+		tileNum = 37;	
+		
+		width = 2;
+		height = 2;
 	}
 	
 	

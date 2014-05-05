@@ -33,8 +33,23 @@ public class BoundingBox
 	
 	public BoundingBox addCoord(float x, float y)
 	{
-		if (x > 0) xMax += x; else xMin -= x;
-		if (y > 0) yMax += y; else yMin -= y;
+		//if (x > 0) xMax += x; else xMin -= x;
+		//if (y > 0) yMax += y; else yMin -= y;
+		
+		if (x < xMin) xMin = x;
+		if (x > xMax) xMax = x;
+		if (y < yMin) yMin = y;
+		if (y > yMax) yMax = y;
+		
+		return this;
+	}
+	
+	public BoundingBox overlapBox(BoundingBox bb)
+	{
+		if (bb.xMin < this.xMin) xMin = bb.xMin;
+		if (bb.yMin < this.yMin) yMin = bb.yMin;
+		if (bb.xMax > this.xMax) xMax = bb.xMax;
+		if (bb.yMax > this.yMax) yMax = bb.yMax;
 		
 		return this;
 	}
@@ -59,19 +74,29 @@ public class BoundingBox
 	
 	public boolean boxOverlaps(BoundingBox bb)
 	{
-		if (this.xMin < bb.xMax && this.xMax > bb.xMin && this.yMin < bb.yMax && this.yMax > bb.yMin) return true;	
-		return false;
+		//if (this.xMin < bb.xMax && this.xMax > bb.xMin && this.yMin < bb.yMax && this.yMax > bb.yMin) return true;	
+		//return false;
+		return (boxOverlapsX(bb) && boxOverlapsY(bb));
 	}
 	
+	// FYBER: SWAPPED SIGNS AND CONDITIONAL RETURN
 	public boolean boxOverlapsX(BoundingBox bb)
 	{
 		if (this.xMin < bb.xMax && this.xMax > bb.xMin) return true;	
 		return false;
+
+		
+		//if (this.xMin > bb.xMax || this.xMax < bb.xMin) return false;	
+		//return true;
 	}
 	public boolean boxOverlapsY(BoundingBox bb)
 	{
 		if (this.yMin < bb.yMax && this.yMax > bb.yMin) return true;	
 		return false;
+		
+		//if (this.yMin > bb.yMax || this.yMax < bb.yMin) return false;	
+		//return true;
+
 	}
 	
 }

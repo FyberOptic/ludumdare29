@@ -8,14 +8,17 @@ public class EntityPlayer extends Entity
 	public EntityPlayer()
 	{
 		this.tileNum = 32;
+		
+		width = 8;
+		height = 15.5f;
 	}
 	
 	
-	@Override
-	public BoundingBox getBB()
-	{
-		return new BoundingBox(xPos + 4, yPos, xPos + 15f - 4, yPos + 16f);
-	}
+//	@Override
+//	public BoundingBox getBB()
+//	{
+//		return new BoundingBox(xPos + 4, yPos , xPos + 15f - 4, yPos + 16f);
+//	}
 
 	
 	
@@ -33,7 +36,7 @@ public class EntityPlayer extends Entity
 		if (!jumping && Keyboard.isKeyDown(Keyboard.KEY_SPACE)) yVel -= 400 * delta;
 		else 
 		{
-			//if (!onGround) 
+			// FYBER: TURN THESE BACK ON
 			if (jumping && jumpcounter < 500) yVel += 100 * delta;
 			else yVel += 300 * delta;
 		}
@@ -84,8 +87,9 @@ public class EntityPlayer extends Entity
 			LD29.soundThrust.playAsSoundEffect(pitch, 0.25f, false);
 		}
 		
+		// FYBER: ADD BACK
 		xVel *= 0.5;
-		if (xVel < 0.1f && xVel > -0.1f) xVel = 0;
+		if (xVel < 0.5f && xVel > -0.5f) xVel = 0;
 		
 		if (xVel > 0) facing = 1;
 		if (xVel < 0) facing = -1;

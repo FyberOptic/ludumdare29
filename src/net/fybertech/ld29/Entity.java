@@ -34,11 +34,15 @@ public class Entity
 	boolean yCollide = false;
 	boolean noClipping = false;
 	
+	float width = 16;
+	float height = 16;
+	
 	int jumpcounter = 0;
 	
 	public boolean destroyEntity = false;
 	
 	ArrayList<Vector2i> intercepts = new ArrayList<Vector2i>();
+	ArrayList<Vector2i> moveintercepts = new ArrayList<Vector2i>();
 	
 	public Entity()
 	{		
@@ -68,18 +72,21 @@ public class Entity
 		
 		if (facing == -1) { uvLeft = tileX + uvCalc - 0.0001f; uvRight = tileX + 0.0001f; }
 		
+		float rx = xPos - 8;//(16 - (width / 2.0f));
+		float ry = yPos - 8; //(16 - (height / 2.0f));
+		
 		GL11.glBegin(GL11.GL_QUADS);
 		GL11.glTexCoord2f(uvLeft, tileY + 0.0001f);	
-		GL11.glVertex2f(xPos, yPos);	
+		GL11.glVertex2f(rx, ry);	
 		
 		GL11.glTexCoord2f(uvRight, tileY + 0.0001f); 
-		GL11.glVertex2f(xPos + 16, yPos);	
+		GL11.glVertex2f(rx + 16, ry);	
 		
 		GL11.glTexCoord2f(uvRight, tileY + uvCalc - 0.0001f); 
-		GL11.glVertex2f(xPos + 16, yPos + 16);	
+		GL11.glVertex2f(rx + 16, ry + 16);	
 		
 		GL11.glTexCoord2f(uvLeft, tileY + uvCalc - 0.0001f); 
-		GL11.glVertex2f(xPos, yPos + 16);
+		GL11.glVertex2f(rx, ry + 16);
 		GL11.glEnd();
 		
 		
@@ -97,8 +104,28 @@ public class Entity
 				GL11.glVertex2f(v.x * 16, v.y * 16 + 16);
 				GL11.glEnd();
 			}
-			GL11.glColor3f(1,1,1);
 			
+			GL11.glColor3f(0,1,0);
+			if (closestXIntercept != null)
+			{
+				GL11.glBegin(GL11.GL_QUADS);
+				GL11.glVertex2f(closestXIntercept.x * 16, closestXIntercept.y * 16);		 
+				GL11.glVertex2f(closestXIntercept.x * 16 + 16, closestXIntercept.y * 16);		 
+				GL11.glVertex2f(closestXIntercept.x * 16 + 16, closestXIntercept.y * 16 + 16);			 
+				GL11.glVertex2f(closestXIntercept.x * 16, closestXIntercept.y * 16 + 16);
+				GL11.glEnd();
+			}
+			if (closestYIntercept != null)
+			{
+				GL11.glBegin(GL11.GL_QUADS);
+				GL11.glVertex2f(closestYIntercept.x * 16, closestYIntercept.y * 16);		 
+				GL11.glVertex2f(closestYIntercept.x * 16 + 16, closestYIntercept.y * 16);		 
+				GL11.glVertex2f(closestYIntercept.x * 16 + 16, closestYIntercept.y * 16 + 16);			 
+				GL11.glVertex2f(closestYIntercept.x * 16, closestYIntercept.y * 16 + 16);
+				GL11.glEnd();
+			}
+			
+			GL11.glColor3f(1,1,1);			
 			BoundingBox bb = this.getBB();
 			GL11.glBegin(GL11.GL_QUADS);
 			GL11.glVertex2f(bb.xMin, bb.yMin);
@@ -106,6 +133,16 @@ public class Entity
 			GL11.glVertex2f(bb.xMax, bb.yMax);
 			GL11.glVertex2f(bb.xMin, bb.yMax);
 			GL11.glEnd();
+			
+			GL11.glColor3f(1,1,0);
+			GL11.glBegin(GL11.GL_QUADS);
+			GL11.glVertex2f(movebox.xMin, movebox.yMin);		 
+			GL11.glVertex2f(movebox.xMax, movebox.yMin);		 
+			GL11.glVertex2f(movebox.xMax, movebox.yMax);			 
+			GL11.glVertex2f(movebox.xMin, movebox.yMax);
+			GL11.glEnd();
+			
+			GL11.glColor3f(1,1,1);
 			
 			GL11.glEnable(GL11.GL_TEXTURE_2D);
 			GL11.glPolygonMode(GL11.GL_FRONT_AND_BACK, GL11.GL_FILL);
@@ -145,18 +182,24 @@ public class Entity
 	
 	public BoundingBox bbFromGridPos(int x, int y)
 	{
-		return new BoundingBox(x * 16, y * 16, (x * 16) + 15f, (y * 16) + 15f);
+		//return new BoundingBox(x * 16, y * 16, (x * 16) + 16f - 0.0001f, (y * 16) + 16f - 0.0001f);  // FYBER: USED TO BE + 15
+		return new BoundingBox(x * 16, y * 16, (x * 16) + 16f, (y * 16) + 16f);  // FYBER: USED TO BE + 15
 	}
 	
 	public BoundingBox getBB()
 	{
-		return new BoundingBox(xPos + 4, yPos, xPos + 15f - 4, yPos + 15f);
+		//return new BoundingBox(xPos, yPos, xPos + 15f, yPos + 15f);
+		return new BoundingBox(xPos - (width / 2.0f), yPos - (height / 2.0f), xPos + (width / 2.0f), yPos + (height / 2.0f));
 	}
 	
 
-
+	Vector2i closestXIntercept = null;
+	Vector2i closestYIntercept = null;
+	
 	public float getMaxMoveAmountX(BoundingBox bb, float x)
 	{
+		closestXIntercept = null;
+		
 		float currentDelta = x;
 		if (x > 0)
 		{
@@ -164,13 +207,14 @@ public class Entity
 			{
 				BoundingBox gridbb = bbFromGridPos(v.x, v.y);
 				if (!gridbb.boxOverlapsY(bb)) continue;	
-				if (gridbb.xMin < bb.xMax) continue; 
+				//if (gridbb.xMin <= bb.xMax) continue; 
+				if (gridbb.xMax <= bb.xMin) continue; 
 				
-				float thisDelta = gridbb.xMin - bb.xMax;
-				if (thisDelta < currentDelta) currentDelta = thisDelta;
+				float thisDelta = gridbb.xMin - bb.xMax;				
+				if (thisDelta < currentDelta) { currentDelta = thisDelta; closestXIntercept = v; } 
 			}
-			return (currentDelta > 0 ? currentDelta : 0);
-			//return currentDelta;
+			//return (currentDelta > 0 ? currentDelta : 0);
+			return currentDelta;
 		}
 		else if (x < 0)
 		{
@@ -180,21 +224,26 @@ public class Entity
 			{
 				BoundingBox gridbb = bbFromGridPos(v.x, v.y);
 				if (!gridbb.boxOverlapsY(bb)) continue;				
-				if (gridbb.xMin > bb.xMin) continue;					
+				//if (gridbb.xMax >= bb.xMin) continue;	
+				if (gridbb.xMin >= bb.xMax) continue;					
 				//System.out.print(".");
 				float thisDelta = gridbb.xMax - bb.xMin;
-				if (thisDelta > currentDelta) currentDelta = thisDelta;
+				//thisDelta -= Math.ulp(thisDelta);
+				//thisDelta -= 0.00001f;
+				if (thisDelta > currentDelta) { currentDelta = thisDelta; closestXIntercept = v; } 
 			}
 			//System.out.println("DELTA2-END: " + currentDelta);
-			return (currentDelta < 0 ? currentDelta : 0);
-			//return currentDelta;		
+			//return (currentDelta < 0 ? currentDelta : 0);
+			return currentDelta;		
 		}
 		
-		return x;
+		return currentDelta;
 	}
 	
 	public float getMaxMoveAmountY(BoundingBox bb, float y)
 	{
+		closestYIntercept = null;
+		
 		float currentDelta = y;
 		if (y > 0)
 		{
@@ -202,12 +251,14 @@ public class Entity
 			{
 				BoundingBox gridbb = bbFromGridPos(v.x, v.y);
 				if (!gridbb.boxOverlapsX(bb)) continue;	
-				if (gridbb.yMin < bb.yMax) continue; 
+				//if (gridbb.yMin <= bb.yMax) continue;
+				if (gridbb.yMax <= bb.yMin) continue; 
 				
 				float thisDelta = gridbb.yMin - bb.yMax;
-				if (thisDelta < currentDelta) currentDelta = thisDelta;
+				if (thisDelta < currentDelta) { currentDelta = thisDelta; closestYIntercept = v; } 
 			}
-			return (currentDelta > 0 ? currentDelta : 0);
+			//return (currentDelta > 0 ? currentDelta : 0);
+			return currentDelta;
 		}
 		else if (y < 0)
 		{
@@ -216,32 +267,39 @@ public class Entity
 			{
 				BoundingBox gridbb = bbFromGridPos(v.x, v.y);
 				if (!gridbb.boxOverlapsX(bb)) continue;				
-				if (gridbb.yMin > bb.yMin) continue;					
+				//if (gridbb.yMax >= bb.yMin) continue;
+				if (gridbb.yMin >= bb.yMax) continue;	
 				
 				float thisDelta = gridbb.yMax - bb.yMin;
-				if (thisDelta > currentDelta) currentDelta = thisDelta;
+				if (thisDelta > currentDelta) { currentDelta = thisDelta;  closestYIntercept = v; } 
 			}
-			return (currentDelta < 0 ? currentDelta : 0);
-			//return currentDelta;
+			//return (currentDelta < 0 ? currentDelta : 0);
+			return currentDelta;
 		}
 		
-		return y;
+		return currentDelta;
 	}
 	
 	
 	public void getIntercepts(BoundingBox bb, ArrayList<Vector2i> list, boolean everything)
 	{
-		for (int y = (int)(Math.floor(bb.yMin)) >> 4; y <= (int)(Math.ceil(bb.yMax)) >> 4; y++)
+		for (int y = ((int)(Math.floor(bb.yMin)) >> 4) - 1; y <= (int)(Math.ceil(bb.yMax)) >> 4; y++)
 		{
-			for (int x = (int)(Math.floor(bb.xMin)) >> 4; x <= (int)(Math.ceil(bb.xMax)) >> 4; x++)
+			for (int x = ((int)(Math.floor(bb.xMin)) >> 4) - 1; x <= (int)(Math.ceil(bb.xMax)) >> 4; x++)
 			{
-				int tile = grid.getTile(x, y);
-				if (tile > 0 && (tile < 32 || everything)) list.add(new Vector2i(x, y));
+				if (this.bbFromGridPos(x, y).boxOverlaps(bb))
+				{
+					int tile = grid.getTile(x, y);
+					if (tile > 0 && (tile < 32 || everything)) list.add(new Vector2i(x, y));
+				}
 			}
 		}		
 
 	}
 	
+	
+	
+	BoundingBox movebox = new BoundingBox();
 	
 	public void doMove(int deltaTime)
 	{
@@ -258,11 +316,20 @@ public class Entity
 		float startX = moveX;
 		float startY = moveY;
 		
-		BoundingBox playerbox = this.getBB();		
+		float lastX = xPos;
+		float lastY = yPos;
 		
-		BoundingBox movebox = playerbox.copy().addCoord(moveX, moveY);
+		//BoundingBox playerbox = this.getBB();		
+		
+		//movebox = this.getBB().addCoord(xPos + moveX, yPos + moveY);
+		
+		movebox = this.getBB().overlapBox(this.getBB().translate(moveX,  moveY));
+		
 		intercepts.clear();
 		getIntercepts(movebox, intercepts, false);
+		
+		moveintercepts.clear();
+		getIntercepts(movebox, moveintercepts, false);
 		
 		if (!this.noClipping)
 		{
@@ -272,7 +339,11 @@ public class Entity
 		}
 		
 		xPos = xPos + moveX;
-		yPos = yPos + moveY;		
+		yPos = yPos + moveY;	
+		
+		if (Math.abs(startX - moveX) < Math.abs(startY - moveY) && closestXIntercept != null) closestYIntercept = null; 
+		
+		//System.out.println(lastX + " -> " + xPos + " " + lastY + " -> " + yPos);
 		
 		xCollide = false;
 		yCollide = false;

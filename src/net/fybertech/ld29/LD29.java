@@ -296,6 +296,9 @@ public class LD29
 			deltaTime = (int)(currentTime - lastTime);
 			lastTime = currentTime;
 			
+			
+			//deltaTime *= 0.9f;
+			
 			handleInput(deltaTime);		
 			
 			gameTickTime += deltaTime;
@@ -357,6 +360,8 @@ public class LD29
 						
 			SoundStore.get().poll(0);
 			
+			//Display.sync(60);
+			
 			//currentfps++;
 			fps++;
 		}		
@@ -368,6 +373,8 @@ public class LD29
 	
 	public void addBat()
 	{
+		//if (true) return;
+		
 		float batX = 0;
 		float batY = 0;
 		
@@ -473,15 +480,25 @@ public class LD29
 		//if (Keyboard.isKeyDown(Keyboard.KEY_NUMPAD8)) scrollY -= scrollamount;
 		//if (Keyboard.isKeyDown(Keyboard.KEY_NUMPAD2)) scrollY += scrollamount;
 		
-		//float moveamount = (deltaTime / 1000.0f) * 10;
+		float moveamount = (deltaTime / 1000.0f) * 10;
 		//if (Keyboard.isKeyDown(Keyboard.KEY_LEFT)) player.xPos -= moveamount; 
 		//if (Keyboard.isKeyDown(Keyboard.KEY_RIGHT)) player.xPos += moveamount;
 		//if (Keyboard.isKeyDown(Keyboard.KEY_UP)) {player.yVel = 0; player.yPos -= moveamount; }
 		//if (Keyboard.isKeyDown(Keyboard.KEY_DOWN)) { player.yVel = 0; player.yPos += moveamount; }
+		if (Keyboard.isKeyDown(Keyboard.KEY_LEFT)) player.xVel -= moveamount; 
+		if (Keyboard.isKeyDown(Keyboard.KEY_RIGHT)) player.xVel += moveamount;
+		if (Keyboard.isKeyDown(Keyboard.KEY_UP)) player.yVel -= moveamount;;
+		if (Keyboard.isKeyDown(Keyboard.KEY_DOWN)) player.yVel += moveamount;
+
 		
 		float playervel = 50;
 		if (Keyboard.isKeyDown(Keyboard.KEY_A)) player.xVel = -playervel; 
-		if (Keyboard.isKeyDown(Keyboard.KEY_D)) player.xVel = playervel; 	
+		if (Keyboard.isKeyDown(Keyboard.KEY_D)) player.xVel = playervel;
+		
+		if (Keyboard.isKeyDown(Keyboard.KEY_A) && Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) player.xVel = -playervel * 2; 
+		if (Keyboard.isKeyDown(Keyboard.KEY_D) && Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) player.xVel = playervel * 2;	
+
+		
 		//if (Keyboard.isKeyDown(Keyboard.KEY_W)) player.yVel = -playervel; 
 		//if (Keyboard.isKeyDown(Keyboard.KEY_S)) player.yVel = playervel;	
 		
@@ -624,8 +641,8 @@ public class LD29
 		
 		//float scrollX = 160 + -player.xPos - 8;; //LD29.instance.player.xPos + 8;
 		//float scrollY = 120 + -player.yPos - 8;; //LD29.instance.player.yPos + 8;
-		float scrollX = LD29.instance.player.xPos + 8;
-		float scrollY = LD29.instance.player.yPos + 8;
+		float scrollX = LD29.instance.player.xPos;
+		float scrollY = LD29.instance.player.yPos;
 		
 		
 	

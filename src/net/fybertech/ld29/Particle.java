@@ -34,16 +34,16 @@ public class Particle extends Entity
 		
 		GL11.glBegin(GL11.GL_QUADS);
 		GL11.glTexCoord2f(uvLeft, tileY + 0.0001f);	
-		GL11.glVertex2f(xPos, yPos);	
+		GL11.glVertex2f(xPos - 8, yPos - 8);	
 		
 		GL11.glTexCoord2f(uvRight, tileY + 0.0001f); 
-		GL11.glVertex2f(xPos + 16, yPos);	
+		GL11.glVertex2f(xPos + 16 - 8, yPos - 8);	
 		
 		GL11.glTexCoord2f(uvRight, tileY + uvCalc - 0.0001f); 
-		GL11.glVertex2f(xPos + 16, yPos + 16);	
+		GL11.glVertex2f(xPos + 16 - 8, yPos + 16 - 8);	
 		
 		GL11.glTexCoord2f(uvLeft, tileY + uvCalc - 0.0001f); 
-		GL11.glVertex2f(xPos, yPos + 16);
+		GL11.glVertex2f(xPos - 8, yPos + 16 - 8);
 		GL11.glEnd();
 	
 	}

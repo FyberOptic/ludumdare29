@@ -14,14 +14,17 @@ public class EntityBat extends Entity
 		xPos = xp;
 		yPos = yp;
 		tileNum = baseTile;
+		
+		width = 12;
+		height = 8;
 	}
 	
 	
-	@Override
-	public BoundingBox getBB()
-	{
-		return new BoundingBox(xPos + 2, yPos+4, xPos + 15f - 2, yPos + 15f - 4);
-	}
+//	@Override
+//	public BoundingBox getBB()
+//	{
+//		return new BoundingBox(xPos + 2, yPos+4, xPos + 15f - 2, yPos + 15f - 4);
+//	}
 	
 	
 	@Override
@@ -34,7 +37,7 @@ public class EntityBat extends Entity
 		
 		Entity player = LD29.instance.player;
 		
-		Vector2f dist = new Vector2f((xPos + 8) - (LD29.instance.player.xPos+8), ((yPos) - LD29.instance.player.yPos));
+		Vector2f dist = new Vector2f((xPos) - (LD29.instance.player.xPos), ((yPos) - LD29.instance.player.yPos));
 		float distfrom = (float)Math.sqrt(dist.x * dist.x + dist.y * dist.y);
 		
 		if (distfrom < 8)
