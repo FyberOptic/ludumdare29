@@ -7,11 +7,15 @@ public class EntitySpider extends Entity
 	int frameCount = 0;
 	int baseTile = (3 * 32) + 5;
 	
+	int walktimer = 0;
+	int walkspeed = 12;
+	
 	public EntitySpider()
 	{
 		tileNum = baseTile;
-		xVel = 12;
-		height = 9;
+		xVel = walkspeed;
+		height = 8;
+		width = 14;
 	}
 	
 	
@@ -19,11 +23,29 @@ public class EntitySpider extends Entity
 	public void update(float deltaTime)
 	{
 		float delta = deltaTime / 1000.0f;
+		
+		float tempX = xVel;
+		if (yVel != 0) xVel = 0;
+		
 		yVel += 300 * delta;
-		if (yVel < -100) yVel = -100;
-		if (yVel > 400) yVel = 400;
+		
+		int tileY = (int)Math.floor(yPos) / 16;
+		int tileLeft = (int)Math.floor((xPos - (width / 1.9f))) / 16;
+		int tileRight = (int)Math.floor((xPos + (width / 1.9f))) / 16;
+		
+		if (grid.getTile(tileLeft,  tileY) != 0 || grid.getTile(tileRight,  tileY) != 0)
+		{		
+			if (yVel < -30) yVel = -30;
+			if (yVel > 30) yVel = 30;
+		}
+		else
+		{
+			if (yVel < -300) yVel = -300;
+			if (yVel > 300) yVel = 300;			
+		}
 		
 		super.update(deltaTime);
+		xVel = tempX;
 		
 		if (this.xCollide) xVel = -xVel; 
 	}
@@ -31,7 +53,10 @@ public class EntitySpider extends Entity
 	@Override
 	public void tick()
 	{
-		frameCount++;
+		walktimer++;
+		if (walktimer > (Math.random() * 40) + 80) { if (xVel != 0) { xVel = 0; frame = 0; } else { xVel = walkspeed; if (Math.random() > 0.5) xVel = -xVel; } walktimer = 0; }  
+		
+		if (xVel != 0) frameCount++;
 		if (frameCount > 2) { if (xVel >= 0) frame++; else frame--; frameCount = 0; } 
 		
 		if (frame >= 3) frame = 0;
