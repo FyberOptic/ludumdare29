@@ -2,6 +2,8 @@ package net.fybertech.ld29;
 
 import java.util.ArrayList;
 
+import org.lwjgl.input.Mouse;
+import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.vector.Vector2f;
 
@@ -13,6 +15,10 @@ public class GUI
 	float width = 160;
 	float height = 120;
 	
+	boolean mousePressed = false;
+	boolean mouseReleased = false;
+	boolean isMouseOver = false;
+	
 	GUI parentGUI = null;
 	ArrayList<GUI> childGUIs = new ArrayList<GUI>();
 	
@@ -23,7 +29,7 @@ public class GUI
 		parentGUI = parent;
 	}
 	
-	public void onMouse(float x, float y, int button, int buttonState)
+	public void onMouse(float x, float y, int button, boolean buttonState)
 	{
 		
 	}
@@ -67,6 +73,30 @@ public class GUI
 	
 	public void update(int deltaTime)
 	{
+		while (Mouse.next())
+		{
+			float guiX = (Display.getWidth() / (LD29.displayScale * 2f) - 160) / 2.0f;
+			float guiY = (Display.getHeight() / (LD29.displayScale * 2f) - 120) / 2.0f;
+			
+			float mouseX = Mouse.getEventX() / (LD29.displayScale * 2.0f);
+			float mouseY = (Display.getHeight() - Mouse.getEventY() - 1) / (LD29.displayScale * 2.0f);
+			
+			mouseX -= guiX;
+			mouseY -= guiY;
+			
+			for (GUI gui : childGUIs)
+			{
+				if (gui.isCoordInside(mouseX, mouseY)) 
+				{
+					gui.isMouseOver = true;					
+					gui.onMouse(mouseX, mouseY, Mouse.getEventButton(), Mouse.getEventButtonState());
+
+				}
+				else gui.isMouseOver = false;
+			}			
+			
+		}
+		
 		for (GUI gui : childGUIs) gui.update(deltaTime);
 	}	
 	
@@ -75,8 +105,32 @@ public class GUI
 		for (GUI gui : childGUIs) gui.tick();
 	}
 	
+	public void childEvent(int id, int event)
+	{
+		
+	}
+	
 	public void render()
 	{
+		
+		GL11.glLoadIdentity();
+		GL11.glDisable(GL11.GL_TEXTURE_2D);
+		GL11.glColor4f(0,0.25f,0.5f,0.5f);
+		GL11.glBegin(GL11.GL_QUADS);
+		GL11.glVertex2f(0 , 0);
+		GL11.glVertex2f(0 , Display.getHeight());
+		GL11.glVertex2f(Display.getWidth(), Display.getHeight());
+		GL11.glVertex2f(Display.getWidth(), 0);		
+		GL11.glEnd();
+		GL11.glEnable(GL11.GL_TEXTURE_2D);
+		
+		
+		
+		GL11.glScalef(((float)LD29.displayScale * 2f), ((float) LD29.displayScale * 2f), 1);
+		float guiX = (Display.getWidth() / (LD29.displayScale * 2f) - 160) / 2;
+		float guiY = (Display.getHeight() / (LD29.displayScale * 2f) - 120) / 2;
+		GL11.glTranslatef(guiX,  guiY,  0);;
+		
 //		GL11.glDisable(GL11.GL_TEXTURE_2D);
 //		GL11.glColor3f(1,0,0);
 //		GL11.glBegin(GL11.GL_QUADS);

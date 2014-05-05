@@ -6,7 +6,7 @@ public class PixelFont
 {
 
 
-	BoundingBox[] chars = new BoundingBox[10];
+	BoundingBox[] chars = new BoundingBox[10 + 26];
 	
 	public PixelFont()
 	{
@@ -16,7 +16,7 @@ public class PixelFont
 		float baseY = uvCalcPixel * (4 * 16);
 		float bottomY = baseY + (uvCalcPixel * 6);
 		
-		for (int n = 0; n < 10; n++)
+		for (int n = 0; n < 10 + 26; n++)
 		{			
 			chars[n] = new BoundingBox(n * 4 * uvCalcPixel, baseY, (n * 4 * uvCalcPixel) + (4 * uvCalcPixel), bottomY); 
 			
@@ -27,9 +27,11 @@ public class PixelFont
 	
 	public void putChar(char c, float x, float y)
 	{
-		c -= 48;
-		if (c > 9) return;
-
+		if (c >= 48 && c <= 57) c -= 48;
+		else if (c >= 65 && c <= 90) c -= (65 - 10);
+		else return;
+		
+		
 		BoundingBox bb = chars[c];
 		
 		GL11.glBegin(GL11.GL_QUADS);
@@ -76,13 +78,13 @@ public class PixelFont
 						case 2: GL11.glTranslatef(0,1,0); break;
 						case 3: GL11.glTranslatef(0,-1,0); break;			
 					}			
-					putChar(s.charAt(n), x + (n * 4), y);
+					putChar(s.charAt(n), x + (n * 6), y);
 					GL11.glPopMatrix();
 				}
 				GL11.glPopAttrib();
 			}		
 			
-			putChar(s.charAt(n), x + (n * 4), y);
+			putChar(s.charAt(n), x + (n * 6), y);
 		}
 	}
 	

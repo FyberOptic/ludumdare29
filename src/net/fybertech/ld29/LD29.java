@@ -286,9 +286,7 @@ public class LD29
 		int ticks = 0;
 		int fps = 0;
 		
-		activeGUI = new GUI(null);
-		activeGUI.addChild(new GUIButton(activeGUI).setPosition(16*0, 16*3 - 4));
-		activeGUI.addChild(new GUIButton(activeGUI).setText("99999").setPosition(16*0, 16*4 + 4));
+		
 		
 		System.out.println("Starting game loop");
 		
@@ -306,18 +304,19 @@ public class LD29
 				gameTickTime -= 50;
 				ticks++;
 				
-				if (getBatCount() < 20) addBat();
-
-				for (Iterator<Entity> iterator = entities.iterator(); iterator.hasNext();) 
+				if (activeGUI == null)
 				{
-					Entity e = iterator.next();
-					e.tick();
-					if (e.destroyEntity) iterator.remove();
+					if (getBatCount() < 20) addBat();
+					for (Iterator<Entity> iterator = entities.iterator(); iterator.hasNext();) 
+					{
+						Entity e = iterator.next();
+						e.tick();
+						if (e.destroyEntity) iterator.remove();
+					}
+					entities.addAll(newentities);
+					newentities.clear();
 				}
-				entities.addAll(newentities);
-				newentities.clear();
-				
-				
+				else activeGUI.tick();				
 			}
 			
 			secondTickTime += deltaTime;
@@ -331,14 +330,19 @@ public class LD29
 				fps = 0;
 			}
 			
-			for (Iterator<Entity> iterator = entities.iterator(); iterator.hasNext();) 
-			{
-				Entity e = iterator.next();
-				e.update(deltaTime);
-				if (e.destroyEntity) iterator.remove();
-			}
 			
-			grid.update(deltaTime);
+			if (activeGUI == null)
+			{				
+				for (Iterator<Entity> iterator = entities.iterator(); iterator.hasNext();) 
+				{
+					Entity e = iterator.next();
+					e.update(deltaTime);
+					if (e.destroyEntity) iterator.remove();
+				}			
+				grid.update(deltaTime);
+			}
+			else activeGUI.update(deltaTime);
+			
 			
 			GL11.glClear(GL11.GL_COLOR_BUFFER_BIT);
 			GL11.glLoadIdentity();
@@ -419,12 +423,25 @@ public class LD29
 				
 				if (Keyboard.getEventKey() == Keyboard.KEY_ESCAPE) 
 				{
-					if (isScreenGrabbed)
+					/*if (isScreenGrabbed)
 					{
 						isScreenGrabbed = false;
 						Mouse.setGrabbed(false);
 					}
-					else this.gameRunning = false;
+					else this.gameRunning = false;*/
+					
+					if (activeGUI != null)
+					{
+						activeGUI = null;
+						Mouse.setGrabbed(true);
+						isScreenGrabbed = true;
+					}
+					else
+					{
+						Mouse.setGrabbed(false);
+						isScreenGrabbed = false;
+						activeGUI = new GUIEscapeMenu();
+					}
 				}
 
 				if (Keyboard.getEventKey() == Keyboard.KEY_BACK) debugMode = !debugMode;
@@ -483,14 +500,14 @@ public class LD29
 		
 		// Handle mouse
 		
-		if (Mouse.isButtonDown(0))
+		
+		if (Mouse.isButtonDown(0) && activeGUI == null)
 		{			
 			if (!isScreenGrabbed)
 			{
 				isScreenGrabbed = true;
 				Mouse.setGrabbed(true);
-			}
-			
+			}			
 			
 			boolean fireShot = false;
 			boolean firstShot = false;
@@ -543,13 +560,15 @@ public class LD29
 		}
 		else leftMouseDown = false;
 	
-		
-		int mx = Mouse.getX();
-		int my = Mouse.getY();
-		my = Display.getHeight() - my -  1;		
-		int dx = (Display.getWidth() / 2) - mx;
-		int dy = (Display.getHeight() / 2) - my;
-		flashdir = (float)(Math.atan2(-dy, -dx) * 180 / Math.PI);
+		if (activeGUI == null)
+		{
+			int mx = Mouse.getX();
+			int my = Mouse.getY();
+			my = Display.getHeight() - my -  1;		
+			int dx = (Display.getWidth() / 2) - mx;
+			int dy = (Display.getHeight() / 2) - my;
+			flashdir = (float)(Math.atan2(-dy, -dx) * 180 / Math.PI);
+		}
 
 	}
 	
@@ -756,27 +775,22 @@ public class LD29
 		pixelFont.putStringWithBorder("" + gemTotal, 14,  21);
 		
 		
-		//GL11.glLoadIdentity();
-		//font.drawString(displayScale * 14f ,displayScale * 20.5f, "" + gemTotal, Color.white);
-		
-//		if (debugMode)
-//		{
-//			font.drawString(displayScale * 4, displayScale * 25,"X: " + player.xPos + " Y: " + player.yPos, Color.white);
-//			font.drawString(displayScale * 4, displayScale * 35,"FPS: " + currentFPS, Color.white);
-//		}
-		
 		GL11.glLoadIdentity();
-		GL11.glScalef(((float)displayScale * 2f), ((float) displayScale * 2f), 1);
-		float guiX = (Display.getWidth() / (displayScale * 2f) - 160) / 2;
-		float guiY = (Display.getHeight() / (displayScale * 2f) - 120) / 2;
-		GL11.glTranslatef(guiX,  guiY,  0);;
-		activeGUI.render();
-		
-		GL11.glLoadIdentity();
+		//font.drawString(displayScale * 14f ,displayScale * 20.5f, "" + gemTotal, Color.white);		
+		if (debugMode)
+		{
+			font.drawString(displayScale * 4, displayScale * 35,"X: " + player.xPos + " Y: " + player.yPos, Color.white);
+			font.drawString(displayScale * 4, displayScale * 45,"FPS: " + currentFPS, Color.white);
+		}
 		
 		TextureImpl.unbind();
 		textureAtlas.bind();
-		if (isScreenGrabbed)
+		
+		if (activeGUI != null) activeGUI.render();
+		
+		GL11.glLoadIdentity();
+		
+		if (isScreenGrabbed && activeGUI == null)
 		{			
 			GL11.glLoadIdentity();
 			GL11.glScalef(((float)displayScale / 1.0f), ((float) displayScale / 1.0f), 1);
