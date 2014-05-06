@@ -69,4 +69,13 @@ public class EntitySpider extends EntityEnemy
 		tileNum = baseTile + frame;
 	}
 	
+	
+	@Override
+	public void onHurt(int amount)
+	{
+		super.onHurt(amount);
+		
+		SoundManager.getSound("spiderhurt").playAsSoundEffect((float)(Math.random() * 0.50) + 1f,  0.5f,  false);
+	}
+	
 }

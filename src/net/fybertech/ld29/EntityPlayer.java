@@ -5,6 +5,8 @@ import org.lwjgl.input.Keyboard;
 public class EntityPlayer extends EntityLiving 
 {
 	
+	boolean isThrusting = false;
+	
 	public EntityPlayer()
 	{
 		super();
@@ -35,10 +37,10 @@ public class EntityPlayer extends EntityLiving
 		
 		//yVel += 200 * delta;
 		
-		if (!jumping && Keyboard.isKeyDown(Keyboard.KEY_SPACE)) yVel -= 400 * delta;
+		//if (!jumping && Keyboard.isKeyDown(Keyboard.KEY_SPACE)) yVel -= 400 * delta;
+		if (isThrusting)  yVel -= 400 * delta;
 		else 
 		{
-			// FYBER: TURN THESE BACK ON
 			if (jumping && jumpcounter < 500) yVel += 100 * delta;
 			else yVel += 300 * delta;
 		}
@@ -81,7 +83,8 @@ public class EntityPlayer extends EntityLiving
 	{
 		super.tick();
 		
-		if (!jumping && Keyboard.isKeyDown(Keyboard.KEY_SPACE))
+		//if (!jumping && Keyboard.isKeyDown(Keyboard.KEY_SPACE))
+		if (isThrusting)
 		{
 			LD29.instance.newentities.add(new ParticleThrust(xPos + (facing == 1 ? -1 : 0), yPos));			
 			float pitch = (float)(Math.random() * 0.20) + 1f;
