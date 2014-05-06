@@ -59,14 +59,14 @@ public class LD29
 	public ArrayList<Entity> entities = new ArrayList<Entity>();
 	public ArrayList<Entity> newentities = new ArrayList<Entity>();
 	
-	public static Audio soundGem = null;
-	public static Audio soundThrust = null;
-	public static Audio soundLand = null;
-	public static Audio soundHead = null;
-	public static Audio soundShoot = null;
-	public static Audio soundShothit = null;
-	public static Audio soundDirtbreak = null;
-	public static Audio soundSqueak = null;
+//	public static Audio soundGem = null;
+//	public static Audio soundThrust = null;
+//	public static Audio soundLand = null;
+//	public static Audio soundHead = null;
+//	public static Audio soundShoot = null;
+//	public static Audio soundShothit = null;
+//	public static Audio soundDirtbreak = null;
+//	public static Audio soundSqueak = null;
 	
 	Font awtFont;
 	public static TrueTypeFont font;
@@ -75,6 +75,7 @@ public class LD29
 	
 	public static boolean debugMode = false; 
 		
+	public static SoundManager soundManager = null;
 	
 	public boolean leftMouseDown = false;
 	public boolean rightMouseDown = false;
@@ -192,7 +193,7 @@ public class LD29
 			textureAtlas = TextureLoader.getTexture("PNG", ResourceLoader.getResourceAsStream("res/atlas.png"));
 			textureAtlas.setTextureFilter(GL11.GL_NEAREST);
 			
-			soundGem = AudioLoader.getAudio("WAV", ResourceLoader.getResourceAsStream("res/gem.wav"));
+			/*			
 			soundThrust = AudioLoader.getAudio("WAV", ResourceLoader.getResourceAsStream("res/thrust.wav"));
 			soundLand = AudioLoader.getAudio("WAV", ResourceLoader.getResourceAsStream("res/land.wav"));
 			soundHead = AudioLoader.getAudio("WAV", ResourceLoader.getResourceAsStream("res/head.wav"));
@@ -200,6 +201,9 @@ public class LD29
 			soundShothit = AudioLoader.getAudio("WAV", ResourceLoader.getResourceAsStream("res/shothit.wav"));
 			soundDirtbreak = AudioLoader.getAudio("WAV", ResourceLoader.getResourceAsStream("res/dirtbreak2.wav"));
 			soundSqueak = AudioLoader.getAudio("WAV", ResourceLoader.getResourceAsStream("res/squeak.wav"));
+			*/
+			
+			soundManager = new SoundManager();
 		}
 		catch(IOException e)
 		{
@@ -575,7 +579,7 @@ public class LD29
 				//System.out.println(xv + " " + yv);
 				
 				newentities.add(new EntityBullet(player.xPos, player.yPos, xv, yv));
-				LD29.soundShoot.playAsSoundEffect((float)(Math.random() * 0.05) + 1f,  0.55f,  false);
+				SoundManager.getSound("shoot").playAsSoundEffect((float)(Math.random() * 0.05) + 1f,  0.55f,  false);
 			}
 			
 		}

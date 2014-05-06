@@ -3,13 +3,15 @@ package net.fybertech.ld29;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.util.vector.Vector2f;
 
-public class EntityBat extends Entity
+public class EntityBat extends EntityEnemy
 {
 	
 	int baseTile = tileNum = (3 * 32) + 2;
 	
 	public EntityBat(float xp, float yp)
 	{
+		super();
+		
 		noClipping = true;
 		xPos = xp;
 		yPos = yp;
@@ -17,6 +19,8 @@ public class EntityBat extends Entity
 		
 		width = 12;
 		height = 8;
+		
+		hitpoints = 1;
 	}
 	
 	
@@ -35,7 +39,7 @@ public class EntityBat extends Entity
 		if (frameTimer >= 0) tileNum = baseTile;
 		if (frameTimer >= 3) tileNum = baseTile + 1;
 		
-		Entity player = LD29.instance.player;
+		EntityPlayer player = LD29.instance.player;
 		
 		Vector2f dist = new Vector2f((xPos) - (LD29.instance.player.xPos), ((yPos) - LD29.instance.player.yPos));
 		float distfrom = (float)Math.sqrt(dist.x * dist.x + dist.y * dist.y);
@@ -46,7 +50,7 @@ public class EntityBat extends Entity
 			{ 
 				player.hitpoints--; 
 				player.hitCooldown = 40;
-				LD29.soundHead.playAsSoundEffect((float)(Math.random() * 0.25) + 1.5f,  0.75f,  false);
+				SoundManager.getSound("head").playAsSoundEffect((float)(Math.random() * 0.25) + 1.5f,  0.75f,  false);
 			}
 		}
 		else if (distfrom > 1200) this.destroyEntity = true;
@@ -64,6 +68,22 @@ public class EntityBat extends Entity
 		}
 		
 		
+	}
+	
+	
+	
+	@Override
+	public void onDeath()
+	{		
+		super.onDeath();
+		
+		SoundManager.getSound("squeak").playAsSoundEffect((float)(Math.random() * 0.50) + 1f,  0.75f,  false);
+		
+		ParticleBatCorpse corpse = new ParticleBatCorpse(xPos, yPos);				
+		corpse.yVel = -50 - (int)(Math.random() * 50);
+		corpse.xVel = (int)(Math.random() * 100) - 50;	
+		corpse.decay = 30;
+		LD29.instance.newentities.add(corpse);
 	}
 	
 	

@@ -54,7 +54,7 @@ public class EntityBullet extends Entity
 		{ 						
 			destroyEntity = true;
 			hitObject = true;
-			LD29.soundShothit.playAsSoundEffect((float)(Math.random() * 0.25) + 0.35f,  0.2f,  false);
+			SoundManager.getSound("shothit").playAsSoundEffect((float)(Math.random() * 0.25) + 0.35f,  0.2f,  false);
 			//System.out.println("HIT");
 			
 			//for (Vector2i v : intercepts)
@@ -98,7 +98,7 @@ public class EntityBullet extends Entity
 						if (damage > 3) 
 						{
 							grid.setTile(v.x,  v.y,  0);
-							LD29.soundDirtbreak.playAsSoundEffect((float)(Math.random() * 0.50) + 1f,  0.5f,  false);
+							SoundManager.getSound("dirtbreak").playAsSoundEffect((float)(Math.random() * 0.50) + 1f,  0.5f,  false);
 							
 							for (int n = 0; n < 8; n++)
 							{
@@ -124,21 +124,14 @@ public class EntityBullet extends Entity
 		// Check for entity collisions
 		for (Entity e : LD29.instance.entities)
 		{
-			if (!(e instanceof EntityBat)) continue;
+			if (!(e instanceof EntityEnemy)) continue;
 			float dx = (e.xPos) - (xPos);
 			float dy = (e.yPos) - (yPos);
 			float dist = (float)Math.sqrt(dx * dx + dy * dy);
 			if (dist < 32 && e.getBB().boxOverlaps(this.getBB()))
 			{
-				e.destroyEntity = true;
 				this.destroyEntity = true;
-				LD29.soundSqueak.playAsSoundEffect((float)(Math.random() * 0.50) + 1f,  0.75f,  false);
-				
-				ParticleBatCorpse corpse = new ParticleBatCorpse(e.xPos, e.yPos);				
-				corpse.yVel = -50 - (int)(Math.random() * 50);
-				corpse.xVel = (int)(Math.random() * 100) - 50;	
-				corpse.decay = 30;
-				LD29.instance.newentities.add(corpse);
+				((EntityEnemy)e).onHurt(1);
 			}
 		}
 				
@@ -153,7 +146,7 @@ public class EntityBullet extends Entity
 				if (bb.boxOverlaps(this.getBB()))
 				{			
 					LD29.gemTotal++;
-					LD29.soundGem.playAsSoundEffect((float) (Math.random() * 0.05) + 1f,  0.75f,  false);
+					SoundManager.getSound("gem").playAsSoundEffect((float) (Math.random() * 0.05) + 1f,  0.75f,  false);
 					grid.setTile(v.x, v.y, 0);					
 				}
 			}

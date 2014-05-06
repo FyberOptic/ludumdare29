@@ -2,11 +2,13 @@ package net.fybertech.ld29;
 
 import org.lwjgl.input.Keyboard;
 
-public class EntityPlayer extends Entity 
+public class EntityPlayer extends EntityLiving 
 {
 	
 	public EntityPlayer()
 	{
+		super();
+		
 		this.tileNum = 32;
 		
 		width = 8;
@@ -48,13 +50,13 @@ public class EntityPlayer extends Entity
 		
 		if (onGround && !lastGround)
 		{
-			if (lastyVel > 200) LD29.soundHead.playAsSoundEffect((float)(Math.random() * 0.25) + 0.5f,  0.35f,  false);
-			else LD29.soundLand.playAsSoundEffect((float)(Math.random() * 0.25) + 0.5f,  0.35f,  false);  
+			if (lastyVel > 200) SoundManager.getSound("head").playAsSoundEffect((float)(Math.random() * 0.25) + 0.5f,  0.35f,  false);
+			else SoundManager.getSound("land").playAsSoundEffect((float)(Math.random() * 0.25) + 0.5f,  0.35f,  false);  
 		}
 		
 		if (hitHead && !lastHead)
 		{
-			LD29.soundHead.playAsSoundEffect((float)(Math.random() * 0.25) + 0.5f,  0.45f,  false);
+			SoundManager.getSound("head").playAsSoundEffect((float)(Math.random() * 0.25) + 0.5f,  0.45f,  false);
 		}
 		
 		for (Vector2i v : intercepts)
@@ -66,7 +68,7 @@ public class EntityPlayer extends Entity
 				if (bb.boxOverlaps(this.getBB()))
 				{			
 					LD29.gemTotal++;
-					LD29.soundGem.playAsSoundEffect((float) (Math.random() * 0.05) + 1f,  0.75f,  false);
+					SoundManager.getSound("gem").playAsSoundEffect((float) (Math.random() * 0.05) + 1f,  0.75f,  false);
 					grid.setTile(v.x, v.y, 0);					
 				}
 			}
@@ -84,7 +86,7 @@ public class EntityPlayer extends Entity
 			LD29.instance.newentities.add(new ParticleThrust(xPos + (facing == 1 ? -1 : 0), yPos));			
 			float pitch = (float)(Math.random() * 0.20) + 1f;
 			pitch = 0.75f - (this.yVel / 2000) + (float)(Math.random() * 0.10);
-			LD29.soundThrust.playAsSoundEffect(pitch, 0.25f, false);
+			SoundManager.getSound("thrust").playAsSoundEffect(pitch, 0.25f, false);
 		}
 		
 		// FYBER: ADD BACK

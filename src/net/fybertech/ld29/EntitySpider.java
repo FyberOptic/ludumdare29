@@ -1,6 +1,6 @@
 package net.fybertech.ld29;
 
-public class EntitySpider extends Entity 
+public class EntitySpider extends EntityEnemy
 {
 
 	int frame = 0;
@@ -12,10 +12,14 @@ public class EntitySpider extends Entity
 	
 	public EntitySpider()
 	{
+		super();
+		
 		tileNum = baseTile;
 		xVel = walkspeed;
 		height = 8;
 		width = 14;
+		
+		hitpoints = 2;
 	}
 	
 	

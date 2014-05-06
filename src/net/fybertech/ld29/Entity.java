@@ -22,7 +22,7 @@ public class Entity
 	
 	int facing = 1;
 	
-	int hitpoints = 10;
+	
 	
 	//GridChunk gridChunk = LD29.instance.gridChunk;
 	Grid grid = LD29.instance.grid;
@@ -44,15 +44,12 @@ public class Entity
 	ArrayList<Vector2i> intercepts = new ArrayList<Vector2i>();
 	ArrayList<Vector2i> moveintercepts = new ArrayList<Vector2i>();
 	
+	
 	public Entity()
 	{		
-	}
+	}	
 	
-	public Entity(Grid g, int tn)
-	{
-		grid = g;
-		tileNum = tn;
-	}
+
 	
 	public void render()
 	{
