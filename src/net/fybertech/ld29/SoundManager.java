@@ -32,7 +32,8 @@ public class SoundManager
 		addSound("shothit", "res/shothit.wav");
 		addSound("dirtbreak", "res/dirtbreak2.wav");
 		addSound("squeak", "res/squeak.wav");
-		addSound("spiderhurt", "res/spider2.wav");
+		addSound("spiderdead", "res/spider2.wav");
+		addSound("spiderhurt", "res/spider8.wav");
 	}
 	
 	public void addSound(String id, String filename) throws IOException

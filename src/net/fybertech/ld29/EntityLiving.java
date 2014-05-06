@@ -22,8 +22,15 @@ public class EntityLiving extends Entity
 			hitCooldown = defaultCooldown;		
 			hitpoints -= amount;
 
-			Vector2f pc = e.getPositionRelatedTo(this);
-			int dir = (pc.x <= this.xPos ? 1 : -1);
+			int dir = 1;	
+			
+			if (e.xVel - xVel > 0) dir = 1;
+			else if (e.xVel - xVel < 0) dir = -1;
+			else
+			{
+				Vector2f pc = e.getPositionRelatedTo(this);
+				dir = (pc.x <= this.xPos ? 1 : -1);
+			}
 			xVel += 200 * dir;
 		}
 		

@@ -247,7 +247,7 @@ public class Entity
 				
 				float thisDelta = gridbb.xMin - bb.xMax;				
 				if (thisDelta < currentDelta) { currentDelta = thisDelta; closestXIntercept.clear(); addWithoutRepeat(closestXIntercept, v); }
-				if (thisDelta == currentDelta) { addWithoutRepeat(closestXIntercept, v); }
+				else if (thisDelta == currentDelta) { addWithoutRepeat(closestXIntercept, v); }
 			}
 			//return (currentDelta > 0 ? currentDelta : 0);
 			return currentDelta;
@@ -267,7 +267,7 @@ public class Entity
 				//thisDelta -= Math.ulp(thisDelta);
 				//thisDelta -= 0.00001f;
 				if (thisDelta > currentDelta) { currentDelta = thisDelta; closestXIntercept.clear(); addWithoutRepeat(closestXIntercept, v); }
-				if (thisDelta == currentDelta) { addWithoutRepeat(closestXIntercept, v); }
+				else if (thisDelta == currentDelta) { addWithoutRepeat(closestXIntercept, v); }
 			}
 			//System.out.println("DELTA2-END: " + currentDelta);
 			//return (currentDelta < 0 ? currentDelta : 0);
@@ -293,7 +293,7 @@ public class Entity
 				
 				float thisDelta = gridbb.yMin - bb.yMax;
 				if (thisDelta < currentDelta) { currentDelta = thisDelta; closestYIntercept.clear(); addWithoutRepeat(closestYIntercept, v); }
-				if (thisDelta == currentDelta) { addWithoutRepeat(closestYIntercept, v); }
+				else if (thisDelta == currentDelta) { addWithoutRepeat(closestYIntercept, v); }
 			}
 			//return (currentDelta > 0 ? currentDelta : 0);
 			return currentDelta;
@@ -310,7 +310,7 @@ public class Entity
 				
 				float thisDelta = gridbb.yMax - bb.yMin;
 				if (thisDelta > currentDelta) { currentDelta = thisDelta;  closestYIntercept.clear(); addWithoutRepeat(closestYIntercept, v); } 
-				if (thisDelta == currentDelta) { addWithoutRepeat(closestYIntercept, v); } 
+				else if (thisDelta == currentDelta) { addWithoutRepeat(closestYIntercept, v); } 
 			}
 			//return (currentDelta < 0 ? currentDelta : 0);
 			return currentDelta;

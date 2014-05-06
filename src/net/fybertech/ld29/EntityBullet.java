@@ -159,6 +159,7 @@ public class EntityBullet extends Entity
 						for (int px = 0; px < 4; px++)
 						{
 							ParticleExplodedDebris debris = new ParticleExplodedDebris(tile,(v.x * 16) + 8,(v.y * 16) + 8,px,py,4);
+							//debris.color.set(2,2,2);
 							LD29.instance.newentities.add(debris);
 						}
 					

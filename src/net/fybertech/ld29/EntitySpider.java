@@ -25,7 +25,7 @@ public class EntitySpider extends EntityEnemy
 		height = 8;
 		width = 14;
 		
-		hitpoints = 10;
+		hitpoints = 3;
 	}
 	
 	
@@ -34,7 +34,7 @@ public class EntitySpider extends EntityEnemy
 	{
 		float delta = deltaTime / 1000.0f;
 		
-		float tempX = xVel;
+		//float tempX = xVel;
 		if (yVel != 0) xVel = 0;
 		
 		yVel += 300 * delta;
@@ -55,9 +55,9 @@ public class EntitySpider extends EntityEnemy
 		}
 		
 		super.update(deltaTime);
-		xVel = tempX;
+		//xVel = tempX;
 		
-		if (this.xCollide) walking = -walking; 
+		if (this.xCollide) { xVel = 0; walking = -walking;  } 
 	}
 	
 	@Override
@@ -117,7 +117,15 @@ public class EntitySpider extends EntityEnemy
 	{
 		super.onHurt(e, amount);
 		
-		if (hitCooldown == defaultCooldown) SoundManager.getSound("spiderhurt").playAsSoundEffect((float)(Math.random() * 0.50) + 1f,  0.5f,  false);
+		if (hitCooldown == defaultCooldown && hitpoints > 0) SoundManager.getSound("spiderhurt").playAsSoundEffect((float)(Math.random() * 0.75) + 1f,  0.75f,  false);
+	}
+	
+	@Override
+	public void onDeath()
+	{
+		super.onDeath();
+		
+		SoundManager.getSound("spiderdead").playAsSoundEffect((float)(Math.random() * 0.30) + 1f,  0.4f,  false);
 	}
 	
 }

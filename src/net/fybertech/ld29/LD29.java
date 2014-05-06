@@ -317,7 +317,7 @@ public class LD29
 				if (activeGUI == null)
 				{
 					if (getBatCount() < 20) addBat();
-					if (getSpiderCount() < 20) addSpider();
+					if (getSpiderCount() < 40) addSpider();
 					for (Iterator<Entity> iterator = entities.iterator(); iterator.hasNext();) 
 					{
 						Entity e = iterator.next();
@@ -494,6 +494,7 @@ public class LD29
 
 				if (Keyboard.getEventKey() == Keyboard.KEY_BACK) debugMode = !debugMode;
 				if (Keyboard.getEventKey() == Keyboard.KEY_N) player.noClipping = !player.noClipping;
+				if (Keyboard.getEventKey() == Keyboard.KEY_INSERT) player.hitpoints++;
 				if (Keyboard.getEventKey() == Keyboard.KEY_DELETE) player.hitpoints--;
 				
 			}
