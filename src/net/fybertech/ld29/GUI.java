@@ -34,6 +34,11 @@ public class GUI
 		
 	}
 	
+	public void onKeyboard(int key, boolean keydown)
+	{
+		
+	}
+	
 	public boolean isCoordInside(float x, float y)
 	{
 		if (x >= xPos && x < xPos + width && y >= yPos && y < yPos + height) return true;

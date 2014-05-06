@@ -31,9 +31,11 @@ public class GridChunk
 	
 	int textureID = -1;
 	
-	public GridChunk(Grid g)
+	public GridChunk(Grid g, int x, int y)
 	{
 		grid = g;
+		gridX = x;
+		gridY = y;
 		
 		tiles = new byte[Grid.CHUNKWIDTH*Grid.CHUNKHEIGHT];
 		data = new byte[Grid.CHUNKWIDTH*Grid.CHUNKHEIGHT];
@@ -333,12 +335,18 @@ public class GridChunk
 		if (LD29.debugMode) 
 		{
 			GL11.glPushAttrib(GL11.GL_CURRENT_BIT);
-			GL11.glColor3f(0,1,0);
+			GL11.glColor3f(0,1,0);			
+			
+			GL11.glLineWidth(2);
 			GL11.glPolygonMode( GL11.GL_FRONT_AND_BACK, GL11.GL_LINE);
 			GL11.glBegin(GL11.GL_QUADS);			
+			if (gridX == 0 || gridY == 0) GL11.glColor3f(1,0,0); else GL11.glColor3f(0,1,0);
 			GL11.glVertex2f(0, 0);
+			if (gridX == Grid.GRIDWIDTH - 1 || gridY == 0) GL11.glColor3f(1,0,0); else GL11.glColor3f(0,1,0);
 			GL11.glVertex2f(256, 0);
+			if (gridX == Grid.GRIDWIDTH - 1 || gridY == Grid.GRIDHEIGHT - 1) GL11.glColor3f(1,0,0); else GL11.glColor3f(0,1,0);
 			GL11.glVertex2f(256, 256);
+			if (gridX == 0 || gridY == Grid.GRIDHEIGHT - 1) GL11.glColor3f(1,0,0); else GL11.glColor3f(0,1,0);
 			GL11.glVertex2f(0, 256);		
 			GL11.glEnd();		
 			GL11.glPolygonMode( GL11.GL_FRONT_AND_BACK, GL11.GL_FILL);

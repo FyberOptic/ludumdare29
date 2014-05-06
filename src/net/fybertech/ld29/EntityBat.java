@@ -41,17 +41,14 @@ public class EntityBat extends EntityEnemy
 		
 		EntityPlayer player = LD29.instance.player;
 		
-		Vector2f dist = new Vector2f((xPos) - (LD29.instance.player.xPos), ((yPos) - LD29.instance.player.yPos));
-		float distfrom = (float)Math.sqrt(dist.x * dist.x + dist.y * dist.y);
+		Vector2f pc = player.getPositionRelatedTo(this);		
 		
-		if (distfrom < 8)
+		Vector2f dist = new Vector2f((xPos) - (pc.x), ((yPos) - pc.y));
+		float distfrom = (float)Math.sqrt(dist.x * dist.x + dist.y * dist.y);		
+				
+		if (distfrom <= 32 && player.getBBRelatedTo(this).boxOverlaps(this.getBB()))
 		{
-			if (player.hitCooldown == 0) 
-			{ 
-				player.hitpoints--; 
-				player.hitCooldown = 40;
-				SoundManager.getSound("head").playAsSoundEffect((float)(Math.random() * 0.25) + 1.5f,  0.75f,  false);
-			}
+			player.onHurt(this,  1);			
 		}
 		else if (distfrom > 1200) this.destroyEntity = true;
 		

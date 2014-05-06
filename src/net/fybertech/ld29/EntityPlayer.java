@@ -5,7 +5,9 @@ import org.lwjgl.input.Keyboard;
 public class EntityPlayer extends EntityLiving 
 {
 	
-	boolean isThrusting = false;
+	public boolean isThrusting = false;
+	public int hitCooldown = 0;
+	
 	
 	public EntityPlayer()
 	{
@@ -83,9 +85,14 @@ public class EntityPlayer extends EntityLiving
 	{
 		super.tick();
 		
+		hitCooldown--;
+		if (hitCooldown < 0) hitCooldown = 0;	
+
+		
 		//if (!jumping && Keyboard.isKeyDown(Keyboard.KEY_SPACE))
 		if (isThrusting)
 		{
+			tileNum = 33;
 			LD29.instance.newentities.add(new ParticleThrust(xPos + (facing == 1 ? -1 : 0), yPos));			
 			float pitch = (float)(Math.random() * 0.20) + 1f;
 			pitch = 0.75f - (this.yVel / 2000) + (float)(Math.random() * 0.10);
@@ -100,7 +107,7 @@ public class EntityPlayer extends EntityLiving
 		if (xVel < 0) facing = -1;
 		
 		if (xVel != 0) animating = true; else animating = false;
-		if (animating) frameTimer++;
+		if (animating && !isThrusting) frameTimer++;
 		if (frameTimer > 2)
 		{
 			tileNum++;
@@ -110,4 +117,22 @@ public class EntityPlayer extends EntityLiving
 		}
 	}
 
+	
+	@Override
+	public void onHurt(Entity e, int damage)
+	{
+		if (hitCooldown == 0) 
+		{ 
+			hitCooldown = 40;		
+			super.onHurt(e,  damage);				
+			SoundManager.getSound("head").playAsSoundEffect((float)(Math.random() * 0.25) + 1.5f,  0.75f,  false);
+		}
+	}
+	
+	@Override
+	public void onDeath()
+	{		
+		System.out.println("DEAD");
+	}
+	
 }

@@ -290,7 +290,6 @@ public class LD29
 		int ticks = 0;
 		int fps = 0;
 		
-		entities.add(new EntitySpider());
 		
 		System.out.println("Starting game loop");
 		
@@ -318,6 +317,7 @@ public class LD29
 				if (activeGUI == null)
 				{
 					if (getBatCount() < 20) addBat();
+					if (getSpiderCount() < 20) addSpider();
 					for (Iterator<Entity> iterator = entities.iterator(); iterator.hasNext();) 
 					{
 						Entity e = iterator.next();
@@ -326,6 +326,21 @@ public class LD29
 					}
 					entities.addAll(newentities);
 					newentities.clear();
+					
+					int gridWidth = Grid.TILEGRIDWIDTH * 16;
+					int gridHeight = Grid.TILEGRIDHEIGHT * 16;
+					for (Entity e : entities)
+					{
+						if (e instanceof Particle) continue;
+						
+						float halfwidth = e.width / 2.0f;
+						float halfheight = e.height / 2.0f;
+						while (e.xPos - halfwidth >= gridWidth) e.xPos -= gridWidth;
+						while (e.xPos + halfwidth < 0) e.xPos += gridWidth;
+						while (e.yPos - halfheight >= gridHeight) e.yPos -= gridHeight;
+						while (e.yPos + halfheight < 0) e.yPos += gridHeight;
+
+					}
 				}
 				else activeGUI.tick();				
 			}
@@ -419,6 +434,36 @@ public class LD29
 	}
 	
 	
+	
+	
+	public void addSpider()
+	{		
+		float spiderX = 0;
+		float spiderY = 0;
+		
+		while (true)
+		{
+			int x = (int)(Math.random() * Grid.TILEGRIDWIDTH);
+			int y = (int)(Math.random() * Grid.TILEGRIDHEIGHT);
+			
+			int tileBelow = grid.getTile(x, y+1);
+			if (grid.getTile(x,  y) == 0 && tileBelow > 0 && tileBelow < 32) { spiderX = x; spiderY = y; break; }
+		}	
+		
+		entities.add(new EntitySpider(spiderX * 16, spiderY * 16));
+	}
+	
+	
+	
+	
+	public int getSpiderCount()
+	{
+		int count = 0;
+		for (Entity e : entities) if (e instanceof EntitySpider) count++;
+		return count;
+	}
+	
+	
 	/**
 	 * 
 	 * @param deltaTime
@@ -427,8 +472,11 @@ public class LD29
 	{
 		// Handle keyboard
 		
+		boolean openedGUI = false;
+		
 		while (Keyboard.next())
-		{			
+		{				
+			
 			if (Keyboard.getEventKeyState()) 
 			{ 
 				keypressStart[Keyboard.getEventKey()] = getTime();
@@ -436,77 +484,68 @@ public class LD29
 				if (Keyboard.getEventKey() == Keyboard.KEY_ADD) this.userScale *= 2.0f;
 				if (Keyboard.getEventKey() == Keyboard.KEY_SUBTRACT) this.userScale /= 2.0f; 
 				
-				if (Keyboard.getEventKey() == Keyboard.KEY_ESCAPE) 
+				if (Keyboard.getEventKey() == Keyboard.KEY_ESCAPE && activeGUI == null) 
 				{
-					/*if (isScreenGrabbed)
-					{
-						isScreenGrabbed = false;
-						Mouse.setGrabbed(false);
-					}
-					else this.gameRunning = false;*/
-					
-					if (activeGUI != null)
-					{
-						activeGUI = null;
-						Mouse.setGrabbed(true);
-						isScreenGrabbed = true;
-					}
-					else
-					{
-						Mouse.setGrabbed(false);
-						isScreenGrabbed = false;
-						activeGUI = new GUIEscapeMenu();
-					}
-				}
+					Mouse.setGrabbed(false);
+					isScreenGrabbed = false;
+					activeGUI = new GUIEscapeMenu(null);
+					openedGUI = true;
+				}				
 
 				if (Keyboard.getEventKey() == Keyboard.KEY_BACK) debugMode = !debugMode;
 				if (Keyboard.getEventKey() == Keyboard.KEY_N) player.noClipping = !player.noClipping;
+				if (Keyboard.getEventKey() == Keyboard.KEY_DELETE) player.hitpoints--;
 				
 			}
+			
+			if (activeGUI != null && !openedGUI) activeGUI.onKeyboard(Keyboard.getEventKey(), Keyboard.getEventKeyState());
 			
 		}
 		
 		//if (Keyboard.getEventKey() == Keyboard.KEY_SPACE)
-		if (Keyboard.isKeyDown(Keyboard.KEY_SPACE))
+		if (activeGUI == null)
 		{
-			if (player.onGround && !player.isThrusting) { player.yVel = -100; player.jumping = true; player.jumpcounter = 0;  }
-			//else if (!player.jumping) { player.jumping = true; player.jumpcounter = 500; }
-			else if (player.jumping) 
-			{ 				
-				//int delta = deltaTime;
-				player.jumpcounter += deltaTime;
-				//if (player.jumpcounter < 500) player.yVel -= 300 * (delta / 1000.0f);
-				//if (player.jumpcounter > 500) player.jumping = false;
+			if (Keyboard.isKeyDown(Keyboard.KEY_SPACE) && player.hitCooldown < 35)
+			{
+				if (player.onGround && !player.isThrusting) { player.yVel = -100; player.jumping = true; player.jumpcounter = 0;  }
+				//else if (!player.jumping) { player.jumping = true; player.jumpcounter = 500; }
+				else if (player.jumping) 
+				{ 				
+					//int delta = deltaTime;
+					player.jumpcounter += deltaTime;
+					//if (player.jumpcounter < 500) player.yVel -= 300 * (delta / 1000.0f);
+					//if (player.jumpcounter > 500) player.jumping = false;
+				}
+				else player.isThrusting = true;
+				
 			}
-			else player.isThrusting = true;
+			else { player.jumping = false; player.isThrusting = false; }
+		
+			float scrollamount = (deltaTime / 1000.0f) * 150;
 			
+			//if (Keyboard.isKeyDown(Keyboard.KEY_NUMPAD4)) scrollX -= scrollamount; 
+			//if (Keyboard.isKeyDown(Keyboard.KEY_NUMPAD6)) scrollX += scrollamount;
+			//if (Keyboard.isKeyDown(Keyboard.KEY_NUMPAD8)) scrollY -= scrollamount;
+			//if (Keyboard.isKeyDown(Keyboard.KEY_NUMPAD2)) scrollY += scrollamount;
+			
+			float moveamount = (deltaTime / 1000.0f) * 10;
+			//if (Keyboard.isKeyDown(Keyboard.KEY_LEFT)) player.xPos -= moveamount; 
+			//if (Keyboard.isKeyDown(Keyboard.KEY_RIGHT)) player.xPos += moveamount;
+			//if (Keyboard.isKeyDown(Keyboard.KEY_UP)) {player.yVel = 0; player.yPos -= moveamount; }
+			//if (Keyboard.isKeyDown(Keyboard.KEY_DOWN)) { player.yVel = 0; player.yPos += moveamount; }
+			if (Keyboard.isKeyDown(Keyboard.KEY_LEFT)) player.xVel -= moveamount; 
+			if (Keyboard.isKeyDown(Keyboard.KEY_RIGHT)) player.xVel += moveamount;
+			if (Keyboard.isKeyDown(Keyboard.KEY_UP)) player.yVel -= moveamount;;
+			if (Keyboard.isKeyDown(Keyboard.KEY_DOWN)) player.yVel += moveamount;
+	
+			
+			float playervel = 50;
+			if (Keyboard.isKeyDown(Keyboard.KEY_A) && player.hitCooldown < 35) player.xVel = -playervel; 
+			if (Keyboard.isKeyDown(Keyboard.KEY_D) && player.hitCooldown < 35) player.xVel = playervel;
+			
+			if (Keyboard.isKeyDown(Keyboard.KEY_A) && Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) player.xVel = -playervel * 2; 
+			if (Keyboard.isKeyDown(Keyboard.KEY_D) && Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) player.xVel = playervel * 2;
 		}
-		else { player.jumping = false; player.isThrusting = false; }
-		
-		float scrollamount = (deltaTime / 1000.0f) * 150;
-		
-		//if (Keyboard.isKeyDown(Keyboard.KEY_NUMPAD4)) scrollX -= scrollamount; 
-		//if (Keyboard.isKeyDown(Keyboard.KEY_NUMPAD6)) scrollX += scrollamount;
-		//if (Keyboard.isKeyDown(Keyboard.KEY_NUMPAD8)) scrollY -= scrollamount;
-		//if (Keyboard.isKeyDown(Keyboard.KEY_NUMPAD2)) scrollY += scrollamount;
-		
-		float moveamount = (deltaTime / 1000.0f) * 10;
-		//if (Keyboard.isKeyDown(Keyboard.KEY_LEFT)) player.xPos -= moveamount; 
-		//if (Keyboard.isKeyDown(Keyboard.KEY_RIGHT)) player.xPos += moveamount;
-		//if (Keyboard.isKeyDown(Keyboard.KEY_UP)) {player.yVel = 0; player.yPos -= moveamount; }
-		//if (Keyboard.isKeyDown(Keyboard.KEY_DOWN)) { player.yVel = 0; player.yPos += moveamount; }
-		if (Keyboard.isKeyDown(Keyboard.KEY_LEFT)) player.xVel -= moveamount; 
-		if (Keyboard.isKeyDown(Keyboard.KEY_RIGHT)) player.xVel += moveamount;
-		if (Keyboard.isKeyDown(Keyboard.KEY_UP)) player.yVel -= moveamount;;
-		if (Keyboard.isKeyDown(Keyboard.KEY_DOWN)) player.yVel += moveamount;
-
-		
-		float playervel = 50;
-		if (Keyboard.isKeyDown(Keyboard.KEY_A)) player.xVel = -playervel; 
-		if (Keyboard.isKeyDown(Keyboard.KEY_D)) player.xVel = playervel;
-		
-		if (Keyboard.isKeyDown(Keyboard.KEY_A) && Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) player.xVel = -playervel * 2; 
-		if (Keyboard.isKeyDown(Keyboard.KEY_D) && Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) player.xVel = playervel * 2;	
 
 		
 		//if (Keyboard.isKeyDown(Keyboard.KEY_W)) player.yVel = -playervel; 
@@ -518,7 +557,7 @@ public class LD29
 		
 		if (Keyboard.isKeyDown(Keyboard.KEY_TAB)) 
 		{ 
-//			scrollX += (Math.random() * 8) - 4; 
+			//scrollX += (Math.random() * 8) - 4; 
 			//scrollY += (Math.random() * 8) - 4;
 		} 
 		
@@ -724,11 +763,27 @@ public class LD29
 		for (Entity e : entities) 
 		{ 
 			if (e == player) continue;
+			
+			float translateX = 0;
+			float translateY = 0;
+			
+			float dx = e.xPos - player.xPos;
+			float dy = e.yPos - player.yPos;
+			
+			if (dx > Grid.TILEGRIDWIDTH * 8) translateX = -Grid.TILEGRIDWIDTH * 16; 
+			else if (dx < -Grid.TILEGRIDWIDTH * 8) translateX = Grid.TILEGRIDWIDTH * 16;
+			if (dy > Grid.TILEGRIDHEIGHT * 8) translateY = -Grid.TILEGRIDHEIGHT * 16; 
+			else if (dy < -Grid.TILEGRIDHEIGHT * 8) translateY = Grid.TILEGRIDHEIGHT * 16;
+			
+			GL11.glTranslatef(translateX,  translateY,  0);
+			
 			if (e instanceof ParticleThrust) e.render();
 			else e.renderWithBorder();
+			
+			GL11.glTranslatef(-translateX,  -translateY,  0);
 		}		
 	
-		player.renderWithBorder();
+		if (player.hitCooldown == 0 || (player.hitCooldown & 1) > 0) player.renderWithBorder();
 		
 		//if (true) return;
 		
@@ -800,6 +855,12 @@ public class LD29
 		//GL11.glLoadIdentity();
 		//GL11.glScalef(((float)displayScale * 2), ((float) displayScale * 2), 1);
 		pixelFont.putStringWithBorder("" + gemTotal, 14,  21);
+		
+		
+		if (player.hitpoints <= 0 && activeGUI == null)
+		{
+			activeGUI = new GUIGameOver(null);
+		}
 		
 		
 		GL11.glLoadIdentity();

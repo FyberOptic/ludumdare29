@@ -1,5 +1,7 @@
 package net.fybertech.ld29;
 
+import org.lwjgl.util.vector.Vector2f;
+
 public class EntityLiving extends Entity 
 {
 	
@@ -11,9 +13,14 @@ public class EntityLiving extends Entity
 	}
 	
 	
-	public void onHurt(int amount)
+	public void onHurt(Entity e, int amount)
 	{
 		hitpoints -= amount;
+
+		Vector2f pc = e.getPositionRelatedTo(this);
+		int dir = (pc.x <= this.xPos ? 1 : -1);
+		xVel += 200 * dir;
+		
 		if (hitpoints <= 0) onDeath();
 	}
 	

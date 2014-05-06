@@ -1,5 +1,7 @@
 package net.fybertech.ld29;
 
+import org.lwjgl.util.vector.Vector2f;
+
 public class EntitySpider extends EntityEnemy
 {
 
@@ -9,17 +11,21 @@ public class EntitySpider extends EntityEnemy
 	
 	int walktimer = 0;
 	int walkspeed = 12;
+	int walking = 0;
 	
-	public EntitySpider()
+	public EntitySpider(float x, float y)
 	{
 		super();
+		
+		xPos = x;
+		yPos = y;
 		
 		tileNum = baseTile;
 		xVel = walkspeed;
 		height = 8;
 		width = 14;
 		
-		hitpoints = 2;
+		hitpoints = 10;
 	}
 	
 	
@@ -51,14 +57,35 @@ public class EntitySpider extends EntityEnemy
 		super.update(deltaTime);
 		xVel = tempX;
 		
-		if (this.xCollide) xVel = -xVel; 
+		if (this.xCollide) walking = -walking; 
 	}
 	
 	@Override
 	public void tick()
 	{
 		walktimer++;
-		if (walktimer > (Math.random() * 40) + 80) { if (xVel != 0) { xVel = 0; frame = 0; } else { xVel = walkspeed; if (Math.random() > 0.5) xVel = -xVel; } walktimer = 0; }  
+		if (walktimer > (Math.random() * 40) + 80) 
+		{ 
+			if (walking != 0) 
+			{ 
+				walking = 0;
+				//xVel = 0; 
+				//frame = 0; 
+			}
+			else 
+			{ 
+				if (Math.random() > 0.5) walking = 1; else walking = -1; 
+			} 
+			walktimer = 0; 
+		}
+		
+		if (walking == 0) frame = 0;
+		
+		xVel *= 0.5;
+		if (xVel < 0.5f && xVel > -0.5f) xVel = 0;
+		
+		if (walking == 1 && xVel < 10 && xVel >= 0) xVel = 10;
+		if (walking == -1 && xVel > -10 && xVel <= 0) xVel = -10;
 		
 		if (xVel != 0) frameCount++;
 		if (frameCount > 2) { if (xVel >= 0) frame++; else frame--; frameCount = 0; } 
@@ -67,13 +94,26 @@ public class EntitySpider extends EntityEnemy
 		if (frame < 0) frame = 2;
 		
 		tileNum = baseTile + frame;
+		
+		
+		EntityPlayer player = LD29.instance.player;
+		Vector2f pc = player.getPositionRelatedTo(this);		
+		
+		Vector2f dist = new Vector2f((xPos) - (pc.x), ((yPos) - pc.y));
+		float distfrom = (float)Math.sqrt(dist.x * dist.x + dist.y * dist.y);		
+				
+		if (distfrom <= 32 && player.getBBRelatedTo(this).boxOverlaps(this.getBB()))
+		{
+			player.onHurt(this,  1);			
+		}	
+		
 	}
 	
 	
 	@Override
-	public void onHurt(int amount)
+	public void onHurt(Entity e, int amount)
 	{
-		super.onHurt(amount);
+		super.onHurt(e, amount);
 		
 		SoundManager.getSound("spiderhurt").playAsSoundEffect((float)(Math.random() * 0.50) + 1f,  0.5f,  false);
 	}

@@ -16,8 +16,7 @@ public class Entity
 	float xVel;
 	float yVel;
 	
-	int hitCooldown = 0;
-	
+
 	int tileNum;
 	
 	int facing = 1;
@@ -49,6 +48,35 @@ public class Entity
 	{		
 	}	
 	
+	
+	public Entity setPosition(float x, float y)
+	{
+		xPos = x; 
+		yPos = y;
+		return this;
+	}
+	
+	public Vector2f getPositionRelatedTo(Entity e)
+	{
+		float translateX = 0;
+		float translateY = 0;
+		
+		float dx = this.xPos - e.xPos;
+		float dy = this.yPos - e.yPos;
+		
+		if (dx > Grid.TILEGRIDWIDTH * 8) translateX = -Grid.TILEGRIDWIDTH * 16; 
+		else if (dx < -Grid.TILEGRIDWIDTH * 8) translateX = Grid.TILEGRIDWIDTH * 16;
+		if (dy > Grid.TILEGRIDHEIGHT * 8) translateY = -Grid.TILEGRIDHEIGHT * 16; 
+		else if (dy < -Grid.TILEGRIDHEIGHT * 8) translateY = Grid.TILEGRIDHEIGHT * 16;
+		
+		return new Vector2f(this.xPos + translateX, this.yPos + translateY);
+	}
+	
+	public BoundingBox getBBRelatedTo(Entity e)
+	{
+		Vector2f v = getPositionRelatedTo(e);
+		return new BoundingBox(v.x - (width / 2.0f), v.y - (height / 2.0f), v.x + (width / 2.0f), v.y + (height / 2.0f));
+	}
 
 	
 	public void render()
@@ -416,14 +444,8 @@ public class Entity
 	
 	public void tick()
 	{
-		hitCooldown--;
-		if (hitCooldown < 0) hitCooldown = 0;
-		
-
 		
 		
-		//if (!animating) tileNum = 32;
-		
-		
+		//if (!animating) tileNum = 32;		
 	}
 }

@@ -131,7 +131,7 @@ public class EntityBullet extends Entity
 			if (dist < 32 && e.getBB().boxOverlaps(this.getBB()))
 			{
 				this.destroyEntity = true;
-				((EntityEnemy)e).onHurt(1);
+				((EntityEnemy)e).onHurt(this, 1);
 			}
 		}
 				
