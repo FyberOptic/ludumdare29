@@ -100,14 +100,20 @@ public class EntityBullet extends Entity
 							grid.setTile(v.x,  v.y,  0);
 							SoundManager.getSound("dirtbreak").playAsSoundEffect((float)(Math.random() * 0.50) + 1f,  0.5f,  false);
 							
-							for (int n = 0; n < 8; n++)
+							//for (int n = 0; n < 4; n++)
 							{
-								ParticleDebris debris = new ParticleDebris(17, 30);
-								debris.xPos = v.x * 16 ;
-								debris.yPos = v.y * 16 ;							
-								debris.yVel = -50 - (int)(Math.random() * 50);
-								debris.xVel = (int)(Math.random() * 100) - 50;							
-								LD29.instance.newentities.add(debris);
+								//ParticleDebris debris = new ParticleDebris(17, 30);
+								//debris.xPos = (v.x * 16) + 8 ;
+								//debris.yPos = (v.y * 16) + 8 ;						
+
+								for (int py = 0; py < 3; py++)
+									for (int px = 0; px < 3; px++)
+									{
+										ParticleExplodedDebris debris = new ParticleExplodedDebris(tile,(v.x * 16) + 8,(v.y * 16) + 8,px,py,6);
+										LD29.instance.newentities.add(debris);
+									}
+													
+								
 							}
 						}
 						

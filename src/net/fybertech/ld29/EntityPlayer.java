@@ -6,7 +6,7 @@ public class EntityPlayer extends EntityLiving
 {
 	
 	public boolean isThrusting = false;
-	public int hitCooldown = 0;
+	
 	
 	
 	public EntityPlayer()
@@ -17,6 +17,7 @@ public class EntityPlayer extends EntityLiving
 		
 		width = 8;
 		height = 15.5f;
+		defaultCooldown = 40;
 	}
 	
 	
@@ -85,8 +86,7 @@ public class EntityPlayer extends EntityLiving
 	{
 		super.tick();
 		
-		hitCooldown--;
-		if (hitCooldown < 0) hitCooldown = 0;	
+		
 
 		
 		//if (!jumping && Keyboard.isKeyDown(Keyboard.KEY_SPACE))
@@ -121,12 +121,8 @@ public class EntityPlayer extends EntityLiving
 	@Override
 	public void onHurt(Entity e, int damage)
 	{
-		if (hitCooldown == 0) 
-		{ 
-			hitCooldown = 40;		
-			super.onHurt(e,  damage);				
-			SoundManager.getSound("head").playAsSoundEffect((float)(Math.random() * 0.25) + 1.5f,  0.75f,  false);
-		}
+		super.onHurt(e,  damage);				
+		if (hitCooldown == defaultCooldown) SoundManager.getSound("head").playAsSoundEffect((float)(Math.random() * 0.25) + 1.5f,  0.75f,  false);
 	}
 	
 	@Override

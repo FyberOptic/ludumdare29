@@ -555,11 +555,11 @@ public class LD29
 		//scrollX = 160 + -player.xPos - 8;
 		//scrollY = 120 + -player.yPos - 8;
 		
-		if (Keyboard.isKeyDown(Keyboard.KEY_TAB)) 
-		{ 
+		//if (Keyboard.isKeyDown(Keyboard.KEY_TAB)) 
+		//{ 
 			//scrollX += (Math.random() * 8) - 4; 
 			//scrollY += (Math.random() * 8) - 4;
-		} 
+		//} 
 		
 		
 				
@@ -763,6 +763,8 @@ public class LD29
 		for (Entity e : entities) 
 		{ 
 			if (e == player) continue;
+			
+			if (e instanceof EntityLiving && (((EntityLiving)e).hitCooldown & 1) != 0) continue;
 			
 			float translateX = 0;
 			float translateY = 0;

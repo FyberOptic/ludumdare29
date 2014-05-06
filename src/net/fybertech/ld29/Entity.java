@@ -21,7 +21,7 @@ public class Entity
 	
 	int facing = 1;
 	
-	
+	boolean renderingBorder = false;
 	
 	//GridChunk gridChunk = LD29.instance.gridChunk;
 	Grid grid = LD29.instance.grid;
@@ -182,6 +182,7 @@ public class Entity
 	{
 		if (!LD29.debugMode)
 		{
+			renderingBorder = true;
 			GL11.glPushAttrib(GL11.GL_CURRENT_BIT);
 			GL11.glColor3f(0,0,0);
 			for (int n = 0; n < 4; n++)
@@ -198,6 +199,7 @@ public class Entity
 				GL11.glPopMatrix();
 			}
 			GL11.glPopAttrib();
+			renderingBorder = false;
 		}		
 				
 		render(); 

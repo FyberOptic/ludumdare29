@@ -6,6 +6,8 @@ public class EntityLiving extends Entity
 {
 	
 	int hitpoints = 10;
+	public int hitCooldown = 0;
+	public int defaultCooldown = 10;
 	
 	public EntityLiving()
 	{
@@ -15,11 +17,15 @@ public class EntityLiving extends Entity
 	
 	public void onHurt(Entity e, int amount)
 	{
-		hitpoints -= amount;
+		if (hitCooldown == 0) 
+		{ 
+			hitCooldown = defaultCooldown;		
+			hitpoints -= amount;
 
-		Vector2f pc = e.getPositionRelatedTo(this);
-		int dir = (pc.x <= this.xPos ? 1 : -1);
-		xVel += 200 * dir;
+			Vector2f pc = e.getPositionRelatedTo(this);
+			int dir = (pc.x <= this.xPos ? 1 : -1);
+			xVel += 200 * dir;
+		}
 		
 		if (hitpoints <= 0) onDeath();
 	}
@@ -29,5 +35,14 @@ public class EntityLiving extends Entity
 		this.destroyEntity = true;
 	}
 	
+	
+	@Override
+	public void tick()
+	{
+		super.tick();
+		
+		hitCooldown--;
+		if (hitCooldown < 0) hitCooldown = 0;	
+	}
 	
 }

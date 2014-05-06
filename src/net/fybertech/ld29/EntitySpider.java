@@ -63,6 +63,8 @@ public class EntitySpider extends EntityEnemy
 	@Override
 	public void tick()
 	{
+		super.tick();
+		
 		walktimer++;
 		if (walktimer > (Math.random() * 40) + 80) 
 		{ 
@@ -115,7 +117,7 @@ public class EntitySpider extends EntityEnemy
 	{
 		super.onHurt(e, amount);
 		
-		SoundManager.getSound("spiderhurt").playAsSoundEffect((float)(Math.random() * 0.50) + 1f,  0.5f,  false);
+		if (hitCooldown == defaultCooldown) SoundManager.getSound("spiderhurt").playAsSoundEffect((float)(Math.random() * 0.50) + 1f,  0.5f,  false);
 	}
 	
 }
