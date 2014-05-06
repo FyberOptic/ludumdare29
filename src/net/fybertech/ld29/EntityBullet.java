@@ -100,20 +100,20 @@ public class EntityBullet extends Entity
 							grid.setTile(v.x,  v.y,  0);
 							SoundManager.getSound("dirtbreak").playAsSoundEffect((float)(Math.random() * 0.50) + 1f,  0.5f,  false);
 							
-							//for (int n = 0; n < 4; n++)
+//							for (int n = 0; n < 4; n++)
+//							{
+//								ParticleDebris debris = new ParticleDebris(17, 30);
+//								debris.xPos = (v.x * 16) + 8 ;
+//								debris.yPos = (v.y * 16) + 8 ;														
+//								LD29.instance.newentities.add(debris);
+//							}
+							
+							for (int py = 0; py < 2; py++)
+							for (int px = 0; px < 2; px++)
 							{
-								//ParticleDebris debris = new ParticleDebris(17, 30);
-								//debris.xPos = (v.x * 16) + 8 ;
-								//debris.yPos = (v.y * 16) + 8 ;						
-
-								for (int py = 0; py < 3; py++)
-									for (int px = 0; px < 3; px++)
-									{
-										ParticleExplodedDebris debris = new ParticleExplodedDebris(tile,(v.x * 16) + 8,(v.y * 16) + 8,px,py,6);
-										LD29.instance.newentities.add(debris);
-									}
-													
-								
+								ParticleExplodedDebris debris = new ParticleExplodedDebris(tile,(v.x * 16) + 8,(v.y * 16) + 8,px,py,8);
+								debris.color.set(0.75f, 0.75f, 0.75f);
+								LD29.instance.newentities.add(debris);
 							}
 						}
 						
@@ -151,9 +151,18 @@ public class EntityBullet extends Entity
 				BoundingBox bb = bbFromGridPos(v.x, v.y).expand(-8, -8);
 				if (bb.boxOverlaps(this.getBB()))
 				{			
-					LD29.gemTotal++;
+					//LD29.gemTotal++;
 					SoundManager.getSound("gem").playAsSoundEffect((float) (Math.random() * 0.05) + 1f,  0.75f,  false);
-					grid.setTile(v.x, v.y, 0);					
+					grid.setTile(v.x, v.y, 0);
+					
+					for (int py = 0; py < 4; py++)
+						for (int px = 0; px < 4; px++)
+						{
+							ParticleExplodedDebris debris = new ParticleExplodedDebris(tile,(v.x * 16) + 8,(v.y * 16) + 8,px,py,4);
+							LD29.instance.newentities.add(debris);
+						}
+					
+					this.destroyEntity = true;
 				}
 			}
 		}

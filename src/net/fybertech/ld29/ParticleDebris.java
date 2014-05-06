@@ -1,11 +1,13 @@
 package net.fybertech.ld29;
 
 import org.lwjgl.opengl.GL11;
+import org.lwjgl.util.vector.Vector3f;
 
 public class ParticleDebris extends Particle 
 {
 
 	BoundingBox uv = new BoundingBox();
+	Vector3f color = new Vector3f();
 	
 	ParticleDebris(int tile, int lifetime)
 	{		
@@ -17,7 +19,7 @@ public class ParticleDebris extends Particle
 		yVel = (int)(Math.random() * 200) - 125;
 		xVel = (int)(Math.random() * 100) - 50;	
 		
-		
+		color.set(1,1,1);
 		
 		float uvCalc = 1.0f / (512 / 16);		
 		float tileX = (float)(tileNum % 32) * uvCalc;
@@ -42,7 +44,7 @@ public class ParticleDebris extends Particle
 		BoundingBox bb = getBB();
 		
 		GL11.glPushAttrib(GL11.GL_CURRENT_BIT);
-		if (!renderingBorder) GL11.glColor3f(0.75f, 0.75f, 0.75f);
+		if (!renderingBorder) GL11.glColor3f(color.x,color.y, color.z);
 		
 		GL11.glBegin(GL11.GL_QUADS);
 		GL11.glTexCoord2f(uv.xMin, uv.yMin);	
