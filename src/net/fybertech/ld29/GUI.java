@@ -25,6 +25,8 @@ public class GUI
 	
 	int gID = 0;
 	
+	float scaleModifier = 2;	
+	
 	public GUI(GUI parent)
 	{
 		parentGUI = parent;
@@ -81,19 +83,21 @@ public class GUI
 	{
 		while (Mouse.next())
 		{
-			float guiX = (Display.getWidth() / (LD29.displayScale * 2f) - 160) / 2.0f;
-			float guiY = (Display.getHeight() / (LD29.displayScale * 2f) - 120) / 2.0f;
-			
-			float mouseX = Mouse.getEventX() / (LD29.displayScale * 2.0f);
-			float mouseY = (Display.getHeight() - Mouse.getEventY() - 1) / (LD29.displayScale * 2.0f);
-			
-			mouseX -= guiX;
-			mouseY -= guiY;
-			
 			for (GUI gui : childGUIs)
 			{
+				float screenWidth = 320 / gui.scaleModifier;
+				float screenHeight = 240 / gui.scaleModifier;
+				float guiX = (Display.getWidth() / (LD29.displayScale * gui.scaleModifier) - screenWidth) / 2.0f;
+				float guiY = (Display.getHeight() / (LD29.displayScale * gui.scaleModifier) - screenHeight) / 2.0f;
+				
+				float mouseX = Mouse.getEventX() / (LD29.displayScale * gui.scaleModifier);
+				float mouseY = (Display.getHeight() - Mouse.getEventY() - 1) / (LD29.displayScale * gui.scaleModifier);
+				
+				mouseX -= guiX;
+				mouseY -= guiY;				
+				
 				if (gui.isCoordInside(mouseX, mouseY)) 
-				{
+				{					
 					gui.isMouseOver = true;					
 					gui.onMouse(mouseX, mouseY, Mouse.getEventButton(), Mouse.getEventButtonState());
 
@@ -118,10 +122,10 @@ public class GUI
 	
 	public void render()
 	{
+		GL11.glLoadIdentity();
 		
 		if (renderScreenCover)
-		{
-			GL11.glLoadIdentity();
+		{			
 			GL11.glDisable(GL11.GL_TEXTURE_2D);
 			GL11.glColor4f(0,0.25f,0.5f,0.5f);
 			GL11.glBegin(GL11.GL_QUADS);
