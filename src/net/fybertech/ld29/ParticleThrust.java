@@ -4,8 +4,9 @@ public class ParticleThrust extends Particle
 {
 	
 	
-	public ParticleThrust(float x, float y)
+	public ParticleThrust(Grid g, float x, float y)
 	{
+		super(g);
 		xPos = x;
 		yPos = y;
 		tileNum = 37;	

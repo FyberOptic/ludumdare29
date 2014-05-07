@@ -9,8 +9,9 @@ public class EntityBullet extends Entity
 	
 	boolean hitObject = false;
 	
-	public EntityBullet(float x, float y, float xV, float yV)
+	public EntityBullet(Grid g, float x, float y, float xV, float yV)
 	{
+		super(g);
 		tileNum = 39;
 		xPos = x;
 		yPos = y;
@@ -111,7 +112,7 @@ public class EntityBullet extends Entity
 							for (int py = 0; py < 2; py++)
 							for (int px = 0; px < 2; px++)
 							{
-								ParticleExplodedDebris debris = new ParticleExplodedDebris(tile,(v.x * 16) + 8,(v.y * 16) + 8,px,py,8);
+								ParticleExplodedDebris debris = new ParticleExplodedDebris(grid, tile,(v.x * 16) + 8,(v.y * 16) + 8,px,py,8);
 								debris.color.set(0.75f, 0.75f, 0.75f);
 								LD29.instance.newentities.add(debris);
 							}
@@ -152,13 +153,14 @@ public class EntityBullet extends Entity
 				if (bb.boxOverlaps(this.getBB()))
 				{			
 					//LD29.gemTotal++;
-					SoundManager.getSound("gem").playAsSoundEffect((float) (Math.random() * 0.05) + 1f,  0.75f,  false);
+					SoundManager.getSound("shatter").playAsSoundEffect((float) (Math.random() * 0.25) + 1f,  0.3f,  false);
+					//SoundManager.getSound("gem").playAsSoundEffect((float) (Math.random() * 0.50) + 1.5f,  0.35f,  false);
 					grid.setTile(v.x, v.y, 0);
 					
 					for (int py = 0; py < 4; py++)
 						for (int px = 0; px < 4; px++)
 						{
-							ParticleExplodedDebris debris = new ParticleExplodedDebris(tile,(v.x * 16) + 8,(v.y * 16) + 8,px,py,4);
+							ParticleExplodedDebris debris = new ParticleExplodedDebris(grid, tile,(v.x * 16) + 8,(v.y * 16) + 8,px,py,4);
 							//debris.color.set(2,2,2);
 							LD29.instance.newentities.add(debris);
 						}

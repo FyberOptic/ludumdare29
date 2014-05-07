@@ -13,13 +13,10 @@ public class EntitySpider extends EntityEnemy
 	int walkspeed = 12;
 	int walking = 0;
 	
-	public EntitySpider(float x, float y)
+	public EntitySpider(Grid g)
 	{
-		super();
-		
-		xPos = x;
-		yPos = y;
-		
+		super(g);		
+	
 		tileNum = baseTile;
 		xVel = walkspeed;
 		height = 8;
@@ -117,7 +114,7 @@ public class EntitySpider extends EntityEnemy
 	{
 		super.onHurt(e, amount);
 		
-		if (hitCooldown == defaultCooldown && hitpoints > 0) SoundManager.getSound("spiderhurt").playAsSoundEffect((float)(Math.random() * 0.75) + 1f,  0.75f,  false);
+		if (hitCooldown == defaultCooldown && hitpoints > 0) SoundManager.getSound("spiderhurt").playAsSoundEffect((float)(Math.random() * 0.50) + 1f,  1f,  false);
 	}
 	
 	@Override
@@ -125,7 +122,7 @@ public class EntitySpider extends EntityEnemy
 	{
 		super.onDeath();
 		
-		SoundManager.getSound("spiderdead").playAsSoundEffect((float)(Math.random() * 0.30) + 1f,  0.4f,  false);
+		SoundManager.getSound("spiderdead").playAsSoundEffect((float)(Math.random() * 0.50) + 1f,  1f,  false);
 	}
 	
 }

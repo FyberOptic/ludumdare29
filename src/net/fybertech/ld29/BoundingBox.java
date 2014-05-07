@@ -31,7 +31,7 @@ public class BoundingBox
 		return this;
 	}
 	
-	public BoundingBox addCoord(float x, float y)
+	public BoundingBox add(float x, float y)
 	{
 		//if (x > 0) xMax += x; else xMin -= x;
 		//if (y > 0) yMax += y; else yMin -= y;

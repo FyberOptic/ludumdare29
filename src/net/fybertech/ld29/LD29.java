@@ -92,6 +92,8 @@ public class LD29
 	
 	int currentFPS = 0;
 	
+	public static TileUtil tiles16;
+	
 	/**
 	 * 
 	 * @return
@@ -248,6 +250,7 @@ public class LD29
 		GL11.glTexEnvi(GL11.GL_TEXTURE_ENV, GL11.GL_TEXTURE_ENV_MODE, GL11.GL_MODULATE);
 		//GL11.glTexEnvf(GL11.GL_TEXTURE_ENV, GL13.GL_COMBINE_ALPHA, GL11.GL_MODULATE);
 		
+		tiles16 = new TileUtil(512, 512, 16, 16);
 		
 		//GL13.glActiveTexture(GL13.GL_TEXTURE1);
 		//GL11.glDisable(GL11.GL_TEXTURE_2D); 
@@ -264,19 +267,8 @@ public class LD29
 		backgroundGrid2.isBackground = true;
 		
 		System.out.println("Adding player");
-		player = new EntityPlayer();
-		while (true)
-		{
-			int x = (int)(Math.random() * 16);
-			int y = (int)(Math.random() * 16);
-			int tileBelow = grid.getTile(x,  y + 1);
-			if (grid.getTile(x,  y) == 0 && tileBelow > 0 && tileBelow < 32)
-			{
-				player.xPos = x * 16;
-				player.yPos = y * 16;
-				break;
-			}
-		}
+		player = new EntityPlayer(grid);
+		player.setRandomPositionOnGround();
 		//player.xPos = 8 * 16;
 		//player.yPos = 8 * 16;
 		entities.add(player);
@@ -423,7 +415,7 @@ public class LD29
 //			if (dist > 200 && dist < 1000) break;
 //		}
 		
-		entities.add(new EntityBat(batX, batY));
+		entities.add(new EntityBat(grid, batX, batY));
 	}
 	
 	public int getBatCount()
@@ -438,19 +430,19 @@ public class LD29
 	
 	public void addSpider()
 	{		
-		float spiderX = 0;
-		float spiderY = 0;
+//		float spiderX = 0;
+//		float spiderY = 0;
+//		
+//		while (true)
+//		{
+//			int x = (int)(Math.random() * Grid.TILEGRIDWIDTH);
+//			int y = (int)(Math.random() * Grid.TILEGRIDHEIGHT);
+//			
+//			int tileBelow = grid.getTile(x, y+1);
+//			if (grid.getTile(x,  y) == 0 && tileBelow > 0 && tileBelow < 32) { spiderX = x; spiderY = y; break; }
+//		}	
 		
-		while (true)
-		{
-			int x = (int)(Math.random() * Grid.TILEGRIDWIDTH);
-			int y = (int)(Math.random() * Grid.TILEGRIDHEIGHT);
-			
-			int tileBelow = grid.getTile(x, y+1);
-			if (grid.getTile(x,  y) == 0 && tileBelow > 0 && tileBelow < 32) { spiderX = x; spiderY = y; break; }
-		}	
-		
-		entities.add(new EntitySpider(spiderX * 16, spiderY * 16));
+		entities.add(new EntitySpider(grid).setRandomPositionOnGround());
 	}
 	
 	
@@ -620,7 +612,7 @@ public class LD29
 				
 				//System.out.println(xv + " " + yv);
 				
-				newentities.add(new EntityBullet(player.xPos, player.yPos, xv, yv));
+				newentities.add(new EntityBullet(grid, player.xPos, player.yPos, xv, yv));
 				SoundManager.getSound("shoot").playAsSoundEffect((float)(Math.random() * 0.05) + 1f,  0.55f,  false);
 			}
 			

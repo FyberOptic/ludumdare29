@@ -372,4 +372,16 @@ public class Grid
 		
 	}
 	
+	
+	public Vector2i findRandomTileAboveGround()
+	{
+		while (true)
+		{
+			int x = (int)(Math.random() * Grid.TILEGRIDWIDTH);
+			int y = (int)(Math.random() * Grid.TILEGRIDHEIGHT);
+			int tileBelow = this.getTile(x,  y + 1);
+			if (this.getTile(x,  y) == 0 && tileBelow > 0 && tileBelow < 32) return new Vector2i(x, y);
+		}
+	}
+	
 }

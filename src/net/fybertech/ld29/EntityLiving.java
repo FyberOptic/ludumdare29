@@ -9,9 +9,9 @@ public class EntityLiving extends Entity
 	public int hitCooldown = 0;
 	public int defaultCooldown = 10;
 	
-	public EntityLiving()
+	public EntityLiving(Grid g)
 	{
-		super();
+		super(g);
 	}
 	
 	

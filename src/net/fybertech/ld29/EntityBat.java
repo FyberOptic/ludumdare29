@@ -8,9 +8,9 @@ public class EntityBat extends EntityEnemy
 	
 	int baseTile = tileNum = (3 * 32) + 2;
 	
-	public EntityBat(float xp, float yp)
+	public EntityBat(Grid g, float xp, float yp)
 	{
-		super();
+		super(g);
 		
 		noClipping = true;
 		xPos = xp;
@@ -76,7 +76,7 @@ public class EntityBat extends EntityEnemy
 		
 		SoundManager.getSound("squeak").playAsSoundEffect((float)(Math.random() * 0.50) + 1f,  0.75f,  false);
 		
-		ParticleBatCorpse corpse = new ParticleBatCorpse(xPos, yPos);				
+		ParticleBatCorpse corpse = new ParticleBatCorpse(grid, xPos, yPos);				
 		corpse.yVel = -50 - (int)(Math.random() * 50);
 		corpse.xVel = (int)(Math.random() * 100) - 50;	
 		corpse.decay = 30;

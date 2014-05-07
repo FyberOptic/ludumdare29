@@ -9,9 +9,9 @@ public class EntityPlayer extends EntityLiving
 	
 	
 	
-	public EntityPlayer()
+	public EntityPlayer(Grid g)
 	{
-		super();
+		super(g);
 		
 		this.tileNum = 32;
 		
@@ -93,7 +93,7 @@ public class EntityPlayer extends EntityLiving
 		if (isThrusting)
 		{
 			tileNum = 33;
-			LD29.instance.newentities.add(new ParticleThrust(xPos + (facing == 1 ? -1 : 0), yPos));			
+			LD29.instance.newentities.add(new ParticleThrust(this.grid, xPos + (facing == 1 ? -1 : 0), yPos));			
 			float pitch = (float)(Math.random() * 0.20) + 1f;
 			pitch = 0.75f - (this.yVel / 2000) + (float)(Math.random() * 0.10);
 			SoundManager.getSound("thrust").playAsSoundEffect(pitch, 0.25f, false);

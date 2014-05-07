@@ -8,9 +8,9 @@ public class ParticleExplodedDebris extends ParticleDebris
 	int debrisWidth;
 	
 	
-	ParticleExplodedDebris(int tile, float x, float y, int tx, int ty, int dw) 
+	ParticleExplodedDebris(Grid g, int tile, float x, float y, int tx, int ty, int dw) 
 	{
-		super(tile, 30);
+		super(g, tile, 30);
 		
 		xPos = x;
 		yPos = y;

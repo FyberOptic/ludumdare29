@@ -44,8 +44,9 @@ public class Entity
 	ArrayList<Vector2i> moveintercepts = new ArrayList<Vector2i>();
 	
 	
-	public Entity()
-	{		
+	public Entity(Grid g)
+	{	
+		grid = g;
 	}	
 	
 	
@@ -72,6 +73,17 @@ public class Entity
 		return new Vector2f(this.xPos + translateX, this.yPos + translateY);
 	}
 	
+	public Entity setRandomPositionOnGround()
+	{
+		Vector2i v = grid.findRandomTileAboveGround();
+		this.xPos = v.x * 16;
+		this.yPos = v.y * 16;
+		
+		return this;
+	}
+	
+
+	
 	public BoundingBox getBBRelatedTo(Entity e)
 	{
 		Vector2f v = getPositionRelatedTo(e);
@@ -82,35 +94,38 @@ public class Entity
 	public void render()
 	{
 		
-		float uvCalc = 1.0f / (512 / 16);
-		
-		float tileX = (float)(tileNum % 32) * uvCalc;
-		float tileY = (float)(tileNum / 32) * uvCalc;					
+		BoundingBox uv = LD29.tiles16.getBB(tileNum); 			
 		
 		
 		
 		//GL11.glDisable(GL11.GL_TEXTURE_2D);
-		//GL11.glPolygonMode(GL11.GL_FRONT_AND_BACK, GL11.GL_LINE);
+		//GL11.glPolygonMode(GL11.GL_FRONT_AND_BACK, GL11.GL_LINE);		
 		
-		float uvLeft = tileX + 0.0001f;
-		float uvRight = tileX + uvCalc - 0.0001f;
-		
-		if (facing == -1) { uvLeft = tileX + uvCalc - 0.0001f; uvRight = tileX + 0.0001f; }
+		if (facing == -1) 
+		{ 
+			float temp = uv.xMin;
+			uv.xMin = uv.xMax;
+			uv.xMax = temp;
+		}
+		uv.xMin += 0.0001f;
+		uv.yMin += 0.0001f;
+		uv.xMax -= 0.0001f;
+		uv.yMax -= 0.0001f;
 		
 		float rx = xPos - 8;//(16 - (width / 2.0f));
 		float ry = yPos - 8; //(16 - (height / 2.0f));
 		
 		GL11.glBegin(GL11.GL_QUADS);
-		GL11.glTexCoord2f(uvLeft, tileY + 0.0001f);	
+		GL11.glTexCoord2f(uv.xMin, uv.yMin);	
 		GL11.glVertex2f(rx, ry);	
 		
-		GL11.glTexCoord2f(uvRight, tileY + 0.0001f); 
+		GL11.glTexCoord2f(uv.xMax, uv.yMin); 
 		GL11.glVertex2f(rx + 16, ry);	
 		
-		GL11.glTexCoord2f(uvRight, tileY + uvCalc - 0.0001f); 
+		GL11.glTexCoord2f(uv.xMax, uv.yMax); 
 		GL11.glVertex2f(rx + 16, ry + 16);	
 		
-		GL11.glTexCoord2f(uvLeft, tileY + uvCalc - 0.0001f); 
+		GL11.glTexCoord2f(uv.xMin, uv.yMax); 
 		GL11.glVertex2f(rx, ry + 16);
 		GL11.glEnd();
 		
