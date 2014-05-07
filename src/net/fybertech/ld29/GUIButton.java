@@ -47,6 +47,13 @@ public class GUIButton extends GUI
 		return this;
 	}
 	
+	public GUIButton setTileWidth(int n)
+	{
+		tilewidth = n;
+		this.setSize(tilewidth * 16, 16);
+		return this;
+	}
+	
 	public GUIButton setTextColor(float r, float g, float b)
 	{
 		textColor.set(r, g, b);

@@ -18,6 +18,7 @@ public class GUI
 	boolean mousePressed = false;
 	boolean mouseReleased = false;
 	boolean isMouseOver = false;
+	boolean renderScreenCover = true;
 	
 	GUI parentGUI = null;
 	ArrayList<GUI> childGUIs = new ArrayList<GUI>();
@@ -118,16 +119,19 @@ public class GUI
 	public void render()
 	{
 		
-		GL11.glLoadIdentity();
-		GL11.glDisable(GL11.GL_TEXTURE_2D);
-		GL11.glColor4f(0,0.25f,0.5f,0.5f);
-		GL11.glBegin(GL11.GL_QUADS);
-		GL11.glVertex2f(0 , 0);
-		GL11.glVertex2f(0 , Display.getHeight());
-		GL11.glVertex2f(Display.getWidth(), Display.getHeight());
-		GL11.glVertex2f(Display.getWidth(), 0);		
-		GL11.glEnd();
-		GL11.glEnable(GL11.GL_TEXTURE_2D);
+		if (renderScreenCover)
+		{
+			GL11.glLoadIdentity();
+			GL11.glDisable(GL11.GL_TEXTURE_2D);
+			GL11.glColor4f(0,0.25f,0.5f,0.5f);
+			GL11.glBegin(GL11.GL_QUADS);
+			GL11.glVertex2f(0 , 0);
+			GL11.glVertex2f(0 , Display.getHeight());
+			GL11.glVertex2f(Display.getWidth(), Display.getHeight());
+			GL11.glVertex2f(Display.getWidth(), 0);		
+			GL11.glEnd();
+			GL11.glEnable(GL11.GL_TEXTURE_2D);
+		}
 		
 		
 		

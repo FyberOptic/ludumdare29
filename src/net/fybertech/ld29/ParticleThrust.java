@@ -33,6 +33,6 @@ public class ParticleThrust extends Particle
 	@Override
 	public void update(float deltaTime)
 	{
-		
+		super.update(deltaTime);
 	}
 }

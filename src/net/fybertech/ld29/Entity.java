@@ -10,46 +10,63 @@ import org.lwjgl.util.vector.Vector3f;
 public class Entity 
 {
 
-	float xPos;
-	float yPos;
+	public float xPos;
+	public float yPos;
 	
-	float xVel;
-	float yVel;
-	
+	public float xVel;
+	public float yVel;	
 
-	int tileNum;
+	public int tileNum;
 	
-	int facing = 1;
+	public int facing = 1;	
 	
-	boolean renderingBorder = false;
+	public int frameTimer = 0;
+	public boolean animating = false;	
 	
-	//GridChunk gridChunk = LD29.instance.gridChunk;
-	Grid grid = LD29.instance.grid;
+	protected boolean renderingBorder = false;	
 	
-	boolean onGround = false;
-	boolean hitHead = false;
-	boolean jumping = false;
-	boolean xCollide = false;
-	boolean yCollide = false;
-	boolean noClipping = false;
+	public Grid grid = LD29.instance.grid;
 	
-	float width = 16;
-	float height = 16;
+	public boolean onGround = false;
+	public boolean hitHead = false;
+	public boolean jumping = false;
+	protected boolean xCollide = false;
+	protected boolean yCollide = false;
+	public boolean noClipping = false;
 	
-	int jumpcounter = 0;
+	public float width = 16;
+	public float height = 16;
+	
+	protected int jumpcounter = 0;
 	
 	public boolean destroyEntity = false;
 	
-	ArrayList<Vector2i> intercepts = new ArrayList<Vector2i>();
-	ArrayList<Vector2i> moveintercepts = new ArrayList<Vector2i>();
+	protected ArrayList<Vector2i> intercepts = new ArrayList<Vector2i>();
+	protected ArrayList<Vector2i> moveintercepts = new ArrayList<Vector2i>();
+	
+	private ArrayList<Vector2i> closestXIntercept = new ArrayList<Vector2i>();
+	private ArrayList<Vector2i> closestYIntercept = new ArrayList<Vector2i>();
+	protected ArrayList<Vector2i> closestTileIntercepts = new ArrayList<Vector2i>();
+	protected BoundingBox movebox = new BoundingBox();
 	
 	
+	/**
+	 * Create new entity
+	 * @param g - Grid to place entity into
+	 */
 	public Entity(Grid g)
 	{	
 		grid = g;
 	}	
 	
 	
+	
+	/**
+	 * Sets entity's position (in pixels)
+	 * @param x
+	 * @param y
+	 * @return
+	 */
 	public Entity setPosition(float x, float y)
 	{
 		xPos = x; 
@@ -57,6 +74,13 @@ public class Entity
 		return this;
 	}
 	
+	
+	
+	/**
+	 * Converts entity's position to be relative to specified entity (due to grid wrapping)
+	 * @param e - Entity to use in relation to
+	 * @return Vector2f of relative coordinates
+	 */
 	public Vector2f getPositionRelatedTo(Entity e)
 	{
 		float translateX = 0;
@@ -73,6 +97,25 @@ public class Entity
 		return new Vector2f(this.xPos + translateX, this.yPos + translateY);
 	}
 	
+	
+
+	/**
+	 * Gets this entity's bounding box with location relative to specified entity (due to grid wrapping)
+	 * @param e - Entity to use in relation to
+	 * @return BoundingBox of relative coordinates
+	 */
+	public BoundingBox getBBRelatedTo(Entity e)
+	{
+		Vector2f v = getPositionRelatedTo(e);
+		return new BoundingBox(v.x - (width / 2.0f), v.y - (height / 2.0f), v.x + (width / 2.0f), v.y + (height / 2.0f));
+	}
+
+	
+	
+	/**
+	 * Sets entity's position to a random location on the grid with a solid block beneath
+	 * @return This entity
+	 */
 	public Entity setRandomPositionOnGround()
 	{
 		Vector2i v = grid.findRandomTileAboveGround();
@@ -84,22 +127,13 @@ public class Entity
 	
 
 	
-	public BoundingBox getBBRelatedTo(Entity e)
-	{
-		Vector2f v = getPositionRelatedTo(e);
-		return new BoundingBox(v.x - (width / 2.0f), v.y - (height / 2.0f), v.x + (width / 2.0f), v.y + (height / 2.0f));
-	}
-
-	
+	/**
+	 * Render entity
+	 */
 	public void render()
 	{
 		
-		BoundingBox uv = LD29.tiles16.getBB(tileNum); 			
-		
-		
-		
-		//GL11.glDisable(GL11.GL_TEXTURE_2D);
-		//GL11.glPolygonMode(GL11.GL_FRONT_AND_BACK, GL11.GL_LINE);		
+		BoundingBox uv = LD29.tiles16.getBB(tileNum); 	
 		
 		if (facing == -1) 
 		{ 
@@ -107,13 +141,14 @@ public class Entity
 			uv.xMin = uv.xMax;
 			uv.xMax = temp;
 		}
+		
 		uv.xMin += 0.0001f;
 		uv.yMin += 0.0001f;
 		uv.xMax -= 0.0001f;
 		uv.yMax -= 0.0001f;
 		
-		float rx = xPos - 8;//(16 - (width / 2.0f));
-		float ry = yPos - 8; //(16 - (height / 2.0f));
+		float rx = xPos - 8;
+		float ry = yPos - 8;
 		
 		GL11.glBegin(GL11.GL_QUADS);
 		GL11.glTexCoord2f(uv.xMin, uv.yMin);	
@@ -186,13 +221,15 @@ public class Entity
 			
 			GL11.glEnable(GL11.GL_TEXTURE_2D);
 			GL11.glPolygonMode(GL11.GL_FRONT_AND_BACK, GL11.GL_FILL);
-		}
+		}		
 		
-		//GL11.glEnable(GL11.GL_TEXTURE_2D);
-		//GL11.glPolygonMode(GL11.GL_FRONT_AND_BACK, GL11.GL_FILL);
 	}
 	
 	
+	
+	/**
+	 * Render entity with a border
+	 */
 	public void renderWithBorder()
 	{
 		if (!LD29.debugMode)
@@ -222,30 +259,51 @@ public class Entity
 	
 	
 	
+	/**
+	 * Get bounding box of a grid location 
+	 * @param x
+	 * @param y
+	 * @return
+	 */
 	public BoundingBox bbFromGridPos(int x, int y)
 	{
 		//return new BoundingBox(x * 16, y * 16, (x * 16) + 16f - 0.0001f, (y * 16) + 16f - 0.0001f);  // FYBER: USED TO BE + 15
 		return new BoundingBox(x * 16, y * 16, (x * 16) + 16f, (y * 16) + 16f);  // FYBER: USED TO BE + 15
 	}
 	
+	
+	
+	/**
+	 * Get bounding box of entity
+	 * @return
+	 */
 	public BoundingBox getBB()
 	{
 		//return new BoundingBox(xPos, yPos, xPos + 15f, yPos + 15f);
 		return new BoundingBox(xPos - (width / 2.0f), yPos - (height / 2.0f), xPos + (width / 2.0f), yPos + (height / 2.0f));
 	}
 	
-
-	ArrayList<Vector2i> closestXIntercept = new ArrayList<Vector2i>();
-	ArrayList<Vector2i> closestYIntercept = new ArrayList<Vector2i>();
-	ArrayList<Vector2i> closestTileIntercepts = new ArrayList<Vector2i>();
 	
 	
+	/**
+	 * Add vector to list without duplicates 
+	 * @param list - ArrayList of Vector2i
+	 * @param v - Vector2i to attempt to add
+	 */
 	public void addWithoutRepeat(ArrayList<Vector2i> list, Vector2i v)
 	{
 		for (Vector2i oldv : list) { if (oldv.x == v.x && oldv.y == v.y) return; }
 		list.add(v);
 	}
 	
+	
+	
+	/**
+	 * Get the maximum X movement for specified bounding box, tested against 'intercepts' list 
+	 * @param bb - BoundingBox to test against list
+	 * @param x - Initial X movement amount
+	 * @return - Final X movement amount
+	 */
 	public float getMaxMoveAmountX(BoundingBox bb, float x)
 	{
 		//closestXIntercept = null;
@@ -291,7 +349,15 @@ public class Entity
 		
 		return currentDelta;
 	}
+
 	
+	
+	/**
+	 * Get the maximum Y movement for specified bounding box, tested against 'intercepts' list 
+	 * @param bb - BoundingBox to test against list
+	 * @param x - Initial Y movement amount
+	 * @return - Final Y movement amount
+	 */
 	public float getMaxMoveAmountY(BoundingBox bb, float y)
 	{
 		//closestYIntercept = null;
@@ -335,6 +401,13 @@ public class Entity
 	}
 	
 	
+	
+	/**
+	 * Set list of tiles which overlap with specified bounding box
+	 * @param bb - Bounding box to test against
+	 * @param list - List of Vector2i to append overlapping tiles with 
+	 * @param everything - Test again all tile types, or just the first 32
+	 */
 	public void getIntercepts(BoundingBox bb, ArrayList<Vector2i> list, boolean everything)
 	{
 		for (int y = ((int)(Math.floor(bb.yMin)) >> 4) - 1; y <= (int)(Math.ceil(bb.yMax)) >> 4; y++)
@@ -347,14 +420,15 @@ public class Entity
 					if (tile > 0 && (tile < 32 || everything)) list.add(new Vector2i(x, y));
 				}
 			}
-		}		
-
+		}
 	}
 	
 	
 	
-	BoundingBox movebox = new BoundingBox();
-	
+	/**
+	 * Move entity based on velocity, accounting for collisions
+	 * @param deltaTime - Milliseconds since last frame
+	 */
 	public void doMove(float deltaTime)
 	{
 		float delta = deltaTime / 1000.0f;
@@ -443,26 +517,24 @@ public class Entity
 	
 	
 	
-	
-	
+	/**
+	 * Update entity, per frame	
+	 * @param deltaTime - Milliseconds since last frame
+	 */
 	public void update(float deltaTime)
 	{
 		doMove(deltaTime);
 		
 	}
+
 	
-	
-	
-	
-	int frameTimer = 0;
-	public boolean animating = false;
-	
-	
-	
+	/**
+	 * Update entity, per tick (20 ticks per second)
+	 */
 	public void tick()
 	{
 		
-		
-		//if (!animating) tileNum = 32;		
 	}
+	
+	
 }

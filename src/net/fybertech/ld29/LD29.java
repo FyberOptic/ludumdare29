@@ -92,6 +92,10 @@ public class LD29
 	
 	int currentFPS = 0;
 	
+	float scrollOffsetX = 0;
+	float scrollOffsetY = 0;
+	boolean renderHUD = true;
+	
 	public static TileUtil tiles16;
 	
 	/**
@@ -281,6 +285,8 @@ public class LD29
 		long secondTickTime = 0;
 		int ticks = 0;
 		int fps = 0;
+		
+		this.activeGUI = new GUIMainMenu(null);
 		
 		
 		System.out.println("Starting game loop");
@@ -683,8 +689,8 @@ public class LD29
 		
 		//float scrollX = 160 + -player.xPos - 8;; //LD29.instance.player.xPos + 8;
 		//float scrollY = 120 + -player.yPos - 8;; //LD29.instance.player.yPos + 8;
-		float scrollX = LD29.instance.player.xPos;
-		float scrollY = LD29.instance.player.yPos;
+		float scrollX = LD29.instance.player.xPos + scrollOffsetX;
+		float scrollY = LD29.instance.player.yPos + scrollOffsetY;
 		
 		
 	
@@ -826,31 +832,24 @@ public class LD29
 		
 		//GL11.glBlendFunc (GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
 		
-		GL11.glLoadIdentity();
-		GL11.glScalef(((float)displayScale * 1f), ((float) displayScale * 1f), 1);
-		GL11.glColor3f(1,1,1);
 		
-		for (int n = 0; n < player.hitpoints; n++)
+		
+		
+		if (this.renderHUD)
 		{
-			renderTileQuadWithBorder(n * 10, 0, 40);
+			GL11.glLoadIdentity();
+			GL11.glScalef(((float)displayScale * 1f), ((float) displayScale * 1f), 1);
+			GL11.glColor3f(1,1,1);
+			
+			for (int n = 0; n < player.hitpoints; n++)
+			{
+				renderTileQuadWithBorder(n * 10, 0, 40);
+			}
+			
+			// Show gem count
+			renderTileQuadWithBorder(-1, 16, (3 * 32));	
+			pixelFont.putStringWithBorder("" + gemTotal, 14,  21);
 		}
-		
-		
-		//GL11.glEnable(GL11.GL_ALPHA_TEST);
-		//GL11.glAlphaFunc(GL11.GL_EQUAL, 1);
-		
-		//GL11.glTexParameter(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_BORDER_COLOR, asFloatBuffer(new float[]{0.0f, 0.0f, 0.0f, 0.0f}));
-		//GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_S, GL12.GL_CLAMP_TO_EDGE);
-		//GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_T, GL12.GL_CLAMP_TO_EDGE);
-		//GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL12.GL_TEXTURE_WRAP_R, GL13.GL_CLAMP_TO_BORDER);
-		
-		// Show gem count
-		renderTileQuadWithBorder(-1, 16, (3 * 32));			
-		
-		//GL11.glLoadIdentity();
-		//GL11.glScalef(((float)displayScale * 2), ((float) displayScale * 2), 1);
-		pixelFont.putStringWithBorder("" + gemTotal, 14,  21);
-		
 		
 		if (player.hitpoints <= 0 && activeGUI == null)
 		{
