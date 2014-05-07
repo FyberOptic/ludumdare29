@@ -13,6 +13,8 @@ public class ParticleThrust extends Particle
 		
 		width = 2;
 		height = 2;
+		
+		gravity = -5;
 	}
 	
 	

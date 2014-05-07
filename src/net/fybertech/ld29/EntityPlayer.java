@@ -44,10 +44,12 @@ public class EntityPlayer extends EntityLiving
 		if (isThrusting)  yVel -= 400 * delta;
 		else 
 		{
-			if (jumping && jumpcounter < 500) yVel += 100 * delta;
+			//System.out.println(jumpcounter);
+			float maxjumpcounter = 250;
+			if (jumping && jumpcounter < maxjumpcounter) { if (jumpcounter > 50) yVel -= (100 * delta) * ((maxjumpcounter - jumpcounter) / maxjumpcounter); }
 			else yVel += 300 * delta;
 		}
-		
+		//System.out.println("VEL: " + yVel);
 		if (yVel < -100) yVel = -100;
 		if (yVel > 400) yVel = 400;		
 		

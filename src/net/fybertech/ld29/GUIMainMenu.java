@@ -141,7 +141,7 @@ public class GUIMainMenu extends GUI
 		optionsButton.render();
 		creditsButton.render();
 		
-		LD29.instance.pixelFont.putStringWithBorder("COPYRIGHT C JEFFREY BOWMAN",  200,  230);
+		LD29.instance.pixelFont.putStringWithBorder("COPYRIGHT C 2014 JEFFREY BOWMAN",  132,  230);
 	}
 
 }
