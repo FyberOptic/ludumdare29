@@ -57,13 +57,13 @@ public class EntityPlayer extends EntityLiving
 		
 		if (onGround && !lastGround)
 		{
-			if (lastyVel > 200) SoundManager.getSound("head").playAsSoundEffect((float)(Math.random() * 0.25) + 0.5f,  0.35f,  false);
-			else SoundManager.getSound("land").playAsSoundEffect((float)(Math.random() * 0.25) + 0.5f,  0.35f,  false);  
+			if (lastyVel > 200) SoundManager.playSound("head", (float)(Math.random() * 0.25) + 0.5f,  0.35f,  false);
+			else SoundManager.playSound("land", (float)(Math.random() * 0.25) + 0.5f,  0.35f,  false);  
 		}
 		
 		if (hitHead && !lastHead)
 		{
-			SoundManager.getSound("head").playAsSoundEffect((float)(Math.random() * 0.25) + 0.5f,  0.45f,  false);
+			SoundManager.playSound("head", (float)(Math.random() * 0.25) + 0.5f,  0.45f,  false);
 		}
 		
 		for (Vector2i v : intercepts)
@@ -75,7 +75,7 @@ public class EntityPlayer extends EntityLiving
 				if (bb.boxOverlaps(this.getBB()))
 				{			
 					LD29.gemTotal++;
-					SoundManager.getSound("gem").playAsSoundEffect((float) (Math.random() * 0.05) + 1f,  0.75f,  false);
+					SoundManager.playSound("gem", (float) (Math.random() * 0.05) + 1f,  0.75f,  false);
 					grid.setTile(v.x, v.y, 0);					
 				}
 			}
@@ -90,16 +90,12 @@ public class EntityPlayer extends EntityLiving
 	{
 		super.tick();
 		
-		
-
-		
-		//if (!jumping && Keyboard.isKeyDown(Keyboard.KEY_SPACE))
 		if (isThrusting)
 		{
 			LD29.instance.newentities.add(new ParticleThrust(this.grid, xPos + (facing == 1 ? -1 : 0), yPos));			
 			float pitch = (float)(Math.random() * 0.20) + 1f;
 			pitch = 0.75f - (this.yVel / 2000) + (float)(Math.random() * 0.10);
-			SoundManager.getSound("thrust").playAsSoundEffect(pitch, 0.25f, false);
+			SoundManager.playSound("thrust", pitch, 0.25f, false);
 		}
 		
 		if (!onGround) tileNum = 33;
@@ -127,7 +123,7 @@ public class EntityPlayer extends EntityLiving
 	public void onHurt(Entity e, int damage)
 	{
 		super.onHurt(e,  damage);				
-		if (hitCooldown == defaultCooldown) SoundManager.getSound("head").playAsSoundEffect((float)(Math.random() * 0.25) + 1.5f,  0.75f,  false);
+		if (hitCooldown == defaultCooldown) SoundManager.playSound("head", (float)(Math.random() * 0.25) + 1.5f,  0.75f,  false);
 	}
 	
 	@Override

@@ -23,13 +23,18 @@ public class GridChunk
 	//int paddingRenderList = -1;
 	boolean dirty = true;
 	
-	ByteBuffer geometryBuffer = null;
+	public static ByteBuffer geometryBuffer = null;
 	int verticeCount = 0;
 	int bufferID = -1;
 	
 	Grid grid;
 	
 	int textureID = -1;
+	
+	static {
+		geometryBuffer = BufferUtils.createByteBuffer(Grid.CHUNKWIDTH*Grid.CHUNKHEIGHT * 4 * 5 * (8 + 8 + 8));
+		geometryBuffer.clear();			
+	}
 	
 	public GridChunk(Grid g, int x, int y)
 	{
@@ -38,14 +43,11 @@ public class GridChunk
 		gridY = y;
 		
 		tiles = new byte[Grid.CHUNKWIDTH*Grid.CHUNKHEIGHT];
-		data = new byte[Grid.CHUNKWIDTH*Grid.CHUNKHEIGHT];
+		data = new byte[Grid.CHUNKWIDTH*Grid.CHUNKHEIGHT];	
 		
-		geometryBuffer = BufferUtils.createByteBuffer(Grid.CHUNKWIDTH*Grid.CHUNKHEIGHT * 4 * 5 * (8 + 8 + 8));
-		geometryBuffer.clear();		
-		
-		bufferID = GL15.glGenBuffers();
-		
+		bufferID = GL15.glGenBuffers();		
 		textureID = GL11.glGenTextures();
+		
 		GL11.glBindTexture(GL11.GL_TEXTURE_2D,  textureID);
 		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_NEAREST);
         GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_NEAREST);

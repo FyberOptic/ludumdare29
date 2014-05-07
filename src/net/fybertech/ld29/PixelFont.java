@@ -2,29 +2,18 @@ package net.fybertech.ld29;
 
 import org.lwjgl.opengl.GL11;
 
-public class PixelFont 
+public abstract class PixelFont 
 {
 
 
 	BoundingBox[] chars = new BoundingBox[256];
 	
+	int charWidth;
+	int charHeight;
+	int widthPadding;
+	
 	public PixelFont()
 	{
-		// Chars are packed 4 to tile
-		float uvCalcPixel = 1.0f / 512;
-		
-		float baseY = uvCalcPixel * (4 * 16);
-		float bottomY = baseY + (uvCalcPixel * 6);
-		
-		for (int n = 0; n < 10; n++)
-		{			
-			chars[n + 48] = new BoundingBox(n * 4 * uvCalcPixel, baseY, (n * 4 * uvCalcPixel) + (4 * uvCalcPixel), bottomY);
-		}
-		
-		for (int n = 0; n < 26; n++)
-		{			
-			chars[n + 65] = new BoundingBox((n+10) * 4 * uvCalcPixel, baseY, ((n+10) * 4 * uvCalcPixel) + (4 * uvCalcPixel), bottomY);
-		}
 
 	}
 	
@@ -44,13 +33,13 @@ public class PixelFont
 		GL11.glVertex2f(x, y);	
 		
 		GL11.glTexCoord2f(bb.xMax - 0.0001f, bb.yMin + 0.0001f); 
-		GL11.glVertex2f(x + 4, y);	
+		GL11.glVertex2f(x + charWidth, y);	
 		
 		GL11.glTexCoord2f(bb.xMax - 0.0001f, bb.yMax - 0.0001f); 
-		GL11.glVertex2f(x + 4, y + 6);	
+		GL11.glVertex2f(x + charWidth, y + charHeight);	
 		
 		GL11.glTexCoord2f(bb.xMin + 0.0001f, bb.yMax - 0.0001f); 
-		GL11.glVertex2f(x, y + 6);
+		GL11.glVertex2f(x, y + charHeight);
 		GL11.glEnd();
 	}
 	
@@ -59,7 +48,7 @@ public class PixelFont
 		int len = s.length();
 		for (int n = 0; n < len; n++)
 		{
-			putChar(s.charAt(n), x + (n * 4), y);
+			putChar(s.charAt(n), x + (n * charWidth), y);
 		}
 	}
 	
@@ -83,13 +72,13 @@ public class PixelFont
 						case 2: GL11.glTranslatef(0,1,0); break;
 						case 3: GL11.glTranslatef(0,-1,0); break;			
 					}			
-					putChar(s.charAt(n), x + (n * 6), y);
+					putChar(s.charAt(n), x + (n * (charWidth + widthPadding)), y);
 					GL11.glPopMatrix();
 				}
 				GL11.glPopAttrib();
 			}		
 			
-			putChar(s.charAt(n), x + (n * 6), y);
+			putChar(s.charAt(n), x + (n * (charWidth + widthPadding)), y);
 		}
 	}
 	

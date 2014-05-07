@@ -61,5 +61,11 @@ public class SoundManager
 		//return null;
 	}
 	
+	public static void playSound(String id, float pitch, float volume, boolean repeat)
+	{
+		Audio sound = SoundManager.getSound(id);
+		if (sound != null) sound.playAsSoundEffect(pitch, volume, repeat);
+	}
+	
 	
 }

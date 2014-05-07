@@ -8,7 +8,7 @@ public class Grid
 	GridChunk[] gridChunks;
 	
 	public static final int GRIDWIDTH = 16;
-	public static final int GRIDHEIGHT = 12;
+	public static final int GRIDHEIGHT = 16;
 	
 	public static final int CHUNKWIDTH = 16;
 	public static final int CHUNKHEIGHT = 16;

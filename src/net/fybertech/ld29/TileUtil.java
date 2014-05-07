@@ -7,6 +7,9 @@ public class TileUtil
 	int tilesWide;
 	int tilesHigh;
 	
+	public static int TILE_GEM = 96;
+	public static int TILE_PLAYER = 32;
+	
 	public TileUtil(int imageWidth, int imageHeight, int tileWidth, int tileHeight)
 	{
 		tilesWide = imageWidth / tileWidth;

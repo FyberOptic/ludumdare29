@@ -1,6 +1,7 @@
 package net.fybertech.ld29;
 
 import org.lwjgl.input.Keyboard;
+import org.lwjgl.util.vector.Vector2f;
 
 public class EntityBullet extends Entity 
 {
@@ -55,7 +56,7 @@ public class EntityBullet extends Entity
 		{ 						
 			destroyEntity = true;
 			hitObject = true;
-			SoundManager.getSound("shothit").playAsSoundEffect((float)(Math.random() * 0.25) + 0.35f,  0.2f,  false);
+			SoundManager.playSound("shothit", (float)(Math.random() * 0.25) + 0.35f,  0.2f,  false);
 			//System.out.println("HIT");
 			
 			//for (Vector2i v : intercepts)
@@ -99,7 +100,7 @@ public class EntityBullet extends Entity
 						if (damage > 3) 
 						{
 							grid.setTile(v.x,  v.y,  0);
-							SoundManager.getSound("dirtbreak").playAsSoundEffect((float)(Math.random() * 0.50) + 1f,  0.5f,  false);
+							SoundManager.playSound("dirtbreak", (float)(Math.random() * 0.50) + 1f,  0.5f,  false);
 							
 //							for (int n = 0; n < 4; n++)
 //							{
@@ -132,8 +133,9 @@ public class EntityBullet extends Entity
 		for (Entity e : LD29.instance.entities)
 		{
 			if (!(e instanceof EntityEnemy)) continue;
-			float dx = (e.xPos) - (xPos);
-			float dy = (e.yPos) - (yPos);
+			Vector2f v = e.getPositionRelatedTo(this);			
+			float dx = (v.x) - (xPos);
+			float dy = (v.y) - (yPos);
 			float dist = (float)Math.sqrt(dx * dx + dy * dy);
 			if (dist < 32 && e.getBB().boxOverlaps(this.getBB()))
 			{
@@ -153,7 +155,7 @@ public class EntityBullet extends Entity
 				if (bb.boxOverlaps(this.getBB()))
 				{			
 					//LD29.gemTotal++;
-					SoundManager.getSound("shatter").playAsSoundEffect((float) (Math.random() * 0.25) + 1f,  0.3f,  false);
+					SoundManager.playSound("shatter", (float) (Math.random() * 0.25) + 1f,  0.3f,  false);
 					//SoundManager.getSound("gem").playAsSoundEffect((float) (Math.random() * 0.50) + 1.5f,  0.35f,  false);
 					grid.setTile(v.x, v.y, 0);
 					

@@ -86,7 +86,8 @@ public class LD29
 	
 	public boolean isScreenGrabbed = false;
 	
-	PixelFont pixelFont = null;
+	PixelFont pixelFont4x6 = null;
+	PixelFont pixelFont8x8 = null;
 	
 	GUI activeGUI = null;
 	
@@ -224,7 +225,8 @@ public class LD29
 		
 		sizeDisplay();
 		
-		pixelFont = new PixelFont();
+		pixelFont8x8 = new PixelFont8x8();
+		pixelFont4x6 = new PixelFont4x6();
 		
 		GL11.glEnable(GL11.GL_TEXTURE_2D);              
 		GL11.glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
@@ -613,7 +615,7 @@ public class LD29
 				//System.out.println(xv + " " + yv);
 				
 				newentities.add(new EntityBullet(grid, player.xPos, player.yPos, xv, yv));
-				SoundManager.getSound("shoot").playAsSoundEffect((float)(Math.random() * 0.05) + 1f,  0.55f,  false);
+				SoundManager.playSound("shoot", (float)(Math.random() * 0.05) + 1f,  0.55f,  false);
 			}
 			
 		}
@@ -663,13 +665,14 @@ public class LD29
 	 */
 	public void render()
 	{
-		gridsRendered = 0;
+		gridsRendered = 0;	
 		
 		GL11.glTranslatef((Display.getWidth() - (320.0f * displayScale * userScale)) / 2.0f, ( Display.getHeight() - (240.0f * displayScale * userScale)) / 2.0f,0);
 		GL11.glScalef(((float)displayScale / 1.0f) * userScale, ((float) displayScale / 1.0f) * userScale, 1);
 		
 		TextureImpl.unbind();
-		textureAtlas.bind();
+		textureAtlas.bind();	
+		
 		//GL11.glBindTexture(GL11.GL_TEXTURE_2D,  textureAtlas.getTextureID());
 		
 		float scaleFactor;
@@ -842,7 +845,7 @@ public class LD29
 			
 			// Show gem count
 			renderTileQuadWithBorder(-1, 16, (3 * 32));	
-			pixelFont.putStringWithBorder("" + gemTotal, 14,  21);
+			pixelFont8x8.putStringWithBorder("" + gemTotal, 14,  21);
 		}
 		
 		if (player.hitpoints <= 0 && activeGUI == null)
@@ -865,6 +868,8 @@ public class LD29
 		if (activeGUI != null) activeGUI.render();
 		
 		GL11.glLoadIdentity();
+		
+		//pixelFont8x8.putStringWithBorder("123456 HELLO hello again in lowercase JEFFREY Jeffrey", 0,  0);
 		
 		if (isScreenGrabbed && activeGUI == null)
 		{			

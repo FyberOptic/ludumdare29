@@ -136,7 +136,7 @@ public class GUIButton extends GUI
 		
 
 		// char width is 6 if bordered
-		LD29.instance.pixelFont.putStringWithBorder(this.buttonText, xPos + ((tilewidth * 16) / 2) - ((buttonText.length() * 6) / 2), yPos + 5);
+		LD29.instance.pixelFont4x6.putStringWithBorder(this.buttonText, xPos + ((tilewidth * 16) / 2) - ((buttonText.length() * 6) / 2), yPos + 5);
 		
 		
 //		GL11.glDisable(GL11.GL_TEXTURE_2D);

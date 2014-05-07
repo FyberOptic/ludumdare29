@@ -30,7 +30,7 @@ public class GUIGameOver extends GUI
 		float startY = (localheight - (8)) / 2;
 		GL11.glTranslatef(startX, startY, 0);
 		
-		LD29.instance.pixelFont.putStringWithBorder("YOU DIED!", 0, 0);
+		LD29.instance.pixelFont4x6.putStringWithBorder("YOU DIED!", 0, 0);
 	}
 	
 	

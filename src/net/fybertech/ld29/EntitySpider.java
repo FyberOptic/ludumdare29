@@ -114,7 +114,7 @@ public class EntitySpider extends EntityEnemy
 	{
 		super.onHurt(e, amount);
 		
-		if (hitCooldown == defaultCooldown && hitpoints > 0) SoundManager.getSound("spiderhurt").playAsSoundEffect((float)(Math.random() * 0.50) + 1f,  1f,  false);
+		if (hitCooldown == defaultCooldown && hitpoints > 0) SoundManager.playSound("spiderhurt", (float)(Math.random() * 0.50) + 1f,  1f,  false);
 	}
 	
 	@Override
@@ -122,7 +122,7 @@ public class EntitySpider extends EntityEnemy
 	{
 		super.onDeath();
 		
-		SoundManager.getSound("spiderdead").playAsSoundEffect((float)(Math.random() * 0.50) + 1f,  1f,  false);
+		SoundManager.playSound("spiderdead", (float)(Math.random() * 0.50) + 1f,  1f,  false);
 	}
 	
 }

@@ -141,7 +141,18 @@ public class GUIMainMenu extends GUI
 		optionsButton.render();
 		creditsButton.render();
 		
-		LD29.instance.pixelFont.putStringWithBorder("COPYRIGHT C 2014 JEFFREY BOWMAN",  132,  230);
+		localscale = 1f;
+		localwidth = 320 / localscale;
+		localheight = 240 / localscale;
+		
+		GL11.glLoadIdentity();
+		GL11.glScalef(((float)LD29.displayScale * localscale), ((float) LD29.displayScale * localscale), 1);
+		GL11.glColor3f(0.25f,0.75f,0.25f);
+		guiX = (Display.getWidth() / (LD29.displayScale * localscale) - localwidth) / 2;
+		guiY = (Display.getHeight() / (LD29.displayScale * localscale) - localheight) / 2;
+		GL11.glTranslatef(guiX, guiY,0);
+		
+		LD29.instance.pixelFont4x6.putString("COPYRIGHT C 2014 JEFFREY BOWMAN",  0,  230);
 	}
 
 }

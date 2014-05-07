@@ -74,7 +74,7 @@ public class EntityBat extends EntityEnemy
 	{		
 		super.onDeath();
 		
-		SoundManager.getSound("squeak").playAsSoundEffect((float)(Math.random() * 0.50) + 1f,  0.75f,  false);
+		SoundManager.playSound("squeak", (float)(Math.random() * 0.50) + 1f,  0.75f,  false);
 		
 		ParticleBatCorpse corpse = new ParticleBatCorpse(grid, xPos, yPos);				
 		corpse.yVel = -50 - (int)(Math.random() * 50);
