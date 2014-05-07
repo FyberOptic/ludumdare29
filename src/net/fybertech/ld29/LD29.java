@@ -506,12 +506,12 @@ public class LD29
 		{
 			if (Keyboard.isKeyDown(Keyboard.KEY_SPACE) && player.hitCooldown < 35)
 			{
-				if (player.onGround && !player.isThrusting) { player.yVel = -80; player.jumping = true; player.jumpcounter = 0;  }				
-				else if (player.jumping) player.jumpcounter += deltaTime;
+				if (player.onGround && !player.isThrusting) { player.yVel = -80; player.isJumping = true; player.jumpcounter = 0;  }				
+				else if (player.isJumping) player.jumpcounter += deltaTime;
 				else player.isThrusting = true;
 				
 			}
-			else { player.jumping = false; player.isThrusting = false; }
+			else { player.isJumping = false; player.isThrusting = false; }
 		
 			
 			float scrollamount = (deltaTime / 1000.0f) * 150;

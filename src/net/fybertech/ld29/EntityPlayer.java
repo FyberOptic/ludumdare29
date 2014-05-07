@@ -46,7 +46,7 @@ public class EntityPlayer extends EntityLiving
 		{
 			//System.out.println(jumpcounter);
 			float maxjumpcounter = 250;
-			if (jumping && jumpcounter < maxjumpcounter) { if (jumpcounter > 50) yVel -= (100 * delta) * ((maxjumpcounter - jumpcounter) / maxjumpcounter); }
+			if (isJumping && jumpcounter < maxjumpcounter) { if (jumpcounter > 50) yVel -= (100 * delta) * ((maxjumpcounter - jumpcounter) / maxjumpcounter); }
 			else yVel += 300 * delta;
 		}
 		//System.out.println("VEL: " + yVel);
@@ -80,6 +80,8 @@ public class EntityPlayer extends EntityLiving
 				}
 			}
 		}
+		
+		if (!lastGround && onGround) tileNum = 34;
 	}
 	
 	
@@ -94,12 +96,13 @@ public class EntityPlayer extends EntityLiving
 		//if (!jumping && Keyboard.isKeyDown(Keyboard.KEY_SPACE))
 		if (isThrusting)
 		{
-			tileNum = 33;
 			LD29.instance.newentities.add(new ParticleThrust(this.grid, xPos + (facing == 1 ? -1 : 0), yPos));			
 			float pitch = (float)(Math.random() * 0.20) + 1f;
 			pitch = 0.75f - (this.yVel / 2000) + (float)(Math.random() * 0.10);
 			SoundManager.getSound("thrust").playAsSoundEffect(pitch, 0.25f, false);
 		}
+		
+		if (!onGround) tileNum = 33;
 		
 		// FYBER: ADD BACK
 		xVel *= 0.5;
@@ -109,7 +112,7 @@ public class EntityPlayer extends EntityLiving
 		if (xVel < 0) facing = -1;
 		
 		if (xVel != 0) animating = true; else animating = false;
-		if (animating && !isThrusting) frameTimer++;
+		if (animating && onGround) frameTimer++;
 		if (frameTimer > 2)
 		{
 			tileNum++;

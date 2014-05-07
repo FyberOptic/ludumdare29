@@ -29,7 +29,7 @@ public class Entity
 	
 	public boolean onGround = false;
 	public boolean hitHead = false;
-	public boolean jumping = false;
+	public boolean isJumping = false;
 	protected boolean xCollide = false;
 	protected boolean yCollide = false;
 	public boolean noClipping = false;

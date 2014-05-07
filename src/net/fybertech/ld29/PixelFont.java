@@ -6,7 +6,7 @@ public class PixelFont
 {
 
 
-	BoundingBox[] chars = new BoundingBox[10 + 26];
+	BoundingBox[] chars = new BoundingBox[256];
 	
 	public PixelFont()
 	{
@@ -16,23 +16,28 @@ public class PixelFont
 		float baseY = uvCalcPixel * (4 * 16);
 		float bottomY = baseY + (uvCalcPixel * 6);
 		
-		for (int n = 0; n < 10 + 26; n++)
+		for (int n = 0; n < 10; n++)
 		{			
-			chars[n] = new BoundingBox(n * 4 * uvCalcPixel, baseY, (n * 4 * uvCalcPixel) + (4 * uvCalcPixel), bottomY); 
-			
-			//System.out.println((n * 4 * uvCalcPixel) + " " + baseY + " " + ((n * 4 * uvCalcPixel) + (4 * uvCalcPixel)) + " " + bottomY);
+			chars[n + 48] = new BoundingBox(n * 4 * uvCalcPixel, baseY, (n * 4 * uvCalcPixel) + (4 * uvCalcPixel), bottomY);
 		}
+		
+		for (int n = 0; n < 26; n++)
+		{			
+			chars[n + 65] = new BoundingBox((n+10) * 4 * uvCalcPixel, baseY, ((n+10) * 4 * uvCalcPixel) + (4 * uvCalcPixel), bottomY);
+		}
+
 	}
 	
 	
 	public void putChar(char c, float x, float y)
 	{
-		if (c >= 48 && c <= 57) c -= 48;
-		else if (c >= 65 && c <= 90) c -= (65 - 10);
-		else return;
+		//if (c >= 48 && c <= 57) c -= 48;
+		//else if (c >= 65 && c <= 90) c -= (65 - 10);
+		//else return;		
 		
+		BoundingBox bb = chars[c & 0xFF];
 		
-		BoundingBox bb = chars[c];
+		if (bb == null) return;
 		
 		GL11.glBegin(GL11.GL_QUADS);
 		GL11.glTexCoord2f(bb.xMin + 0.0001f, bb.yMin + 0.0001f);	

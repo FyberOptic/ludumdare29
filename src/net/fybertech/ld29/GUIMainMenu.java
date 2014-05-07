@@ -35,7 +35,7 @@ public class GUIMainMenu extends GUI
 		LD29.instance.userScale = 6;	
 		LD29.instance.renderHUD = false;
 		LD29.instance.scrollOffsetX = 16;
-		LD29.instance.scrollOffsetY = 0;
+		LD29.instance.scrollOffsetY = 4;
 	}
 	
 	
@@ -81,8 +81,8 @@ public class GUIMainMenu extends GUI
 		
 		int tileNum = 33;		
 		ParticleThrust thrust = new ParticleThrust(LD29.instance.grid, player.xPos + (player.facing == 1 ? -1 : 0), player.yPos);
-		thrust.xVel = 5;
-		thrust.yVel = 10;
+		thrust.xVel = 2;
+		thrust.yVel = 60;
 		LD29.instance.entities.add(thrust);
 		
 		for (Iterator<Entity> iterator = LD29.instance.entities.iterator(); iterator.hasNext();) 
