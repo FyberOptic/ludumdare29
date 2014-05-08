@@ -8,6 +8,10 @@ public class EntityBat extends EntityEnemy
 	
 	int baseTile = tileNum = (3 * 32) + 2;
 	
+	int tickCounter = 0;
+	float direction = 0;
+	boolean chasing = false;
+	
 	public EntityBat(Grid g, float xp, float yp)
 	{
 		super(g);
@@ -21,6 +25,7 @@ public class EntityBat extends EntityEnemy
 		height = 8;
 		
 		hitpoints = 1;
+		direction = (float)Math.random() * 360;
 	}
 	
 	
@@ -34,15 +39,11 @@ public class EntityBat extends EntityEnemy
 	@Override
 	public void tick()
 	{		
-		frameTimer++;
-		if (frameTimer >= 6) frameTimer = 0;
-		if (frameTimer >= 0) tileNum = baseTile;
-		if (frameTimer >= 3) tileNum = baseTile + 1;
+
 		
-		EntityPlayer player = LD29.instance.player;
-		
-		Vector2f pc = player.getPositionRelatedTo(this);		
-		
+		EntityPlayer player = LD29.instance.player;		
+		Vector2f pc = player.getPositionRelatedTo(this);
+
 		Vector2f dist = new Vector2f((xPos) - (pc.x), ((yPos) - pc.y));
 		float distfrom = (float)Math.sqrt(dist.x * dist.x + dist.y * dist.y);		
 				
@@ -51,18 +52,32 @@ public class EntityBat extends EntityEnemy
 			player.onHurt(this,  1);			
 		}
 		else if (distfrom > 1200) this.destroyEntity = true;
+//		
+//		if (dist.x == 0 && dist.y == 0) 
+//		{
+//			xVel = 0;
+//			yVel = 0;
+//		}
+//		else
+//		{
+//			dist.normalise();	
+//			xVel = -dist.x * 20;
+//			yVel = -dist.y * 20;
+//		}
 		
-		if (dist.x == 0 && dist.y == 0) 
+		tickCounter++;
+		if (tickCounter >= 20)
 		{
-			xVel = 0;
-			yVel = 0;
+			tickCounter = 0;
+			float speed = 20;
+			
+			if (distfrom <= 128) { direction = (float)Math.toDegrees(Math.atan2(pc.y - yPos, pc.x - xPos)); speed = 30; chasing = true; }			
+			else { direction += (((float)Math.random() * 30) - 15); chasing = false; }
+			
+			xVel = (float)Math.cos(Math.toRadians(direction)) * speed;
+			yVel = (float)Math.sin(Math.toRadians(direction)) * speed;
 		}
-		else
-		{
-			dist.normalise();	
-			xVel = -dist.x * 20;
-			yVel = -dist.y * 20;
-		}
+		
 		
 		
 	}
@@ -89,6 +104,12 @@ public class EntityBat extends EntityEnemy
 	{
 		
 		doMove(deltaTime);		
+		
+		frameTimer += deltaTime;
+		if (chasing) frameTimer += (deltaTime / 2);
+		if (frameTimer >= 150) { frameTimer = 0; tileNum++; if (tileNum > baseTile + 1) tileNum = baseTile; }
+		//if (frameTimer >= 0) tileNum = baseTile;
+		//if (frameTimer >= 3) tileNum = baseTile + 1;
 		
 	}
 }

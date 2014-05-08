@@ -35,13 +35,14 @@ import org.newdawn.slick.util.ResourceLoader;
 
 public class LD29 
 {	
+	public static int DEFAULTUSERSCALE = 1;
 	
 	public static LD29 instance = null;
 	
 	public boolean gameRunning = true;	
 	public Texture textureAtlas = null;
 	public static int displayScale = 1;
-	public static float userScale = 2;
+	public static float userScale = DEFAULTUSERSCALE;
 	
 	long[] keypressStart = null;
 	
@@ -316,7 +317,7 @@ public class LD29
 				
 				if (activeGUI == null)
 				{
-					if (getBatCount() < 20) addBat();
+					if (getBatCount() < 40) addBat();
 					if (getSpiderCount() < 40) addSpider();
 					for (Iterator<Entity> iterator = entities.iterator(); iterator.hasNext();) 
 					{
@@ -845,7 +846,7 @@ public class LD29
 			
 			// Show gem count
 			renderTileQuadWithBorder(-1, 16, (3 * 32));	
-			pixelFont8x8.putStringWithBorder("" + gemTotal, 14,  21);
+			pixelFont8x8.putStringWithBorder("" + gemTotal, 12,  20);
 		}
 		
 		if (player.hitpoints <= 0 && activeGUI == null)

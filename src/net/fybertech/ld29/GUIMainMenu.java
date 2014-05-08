@@ -49,8 +49,10 @@ public class GUIMainMenu extends GUI
 			LD29.instance.activeGUI = null;
 			LD29.instance.scrollOffsetX = 0;
 			LD29.instance.scrollOffsetY = 0;
-			LD29.instance.userScale = 2;
+			LD29.instance.userScale = LD29.DEFAULTUSERSCALE;
 			LD29.instance.renderHUD = true;
+			LD29.instance.entities.clear();
+			LD29.instance.entities.add(LD29.instance.player.setRandomPositionOnGround());			
 		}
 		else if (id == 1) LD29.instance.gameRunning = false;
 	}
@@ -99,18 +101,18 @@ public class GUIMainMenu extends GUI
 	{
 		GL11.glLoadIdentity();
 		
-		if (renderScreenCover)
-		{			
-			GL11.glDisable(GL11.GL_TEXTURE_2D);
-			GL11.glColor4f(0,0.25f,0.5f,0.5f);
-			GL11.glBegin(GL11.GL_QUADS);
-			GL11.glVertex2f(0 , 0);
-			GL11.glVertex2f(0 , Display.getHeight());
-			GL11.glVertex2f(Display.getWidth(), Display.getHeight());
-			GL11.glVertex2f(Display.getWidth(), 0);		
-			GL11.glEnd();
-			GL11.glEnable(GL11.GL_TEXTURE_2D);
-		}
+//		if (renderScreenCover)
+//		{			
+//			GL11.glDisable(GL11.GL_TEXTURE_2D);
+//			GL11.glColor4f(0,0.25f,0.5f,0.5f);
+//			GL11.glBegin(GL11.GL_QUADS);
+//			GL11.glVertex2f(0 , 0);
+//			GL11.glVertex2f(0 , Display.getHeight());
+//			GL11.glVertex2f(Display.getWidth(), Display.getHeight());
+//			GL11.glVertex2f(Display.getWidth(), 0);		
+//			GL11.glEnd();
+//			GL11.glEnable(GL11.GL_TEXTURE_2D);
+//		}
 		
 		float localscale = 2;
 		float localwidth = 320 / localscale;
@@ -152,7 +154,23 @@ public class GUIMainMenu extends GUI
 		guiY = (Display.getHeight() / (LD29.displayScale * localscale) - localheight) / 2;
 		GL11.glTranslatef(guiX, guiY,0);
 		
-		LD29.instance.pixelFont4x6.putString("COPYRIGHT C 2014 JEFFREY BOWMAN",  0,  230);
+		LD29.instance.pixelFont4x6.putString("COPYRIGHT   2014 JEFFREY BOWMAN",  0,  230);
+		LD29.instance.pixelFont8x8.putChar((char)169, 38,  230);
+		
+		
+		
+		localscale = 6f;
+		localwidth = 320 / localscale;
+		localheight = 240 / localscale;
+		
+		GL11.glLoadIdentity();
+		GL11.glScalef(((float)LD29.displayScale * localscale), ((float) LD29.displayScale * localscale), 1);
+		GL11.glColor3f(1,1,1);
+		guiX = (Display.getWidth() / (LD29.displayScale * localscale) - localwidth) / 2;
+		guiY = (Display.getHeight() / (LD29.displayScale * localscale) - localheight) / 2;
+		GL11.glTranslatef(guiX, guiY,0);
+		LD29.instance.pixelFont8x8.putStringWithBorder("LOGO", 21, 2);
+		LD29.instance.pixelFont8x8.putStringWithBorder("HERE", 21, 12);
 	}
 
 }

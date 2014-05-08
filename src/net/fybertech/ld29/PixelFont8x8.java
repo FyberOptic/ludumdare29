@@ -18,9 +18,11 @@ public class PixelFont8x8 extends PixelFont {
 		float baseY = uvCalcPixel * (5 * 16);
 		float bottomY = baseY + (uvCalcPixel * charHeight);
 		
-		for (int n = 0; n < 10; n++)
+		for (int n = 0; n < 11; n++)
 		{			
-			chars[n + 48] = new BoundingBox(n * charWidth * uvCalcPixel, baseY, (n * charWidth * uvCalcPixel) + (charWidth * uvCalcPixel), bottomY);
+			int basenum = n + 48;
+			if (n == 10) basenum = 169;
+			chars[basenum] = new BoundingBox(n * charWidth * uvCalcPixel, baseY, (n * charWidth * uvCalcPixel) + (charWidth * uvCalcPixel), bottomY);
 		}
 		
 		
