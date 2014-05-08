@@ -119,13 +119,31 @@ public class Entity
 	public Entity setRandomPositionOnGround()
 	{
 		Vector2i v = grid.findRandomTileAboveGround();
-		this.xPos = v.x * 16;
-		this.yPos = v.y * 16;
+		this.xPos = (v.x * 16) + 8;
+		this.yPos = (v.y * 16) + 8;
 		
 		return this;
 	}
 	
 
+	public Entity setRandomPositionOnGroundFrom(Entity e, int min, int max)
+	{
+		while (true)
+		{
+			setRandomPositionOnGround();			
+			float dx = e.xPos - this.xPos;
+			float dy = e.yPos - this.yPos;
+			float distFrom = (float)Math.sqrt((dx*dx) + (dy*dy));
+			
+			if (min != -1 && distFrom < min) continue;
+			if (max != -1 && distFrom > max) continue;
+			break;			
+		}
+		
+		return this;
+	}
+	
+	
 	
 	/**
 	 * Render entity

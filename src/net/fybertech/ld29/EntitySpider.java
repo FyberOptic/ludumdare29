@@ -123,6 +123,12 @@ public class EntitySpider extends EntityEnemy
 		super.onDeath();
 		
 		SoundManager.playSound("spiderdead", (float)(Math.random() * 0.50) + 1f,  1f,  false);
+		
+		ParticleCorpse corpse = new ParticleCorpse(grid, baseTile + 3, xPos, yPos);				
+		corpse.yVel = -50 - (int)(Math.random() * 50);
+		corpse.xVel = (int)(Math.random() * 100) - 50;	
+		corpse.decay = 30;
+		LD29.instance.newentities.add(corpse);
 	}
 	
 }

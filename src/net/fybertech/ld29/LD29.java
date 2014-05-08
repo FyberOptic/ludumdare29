@@ -118,7 +118,8 @@ public class LD29
 	 * @param height The height of the display required
 	 * @param fullscreen True if we want fullscreen mode
 	 */
-	public void setDisplayMode(int width, int height, boolean fullscreen) {
+	public void setDisplayMode(int width, int height, boolean fullscreen) 
+	{
 
 	    // return if requested DisplayMode is already set
 	    if ((Display.getDisplayMode().getWidth() == width) && 
@@ -201,16 +202,6 @@ public class LD29
 			textureAtlas = TextureLoader.getTexture("PNG", ResourceLoader.getResourceAsStream("res/atlas.png"));
 			textureAtlas.setTextureFilter(GL11.GL_NEAREST);
 			
-			/*			
-			soundThrust = AudioLoader.getAudio("WAV", ResourceLoader.getResourceAsStream("res/thrust.wav"));
-			soundLand = AudioLoader.getAudio("WAV", ResourceLoader.getResourceAsStream("res/land.wav"));
-			soundHead = AudioLoader.getAudio("WAV", ResourceLoader.getResourceAsStream("res/head.wav"));
-			soundShoot = AudioLoader.getAudio("WAV", ResourceLoader.getResourceAsStream("res/shoot.wav"));
-			soundShothit = AudioLoader.getAudio("WAV", ResourceLoader.getResourceAsStream("res/shothit.wav"));
-			soundDirtbreak = AudioLoader.getAudio("WAV", ResourceLoader.getResourceAsStream("res/dirtbreak2.wav"));
-			soundSqueak = AudioLoader.getAudio("WAV", ResourceLoader.getResourceAsStream("res/squeak.wav"));
-			*/
-			
 			soundManager = new SoundManager();
 		}
 		catch(IOException e)
@@ -258,14 +249,8 @@ public class LD29
 		//GL11.glTexEnvf(GL11.GL_TEXTURE_ENV, GL13.GL_COMBINE_ALPHA, GL11.GL_MODULATE);
 		
 		tiles16 = new TileUtil(512, 512, 16, 16);
+	
 		
-		//GL13.glActiveTexture(GL13.GL_TEXTURE1);
-		//GL11.glDisable(GL11.GL_TEXTURE_2D); 
-		//GL13.glActiveTexture(GL13.GL_TEXTURE0);
-		
-		//gridChunk = new GridChunk();
-		//gridChunk.renderToList(gridChunk.initialRenderList);
-		//gridChunk.renderToList(gridChunk.renderList);
 		System.out.println("Creating tile grids");
 		grid = new Grid();
 		backgroundGrid = new Grid();
@@ -276,8 +261,6 @@ public class LD29
 		System.out.println("Adding player");
 		player = new EntityPlayer(grid);
 		player.setRandomPositionOnGround();
-		//player.xPos = 8 * 16;
-		//player.yPos = 8 * 16;
 		entities.add(player);
 		
 		long currentTime = getTime();
@@ -451,7 +434,7 @@ public class LD29
 //			if (grid.getTile(x,  y) == 0 && tileBelow > 0 && tileBelow < 32) { spiderX = x; spiderY = y; break; }
 //		}	
 		
-		entities.add(new EntitySpider(grid).setRandomPositionOnGround());
+		entities.add(new EntitySpider(grid).setRandomPositionOnGroundFrom(player, 200, -1));
 	}
 	
 	
