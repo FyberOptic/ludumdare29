@@ -89,10 +89,16 @@ public class Entity
 		float dx = this.xPos - e.xPos;
 		float dy = this.yPos - e.yPos;
 		
-		if (dx > Grid.TILEGRIDWIDTH * 8) translateX = -Grid.TILEGRIDWIDTH * 16; 
-		else if (dx < -Grid.TILEGRIDWIDTH * 8) translateX = Grid.TILEGRIDWIDTH * 16;
-		if (dy > Grid.TILEGRIDHEIGHT * 8) translateY = -Grid.TILEGRIDHEIGHT * 16; 
-		else if (dy < -Grid.TILEGRIDHEIGHT * 8) translateY = Grid.TILEGRIDHEIGHT * 16;
+		if (grid.wrapHorizontal)
+		{
+			if (dx > Grid.TILEGRIDWIDTH * 8) translateX = -Grid.TILEGRIDWIDTH * 16;
+			else if (dx < -Grid.TILEGRIDWIDTH * 8) translateX = Grid.TILEGRIDWIDTH * 16;
+		}
+		if (grid.wrapVertical)
+		{		
+			if (dy > Grid.TILEGRIDHEIGHT * 8) translateY = -Grid.TILEGRIDHEIGHT * 16; 
+			else if (dy < -Grid.TILEGRIDHEIGHT * 8) translateY = Grid.TILEGRIDHEIGHT * 16;
+		}
 		
 		return new Vector2f(this.xPos + translateX, this.yPos + translateY);
 	}
@@ -239,6 +245,8 @@ public class Entity
 			
 			GL11.glEnable(GL11.GL_TEXTURE_2D);
 			GL11.glPolygonMode(GL11.GL_FRONT_AND_BACK, GL11.GL_FILL);
+			
+			LD29.instance.pixelFont4x6.putString((int)xPos + " " + (int)yPos, rx-8, ry-8);
 		}		
 		
 	}

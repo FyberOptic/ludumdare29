@@ -77,17 +77,18 @@ public class GridChunk
 	 * @return
 	 */
 	
-	public boolean setTile(int x, int y, int tilenum)
+	public int setTile(int x, int y, int tilenum)
 	{			
-		if (x < 0 || y < 0 || x >= Grid.CHUNKWIDTH || y >= Grid.CHUNKHEIGHT) return false;			
+		if (x < 0 || y < 0 || x >= Grid.CHUNKWIDTH || y >= Grid.CHUNKHEIGHT) return -1;	
+		int oldTile = tiles[(y * Grid.CHUNKWIDTH) + x];
 		tiles[(y * Grid.CHUNKWIDTH) + x] = (byte)(tilenum & 0xFF);
 		this.dirty = true;
-		return true;
+		return oldTile;
 	}
 	
 	public int getTile(int x, int y)
 	{			
-		if (x < 0 || y < 0 || x >= Grid.CHUNKWIDTH || y >= Grid.CHUNKHEIGHT) return 0;			
+		if (x < 0 || y < 0 || x >= Grid.CHUNKWIDTH || y >= Grid.CHUNKHEIGHT) return -1;			
 		return tiles[(y * Grid.CHUNKWIDTH) + x] & 0xFF;		
 	}
 	

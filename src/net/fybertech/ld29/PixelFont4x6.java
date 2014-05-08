@@ -24,6 +24,8 @@ public class PixelFont4x6 extends PixelFont {
 		{			
 			chars[n + 65] = new BoundingBox((n+10) * charWidth * uvCalcPixel, baseY, ((n+10) * charWidth * uvCalcPixel) + (charWidth * uvCalcPixel), bottomY);
 		}
+		
+		chars['-'] = new BoundingBox(37 * charWidth * uvCalcPixel, baseY, (37 * charWidth * uvCalcPixel) + (charWidth * uvCalcPixel), bottomY);
 	}
 	
 }

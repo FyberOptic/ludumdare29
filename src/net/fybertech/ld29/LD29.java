@@ -253,10 +253,11 @@ public class LD29
 		
 		System.out.println("Creating tile grids");
 		grid = new Grid();
-		backgroundGrid = new Grid();
-		backgroundGrid.isBackground = true;
-		backgroundGrid2 = new Grid();
-		backgroundGrid2.isBackground = true;
+		grid.wrapVertical = false;
+		//backgroundGrid = new Grid();
+		//backgroundGrid.isBackground = true;
+		//backgroundGrid2 = new Grid();
+		//backgroundGrid2.isBackground = true;
 		
 		System.out.println("Adding player");
 		player = new EntityPlayer(grid);
@@ -319,10 +320,17 @@ public class LD29
 						
 						float halfwidth = e.width / 2.0f;
 						float halfheight = e.height / 2.0f;
-						while (e.xPos - halfwidth >= gridWidth) e.xPos -= gridWidth;
-						while (e.xPos + halfwidth < 0) e.xPos += gridWidth;
-						while (e.yPos - halfheight >= gridHeight) e.yPos -= gridHeight;
-						while (e.yPos + halfheight < 0) e.yPos += gridHeight;
+						
+						if (grid.wrapHorizontal)
+						{
+							while (e.xPos - halfwidth >= gridWidth) e.xPos -= gridWidth;
+							while (e.xPos + halfwidth < 0) e.xPos += gridWidth;
+						}
+						if (grid.wrapVertical)
+						{						
+							while (e.yPos - halfheight >= gridHeight) e.yPos -= gridHeight;
+							while (e.yPos + halfheight < 0) e.yPos += gridHeight;
+						}
 
 					}
 				}
@@ -677,26 +685,38 @@ public class LD29
 	
 		if (!debugMode)
 		{
-		
+			float localScrollX;
+			float localScrollY;
+			
+			localScrollX = scrollX + ((16 * Grid.CHUNKWIDTH) * 16);
+			localScrollY = scrollY;
 			GL11.glPushMatrix();
 			scaleFactor = 0.5f;
 			GL11.glColor3f(0.25f, 0.25f, 0.25f);
 			GL11.glScalef(scaleFactor, scaleFactor, scaleFactor);			
-			GL11.glTranslatef((160 / scaleFactor) - scrollX,  (120 / scaleFactor) - scrollY, 0);
-			backgroundGrid.setScroll(scrollX,  scrollY);
-			backgroundGrid.setGlobalScale(displayScale * userScale * scaleFactor);			
-			backgroundGrid.render();
+			GL11.glTranslatef((160 / scaleFactor) - localScrollX,  (120 / scaleFactor) - localScrollY, 0);
+			//backgroundGrid.setScroll(scrollX,  scrollY);
+			//backgroundGrid.setGlobalScale(displayScale * userScale * scaleFactor);			
+			//backgroundGrid.render();
+			grid.setScroll(localScrollX,  localScrollY);
+			grid.setGlobalScale(displayScale * userScale * scaleFactor);			
+			grid.render();
 			GL11.glPopMatrix();
 
 			
+			localScrollX = scrollX + ((16 * Grid.CHUNKWIDTH) * 32);
+			localScrollY = scrollY;
 			GL11.glPushMatrix();
 			scaleFactor = 0.75f;
 			GL11.glColor3f(0.5f, 0.5f, 0.5f);
 			GL11.glScalef(scaleFactor, scaleFactor, scaleFactor);			
-			GL11.glTranslatef((160 / scaleFactor) - scrollX,  (120 / scaleFactor) - scrollY, 0);
-			backgroundGrid2.setScroll(scrollX,  scrollY);
-			backgroundGrid2.setGlobalScale(displayScale * userScale * scaleFactor);			
-			backgroundGrid2.render();
+			GL11.glTranslatef((160 / scaleFactor) - localScrollX,  (120 / scaleFactor) - localScrollY, 0);
+			//backgroundGrid2.setScroll(scrollX,  scrollY);
+			//backgroundGrid2.setGlobalScale(displayScale * userScale * scaleFactor);			
+			//backgroundGrid2.render();
+			grid.setScroll(localScrollX,  localScrollY);
+			grid.setGlobalScale(displayScale * userScale * scaleFactor);			
+			grid.render();
 			GL11.glPopMatrix();
 		}
 
@@ -752,10 +772,16 @@ public class LD29
 			float dx = e.xPos - player.xPos;
 			float dy = e.yPos - player.yPos;
 			
-			if (dx > Grid.TILEGRIDWIDTH * 8) translateX = -Grid.TILEGRIDWIDTH * 16; 
-			else if (dx < -Grid.TILEGRIDWIDTH * 8) translateX = Grid.TILEGRIDWIDTH * 16;
-			if (dy > Grid.TILEGRIDHEIGHT * 8) translateY = -Grid.TILEGRIDHEIGHT * 16; 
-			else if (dy < -Grid.TILEGRIDHEIGHT * 8) translateY = Grid.TILEGRIDHEIGHT * 16;
+			if (grid.wrapHorizontal)
+			{
+				if (dx > Grid.TILEGRIDWIDTH * 8) translateX = -Grid.TILEGRIDWIDTH * 16; 
+				else if (dx < -Grid.TILEGRIDWIDTH * 8) translateX = Grid.TILEGRIDWIDTH * 16;
+			}
+			if (grid.wrapVertical)
+			{
+				if (dy > Grid.TILEGRIDHEIGHT * 8) translateY = -Grid.TILEGRIDHEIGHT * 16;
+				else if (dy < -Grid.TILEGRIDHEIGHT * 8) translateY = Grid.TILEGRIDHEIGHT * 16;
+			}			
 			
 			GL11.glTranslatef(translateX,  translateY,  0);
 			

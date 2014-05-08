@@ -7,7 +7,7 @@ public class Grid
 {
 	GridChunk[] gridChunks;
 	
-	public static final int GRIDWIDTH = 16;
+	public static final int GRIDWIDTH = 48;
 	public static final int GRIDHEIGHT = 16;
 	
 	public static final int CHUNKWIDTH = 16;
@@ -25,6 +25,9 @@ public class Grid
 	
 	public float scrollX = 0;
 	public float scrollY = 0;
+	
+	public boolean wrapHorizontal = true;
+	public boolean wrapVertical = true;
 	
 	public boolean isBackground = false;
 	
@@ -71,7 +74,8 @@ public class Grid
 			int blocksDestroyed = 0;
 			
 			//for (int n = 0; n < length; n++)
-			while (blocksDestroyed < 10000)
+			boolean narrowPath = true;
+			while (blocksDestroyed < 15000)
 			{
 				startX += Math.cos(Math.toRadians(dir));
 				startY += Math.sin(Math.toRadians(dir));				
@@ -82,12 +86,25 @@ public class Grid
 				int intY = (int)Math.floor(startY);
 				
 				boolean hitEdge = false;
+				if (narrowPath && Math.random() > 0.97) narrowPath = false;
+				else if (!narrowPath && Math.random() > 0.75) narrowPath = true;
 				
-				if (!setTile(intX, intY, 0)) hitEdge = true; else blocksDestroyed++;
-				if (!setTile(intX+1, intY, 0)) hitEdge = true; else blocksDestroyed++;
-				if (!setTile(intX-1, intY, 0)) hitEdge = true; else blocksDestroyed++;
-				if (!setTile(intX, intY+1, 0)) hitEdge = true; else blocksDestroyed++;
-				if (!setTile(intX, intY-1, 0)) hitEdge = true; else blocksDestroyed++;
+				int oldTile;
+				if (narrowPath)
+				{
+					oldTile = setTile(intX, intY, 0); if (oldTile == -1) hitEdge = true; else if (oldTile > 0) blocksDestroyed++;
+					oldTile = setTile(intX+1, intY, 0); if (oldTile == -1) hitEdge = true; else if (oldTile > 0) blocksDestroyed++;
+					oldTile = setTile(intX-1, intY, 0); if (oldTile == -1) hitEdge = true; else if (oldTile > 0) blocksDestroyed++;
+					oldTile = setTile(intX, intY+1, 0); if (oldTile == -1) hitEdge = true; else if (oldTile > 0) blocksDestroyed++;
+					oldTile = setTile(intX, intY-1, 0); if (oldTile == -1) hitEdge = true; else if (oldTile > 0) blocksDestroyed++;
+				}
+				else
+				{		
+					for (int n = -1; n <= 1; n++) { oldTile = setTile(intX + n, intY-1, 0); if (oldTile == -1) hitEdge = true; else if (oldTile > 0) blocksDestroyed++; }
+					for (int n = -2; n <= 2; n++) { oldTile = setTile(intX + n, intY, 0); if (oldTile == -1) hitEdge = true; else if (oldTile > 0) blocksDestroyed++; }
+					for (int n = -2; n <= 2; n++) { oldTile = setTile(intX + n, intY+1, 0); if (oldTile == -1) hitEdge = true; else if (oldTile > 0) blocksDestroyed++; }
+					for (int n = -1; n <= 1; n++) { oldTile = setTile(intX + n, intY+2, 0); if (oldTile == -1) hitEdge = true; else if (oldTile > 0) blocksDestroyed++; }
+				}
 				
 				if (hitEdge) 
 				{ 
@@ -130,12 +147,18 @@ public class Grid
 		
 	}	
 	
-	public boolean setTile(int x, int y, int tilenum)
+	public int setTile(int x, int y, int tilenum)
 	{			
-		while (x < 0) x += TILEGRIDWIDTH;
-		while (y < 0) y += TILEGRIDHEIGHT;
-		while (x >= TILEGRIDWIDTH) x -= TILEGRIDWIDTH;
-		while (y >= TILEGRIDHEIGHT) y -= TILEGRIDHEIGHT;
+		if (wrapHorizontal)
+		{
+			while (x < 0) x += TILEGRIDWIDTH;
+			while (x >= TILEGRIDWIDTH) x -= TILEGRIDWIDTH;
+		}
+		if (wrapVertical)
+		{
+			while (y < 0) y += TILEGRIDHEIGHT;		
+			while (y >= TILEGRIDHEIGHT) y -= TILEGRIDHEIGHT;
+		}
 
 		
 		int cx = x >> 4;
@@ -143,28 +166,39 @@ public class Grid
 		int ctx = x & 0xF;
 		int cty = y & 0xF;
 		
-		if (cx < 0 || cy < 0 || cx >= GRIDWIDTH || cy >= GRIDHEIGHT) return false;
+		if (cx < 0 || cy < 0 || cx >= GRIDWIDTH || cy >= GRIDHEIGHT) return -1;
+		
+		//if (cy < 1) return -1;
 		
 		// Protection border
 		//if (x < 2 || y < 2 || x >= TILEGRIDWIDTH - 2 || y >= TILEGRIDHEIGHT - 2) return false;
 		
-		if (!gridChunks[(cy * GRIDWIDTH) + cx].setTile(ctx, cty, tilenum)) return false;		
+		int oldTile = gridChunks[(cy * GRIDWIDTH) + cx].setTile(ctx, cty, tilenum);		
 		
-		notifyTileUpdate(x, y);
-		notifyTileUpdate(x+1, y);
-		notifyTileUpdate(x-1, y);
-		notifyTileUpdate(x, y+1);
-		notifyTileUpdate(x, y-1);
+		if (oldTile != -1)
+		{
+			notifyTileUpdate(x, y);
+			notifyTileUpdate(x+1, y);
+			notifyTileUpdate(x-1, y);
+			notifyTileUpdate(x, y+1);
+			notifyTileUpdate(x, y-1);
+		}
 		
-		return true;
+		return oldTile;
 	}
 	
-	public boolean setTileDirect(int x, int y, int tilenum)
+	public int setTileDirect(int x, int y, int tilenum)
 	{			
-		while (x < 0) x += TILEGRIDWIDTH;
-		while (y < 0) y += TILEGRIDHEIGHT;
-		while (x >= TILEGRIDWIDTH) x -= TILEGRIDWIDTH;
-		while (y >= TILEGRIDHEIGHT) y -= TILEGRIDHEIGHT;
+		if (wrapHorizontal)
+		{
+			while (x < 0) x += TILEGRIDWIDTH;
+			while (x >= TILEGRIDWIDTH) x -= TILEGRIDWIDTH;
+		}
+		if (wrapVertical)
+		{
+			while (y < 0) y += TILEGRIDHEIGHT;		
+			while (y >= TILEGRIDHEIGHT) y -= TILEGRIDHEIGHT;
+		}
 
 		
 		int cx = x >> 4;
@@ -172,7 +206,7 @@ public class Grid
 		int ctx = x & 0xF;
 		int cty = y & 0xF;
 		
-		if (cx < 0 || cy < 0 || cx >= GRIDWIDTH || cy >= GRIDHEIGHT) return false;
+		if (cx < 0 || cy < 0 || cx >= GRIDWIDTH || cy >= GRIDHEIGHT) return -1;
 		
 		return gridChunks[(cy * GRIDWIDTH) + cx].setTile(ctx, cty, tilenum);		
 	}
@@ -180,10 +214,16 @@ public class Grid
 	
 	public int getTile(int x, int y)
 	{		
-		while (x < 0) x += TILEGRIDWIDTH;
-		while (y < 0) y += TILEGRIDHEIGHT;
-		while (x >= TILEGRIDWIDTH) x -= TILEGRIDWIDTH;
-		while (y >= TILEGRIDHEIGHT) y -= TILEGRIDHEIGHT;
+		if (wrapHorizontal)
+		{
+			while (x < 0) x += TILEGRIDWIDTH;
+			while (x >= TILEGRIDWIDTH) x -= TILEGRIDWIDTH;
+		}
+		if (wrapVertical)
+		{
+			while (y < 0) y += TILEGRIDHEIGHT;		
+			while (y >= TILEGRIDHEIGHT) y -= TILEGRIDHEIGHT;
+		}
 
 		
 		int cx = x >> 4;
@@ -199,10 +239,16 @@ public class Grid
 	
 	public void setData(int x, int y, int tileNum)
 	{
-		while (x < 0) x += TILEGRIDWIDTH;
-		while (y < 0) y += TILEGRIDHEIGHT;
-		while (x >= TILEGRIDWIDTH) x -= TILEGRIDWIDTH;
-		while (y >= TILEGRIDHEIGHT) y -= TILEGRIDHEIGHT;
+		if (wrapHorizontal)
+		{
+			while (x < 0) x += TILEGRIDWIDTH;
+			while (x >= TILEGRIDWIDTH) x -= TILEGRIDWIDTH;
+		}
+		if (wrapVertical)
+		{
+			while (y < 0) y += TILEGRIDHEIGHT;		
+			while (y >= TILEGRIDHEIGHT) y -= TILEGRIDHEIGHT;
+		}
 
 		
 		int cx = x >> 4;
@@ -218,10 +264,16 @@ public class Grid
 	
 	public int getData(int x, int y)
 	{
-		while (x < 0) x += TILEGRIDWIDTH;
-		while (y < 0) y += TILEGRIDHEIGHT;
-		while (x >= TILEGRIDWIDTH) x -= TILEGRIDWIDTH;
-		while (y >= TILEGRIDHEIGHT) y -= TILEGRIDHEIGHT;
+		if (wrapHorizontal)
+		{
+			while (x < 0) x += TILEGRIDWIDTH;
+			while (x >= TILEGRIDWIDTH) x -= TILEGRIDWIDTH;
+		}
+		if (wrapVertical)
+		{
+			while (y < 0) y += TILEGRIDHEIGHT;		
+			while (y >= TILEGRIDHEIGHT) y -= TILEGRIDHEIGHT;
+		}
 		
 		int cx = x >> 4;
 		int cy = y >> 4;
@@ -281,10 +333,18 @@ public class Grid
 				
 				//if (x < 0 || y < 0) System.out.println("RENDERING NEGATIVE");
 				
-				while (cx < 0) cx += GRIDWIDTH;
-				while (cy < 0) cy += GRIDHEIGHT;
-				while (cx >= GRIDWIDTH) cx -= GRIDWIDTH;
-				while (cy >= GRIDHEIGHT) cy -= GRIDHEIGHT;
+				if (wrapHorizontal) 
+				{
+					while (cx < 0) cx += GRIDWIDTH;
+					while (cx >= GRIDWIDTH) cx -= GRIDWIDTH;
+				}
+				if (wrapVertical)
+				{
+					while (cy < 0) cy += GRIDHEIGHT;				
+					while (cy >= GRIDHEIGHT) cy -= GRIDHEIGHT;
+				}
+				
+				if (cx < 0 || cy < 0 || cx >= GRIDWIDTH || cy >= GRIDHEIGHT) continue;
 				
 				GL11.glPushMatrix();
 				GL11.glTranslatef(x * CHUNKWIDTH * 16, y * CHUNKHEIGHT * 16,  0);			
