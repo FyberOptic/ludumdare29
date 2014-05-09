@@ -331,6 +331,7 @@ public class LD29
 							while (e.yPos - halfheight >= gridHeight) e.yPos -= gridHeight;
 							while (e.yPos + halfheight < 0) e.yPos += gridHeight;
 						}
+						else if (e.yPos >= Grid.TILEGRIDHEIGHT * 16 && e instanceof EntityLiving) ((EntityLiving)e).onHurt(null,  1);
 
 					}
 				}
@@ -395,13 +396,24 @@ public class LD29
 		
 		//System.out.println("Adding bat");
 		
-		batX = (float)(Math.random() * 800) + 200;
-		batY = (float)(Math.random() * 800) + 200;
-		if (Math.random() > 0.5f) batX = -batX;
-		if (Math.random() > 0.5f) batY = -batY;
+		while (true)
+		{
+			batX = (float)(Math.random() * 800) + 200;
+			batY = (float)(Math.random() * 800) + 200;
+			if (Math.random() > 0.5f) batX = -batX;
+			if (Math.random() > 0.5f) batY = -batY;
+			
+			batX += player.xPos;
+			batY += player.yPos;
+			
+			if (!grid.wrapVertical)
+			{
+				if (batY >= 0 && batY <= Grid.TILEGRIDHEIGHT * 16) break;
+			}
+			else break;
+		}
 		
-		batX += player.xPos;
-		batY += player.yPos;
+		
 		
 //		while (true)
 //		{
@@ -688,6 +700,9 @@ public class LD29
 			float localScrollX;
 			float localScrollY;
 			
+			boolean oldWrap = grid.wrapVertical; 
+			grid.wrapVertical = true;
+			
 			localScrollX = scrollX + ((16 * Grid.CHUNKWIDTH) * 16);
 			localScrollY = scrollY;
 			GL11.glPushMatrix();
@@ -718,6 +733,8 @@ public class LD29
 			grid.setGlobalScale(displayScale * userScale * scaleFactor);			
 			grid.render();
 			GL11.glPopMatrix();
+			
+			grid.wrapVertical = oldWrap;
 		}
 
 		
@@ -730,6 +747,7 @@ public class LD29
 		
 		if (!debugMode)
 		{		
+			
 			float bordersize = 1f;
 			GL11.glColor4f(0f,0f,0f,1f);
 			GL11.glPushMatrix();

@@ -6,6 +6,8 @@ import org.lwjgl.opengl.GL11;
 public class Grid 
 {
 	GridChunk[] gridChunks;
+	GridChunk lavaChunk;
+	GridChunk rockChunk;
 	
 	public static final int GRIDWIDTH = 48;
 	public static final int GRIDHEIGHT = 16;
@@ -144,6 +146,29 @@ public class Grid
 		}
 		
 		
+		// Generate lava chunk
+		lavaChunk = new GridChunk(this, -1,-1);
+		for (int n = 0; n < Grid.CHUNKWIDTH * Grid.CHUNKHEIGHT; n++) 
+		{
+			int x = n % CHUNKWIDTH;
+			int y = n / CHUNKWIDTH;
+			int tileNum = 19;
+			if (y == 0) tileNum = 18;
+			
+			lavaChunk.setTile(x,  y, tileNum);			
+		}
+		
+		// Generate rock chunk
+		rockChunk = new GridChunk(this, -1,-1);
+		for (int n = 0; n < Grid.CHUNKWIDTH * Grid.CHUNKHEIGHT; n++) 
+		{
+			int x = n % CHUNKWIDTH;
+			int y = n / CHUNKWIDTH;
+			int tileNum = 7;
+			if (y == Grid.CHUNKHEIGHT-1) tileNum = 8 + (int)(Math.random() * 2);
+			
+			rockChunk.setTile(x,  y, tileNum);			
+		}
 		
 	}	
 	
@@ -232,7 +257,8 @@ public class Grid
 		int ctx = x & 0xF;
 		int cty = y & 0xF;
 		
-		if (cx < 0 || cy < 0 || cx >= GRIDWIDTH || cy >= GRIDHEIGHT) return 0;
+		if (cx < 0 || cx >= GRIDWIDTH || cy >= GRIDHEIGHT) return 0;
+		if (cy < 0) return 7; 
 		
 		return gridChunks[(cy * GRIDWIDTH) + cx].getTile(ctx, cty);
 	}
@@ -342,13 +368,18 @@ public class Grid
 				{
 					while (cy < 0) cy += GRIDHEIGHT;				
 					while (cy >= GRIDHEIGHT) cy -= GRIDHEIGHT;
-				}
+				}				
 				
-				if (cx < 0 || cy < 0 || cx >= GRIDWIDTH || cy >= GRIDHEIGHT) continue;
+				GridChunk chunk;
+				
+				if (cx < 0 || cx >= GRIDWIDTH) continue;
+				if (cy >= GRIDHEIGHT) chunk = lavaChunk;
+				else if (cy < 0) chunk = rockChunk;
+				else chunk = gridChunks[(cy * GRIDWIDTH) + cx];
 				
 				GL11.glPushMatrix();
 				GL11.glTranslatef(x * CHUNKWIDTH * 16, y * CHUNKHEIGHT * 16,  0);			
-				gridChunks[(cy * GRIDWIDTH) + cx].render();
+				chunk.render();
 				GL11.glPopMatrix();
 			}
 		}

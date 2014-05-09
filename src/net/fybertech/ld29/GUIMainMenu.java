@@ -35,7 +35,7 @@ public class GUIMainMenu extends GUI
 		LD29.instance.userScale = 6;	
 		LD29.instance.renderHUD = false;
 		LD29.instance.scrollOffsetX = 16;
-		LD29.instance.scrollOffsetY = 4;
+		LD29.instance.scrollOffsetY = 4;		
 	}
 	
 	
@@ -52,7 +52,8 @@ public class GUIMainMenu extends GUI
 			LD29.instance.userScale = LD29.DEFAULTUSERSCALE;
 			LD29.instance.renderHUD = true;
 			LD29.instance.entities.clear();
-			LD29.instance.entities.add(LD29.instance.player.setRandomPositionOnGround());			
+			LD29.instance.entities.add(LD29.instance.player.setRandomPositionOnGround());		
+			LD29.instance.grid.wrapVertical = false;
 		}
 		else if (id == 1) LD29.instance.gameRunning = false;
 	}
@@ -94,6 +95,29 @@ public class GUIMainMenu extends GUI
 			e.tick();
 			if (e.destroyEntity) iterator.remove();
 		}
+		
+		
+		int gridWidth = Grid.TILEGRIDWIDTH * 16;
+		int gridHeight = Grid.TILEGRIDHEIGHT * 16;
+		for (Entity e : LD29.instance.entities)
+		{
+			if (e instanceof Particle) continue;
+			
+			float halfwidth = e.width / 2.0f;
+			float halfheight = e.height / 2.0f;
+			
+			if (LD29.instance.grid.wrapHorizontal)
+			{
+				while (e.xPos - halfwidth >= gridWidth) e.xPos -= gridWidth;
+				while (e.xPos + halfwidth < 0) e.xPos += gridWidth;
+			}
+			if (LD29.instance.grid.wrapVertical)
+			{						
+				while (e.yPos - halfheight >= gridHeight) e.yPos -= gridHeight;
+				while (e.yPos + halfheight < 0) e.yPos += gridHeight;
+			}
+
+		}
 	}
 	
 	@Override
@@ -113,6 +137,8 @@ public class GUIMainMenu extends GUI
 //			GL11.glEnd();
 //			GL11.glEnable(GL11.GL_TEXTURE_2D);
 //		}
+		
+		LD29.instance.grid.wrapVertical = true;
 		
 		float localscale = 2;
 		float localwidth = 320 / localscale;
@@ -151,26 +177,81 @@ public class GUIMainMenu extends GUI
 		GL11.glScalef(((float)LD29.displayScale * localscale), ((float) LD29.displayScale * localscale), 1);
 		GL11.glColor3f(0.25f,0.75f,0.25f);
 		guiX = (Display.getWidth() / (LD29.displayScale * localscale) - localwidth) / 2;
-		guiY = (Display.getHeight() / (LD29.displayScale * localscale) - localheight) / 2;
+		guiY = (Display.getHeight() / (LD29.displayScale * localscale) - localheight) / 2;		
 		GL11.glTranslatef(guiX, guiY,0);
 		
 		LD29.instance.pixelFont4x6.putString("COPYRIGHT   2014 JEFFREY BOWMAN",  0,  230);
 		LD29.instance.pixelFont8x8.putChar((char)169, 38,  230);
 		
+//		GL11.glTranslatef(112,8,0);
+		
+//		int logoWidth = 208;
+//		int logoHeight = 128;
+//		float uvCalc = 1f / 512f;
+//		float left = 0;
+//		float right = logoWidth * uvCalc;
+//		float top = (512 - logoHeight) * uvCalc;
+//		float bottom = 512 * uvCalc;
+//		
+//		GL11.glColor3f(1,1,1);
+//		GL11.glBegin(GL11.GL_QUADS);
+//		GL11.glTexCoord2f(left, top);
+//		GL11.glVertex2f(0 , 0);
+//		GL11.glTexCoord2f(left,  bottom);
+//		GL11.glVertex2f(0 , logoHeight);
+//		GL11.glTexCoord2f(right,  bottom);
+//		GL11.glVertex2f(logoWidth, logoHeight);
+//		GL11.glTexCoord2f(right, top);
+//		GL11.glVertex2f(logoWidth, 0);		
+//		GL11.glEnd();
 		
 		
-		localscale = 6f;
+		localscale = 2f;
 		localwidth = 320 / localscale;
 		localheight = 240 / localscale;
 		
 		GL11.glLoadIdentity();
 		GL11.glScalef(((float)LD29.displayScale * localscale), ((float) LD29.displayScale * localscale), 1);
-		GL11.glColor3f(1,1,1);
+		GL11.glColor3f(0.25f,0.75f,0.25f);
 		guiX = (Display.getWidth() / (LD29.displayScale * localscale) - localwidth) / 2;
-		guiY = (Display.getHeight() / (LD29.displayScale * localscale) - localheight) / 2;
+		guiY = (Display.getHeight() / (LD29.displayScale * localscale) - localheight) / 2;		
 		GL11.glTranslatef(guiX, guiY,0);
-		LD29.instance.pixelFont8x8.putStringWithBorder("LOGO", 21, 2);
-		LD29.instance.pixelFont8x8.putStringWithBorder("HERE", 21, 12);
+		GL11.glTranslatef(64,4,0);
+		
+		int logoWidth = 6 * 16;
+		int logoHeight = 4 * 16;
+		float uvCalc = 1f / 512f;
+		float left = 0;
+		float right = logoWidth * uvCalc;
+		float top = (512 - logoHeight) * uvCalc;
+		float bottom = 512 * uvCalc;
+		
+		GL11.glColor3f(1,1,1);
+		GL11.glBegin(GL11.GL_QUADS);
+		GL11.glTexCoord2f(left, top);
+		GL11.glVertex2f(0 , 0);
+		GL11.glTexCoord2f(left,  bottom);
+		GL11.glVertex2f(0 , logoHeight);
+		GL11.glTexCoord2f(right,  bottom);
+		GL11.glVertex2f(logoWidth, logoHeight);
+		GL11.glTexCoord2f(right, top);
+		GL11.glVertex2f(logoWidth, 0);		
+		GL11.glEnd();
+		
+		
+		
+//		localscale = 6f;
+//		localwidth = 320 / localscale;
+//		localheight = 240 / localscale;
+//		
+//		GL11.glLoadIdentity();
+//		GL11.glScalef(((float)LD29.displayScale * localscale), ((float) LD29.displayScale * localscale), 1);
+//		GL11.glColor3f(1,1,1);
+//		guiX = (Display.getWidth() / (LD29.displayScale * localscale) - localwidth) / 2;
+//		guiY = (Display.getHeight() / (LD29.displayScale * localscale) - localheight) / 2;
+//		GL11.glTranslatef(guiX, guiY,0);
+//		LD29.instance.pixelFont8x8.putStringWithBorder("LOGO", 21, 2);
+//		LD29.instance.pixelFont8x8.putStringWithBorder("HERE", 21, 12);
 	}
 
 }

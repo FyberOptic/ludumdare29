@@ -24,14 +24,17 @@ public class EntityLiving extends Entity
 
 			int dir = 1;	
 			
-			if (e.xVel - xVel > 0) dir = 1;
-			else if (e.xVel - xVel < 0) dir = -1;
-			else
+			if (e != null)
 			{
-				Vector2f pc = e.getPositionRelatedTo(this);
-				dir = (pc.x <= this.xPos ? 1 : -1);
+				if (e.xVel - xVel > 0) dir = 1;
+				else if (e.xVel - xVel < 0) dir = -1;
+				else
+				{
+					Vector2f pc = e.getPositionRelatedTo(this);
+					dir = (pc.x <= this.xPos ? 1 : -1);
+				}
+				xVel += 200 * dir;
 			}
-			xVel += 200 * dir;
 		}
 		
 		if (hitpoints <= 0) onDeath();

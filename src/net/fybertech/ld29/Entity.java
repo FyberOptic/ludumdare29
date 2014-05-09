@@ -137,9 +137,7 @@ public class Entity
 		while (true)
 		{
 			setRandomPositionOnGround();			
-			float dx = e.xPos - this.xPos;
-			float dy = e.yPos - this.yPos;
-			float distFrom = (float)Math.sqrt((dx*dx) + (dy*dy));
+			float distFrom = this.getDistanceFrom(e);
 			
 			if (min != -1 && distFrom < min) continue;
 			if (max != -1 && distFrom > max) continue;
@@ -147,6 +145,16 @@ public class Entity
 		}
 		
 		return this;
+	}
+	
+	
+	
+	public float getDistanceFrom(Entity e)
+	{
+		Vector2f v = e.getPositionRelatedTo(this);		
+		float dx = v.x - this.xPos;
+		float dy = v.y - this.yPos;		
+		return (float)Math.sqrt((dx*dx) + (dy*dy));
 	}
 	
 	

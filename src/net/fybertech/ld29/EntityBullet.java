@@ -51,7 +51,14 @@ public class EntityBullet extends Entity
 	{
 		doMove(deltaTime);
 		
-
+		
+//		if (yPos < 0)
+//		{
+//			SoundManager.playSound("shothit", (float)(Math.random() * 0.25) + 0.35f,  0.2f,  false);
+//			destroyEntity = true;
+//		}
+		
+		
 		if ((xCollide || yCollide) && !hitObject) 
 		{ 						
 			destroyEntity = true;
