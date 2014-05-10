@@ -72,7 +72,7 @@ public class EntityPlayer extends EntityLiving
 		for (Vector2i v : intercepts)
 		{
 			int tile = grid.getTile(v.x,  v.y);
-			if (tile == 96)
+			if (tile == TileUtil.TILE_GEM)
 			{
 				BoundingBox bb = getGridPosBB(v.x, v.y).expand(-8, -8);
 				if (bb.boxOverlaps(this.getBB()))
@@ -80,6 +80,14 @@ public class EntityPlayer extends EntityLiving
 					LD29.gemTotal++;
 					SoundManager.playSound("gem", (float) (Math.random() * 0.05) + 1f,  0.75f,  false);
 					grid.setTile(v.x, v.y, 0);					
+				}
+			}
+			else if (tile == TileUtil.TILE_STALACTITE)
+			{
+				BoundingBox bb = getGridPosBB(v.x, v.y).expand(-4, -8);
+				if (bb.boxOverlaps(this.getBB()))
+				{					
+					this.onHurt(null,  1);
 				}
 			}
 		}
@@ -125,8 +133,9 @@ public class EntityPlayer extends EntityLiving
 	@Override
 	public void onHurt(Entity e, int damage)
 	{
+		int startCooldown = hitCooldown;
 		super.onHurt(e,  damage);				
-		if (hitCooldown == defaultCooldown) SoundManager.playSound("head", (float)(Math.random() * 0.25) + 1.5f,  0.75f,  false);
+		if (startCooldown == 0 && hitCooldown == defaultCooldown) SoundManager.playSound("head", (float)(Math.random() * 0.25) + 1.5f,  0.75f,  false);
 	}
 	
 	@Override
