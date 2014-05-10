@@ -103,7 +103,7 @@ public class EntitySpider extends EntityEnemy
 				
 		if (distfrom <= 32 && player.getBBRelatedTo(this).boxOverlaps(this.getBB()))
 		{
-			player.onHurt(this,  1);			
+			player.onHurt(this,  1);
 		}	
 		
 	}

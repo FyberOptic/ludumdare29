@@ -322,6 +322,7 @@ public class LD29
 							while (e.yPos - halfheight >= gridHeight) e.yPos -= gridHeight;
 							while (e.yPos + halfheight < 0) e.yPos += gridHeight;
 						}
+						// Lava damage
 						else if (e.yPos >= Grid.TILEGRIDHEIGHT * 16 && e instanceof EntityLiving) ((EntityLiving)e).onHurt(null,  1);
 
 					}
@@ -512,6 +513,7 @@ public class LD29
 			}
 			else { player.isJumping = false; player.isThrusting = false; }
 		
+			if (Keyboard.isKeyDown(Keyboard.KEY_W)) player.isVerticalBoosting = true; else player.isVerticalBoosting = false;
 			
 			float scrollamount = (deltaTime / 1000.0f) * 150;
 			

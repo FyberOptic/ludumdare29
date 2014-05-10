@@ -18,8 +18,8 @@ public class Entity
 
 	public int tileNum;
 	
-	public float uvOffsetX = 0;
-	public float uvOffsetY = 0;
+	public float offsetX = 0;
+	public float offsetY = 0;
 	
 	public int facing = 1;	
 	
@@ -193,16 +193,16 @@ public class Entity
 		
 		GL11.glBegin(GL11.GL_QUADS);
 		GL11.glTexCoord2f(uv.xMin, uv.yMin);	
-		GL11.glVertex2f(rx + uvOffsetX, ry + uvOffsetY);	
+		GL11.glVertex2f(rx , ry);	
 		
 		GL11.glTexCoord2f(uv.xMax, uv.yMin); 
-		GL11.glVertex2f(rx + 16 + uvOffsetX, ry + uvOffsetY);	
+		GL11.glVertex2f(rx + 16, ry);	
 		
 		GL11.glTexCoord2f(uv.xMax, uv.yMax); 
-		GL11.glVertex2f(rx + 16 + uvOffsetX, ry + 16 + uvOffsetY);	
+		GL11.glVertex2f(rx + 16, ry + 16);	
 		
 		GL11.glTexCoord2f(uv.xMin, uv.yMax); 
-		GL11.glVertex2f(rx + uvOffsetX, ry + 16 + uvOffsetY);
+		GL11.glVertex2f(rx, ry + 16);
 		GL11.glEnd();
 		
 		
@@ -308,7 +308,7 @@ public class Entity
 	 * @param y
 	 * @return
 	 */
-	public BoundingBox bbFromGridPos(int x, int y)
+	public BoundingBox getGridPosBB(int x, int y)
 	{
 		//return new BoundingBox(x * 16, y * 16, (x * 16) + 16f - 0.0001f, (y * 16) + 16f - 0.0001f);  // FYBER: USED TO BE + 15
 		return new BoundingBox(x * 16, y * 16, (x * 16) + 16f, (y * 16) + 16f);  // FYBER: USED TO BE + 15
@@ -323,7 +323,7 @@ public class Entity
 	public BoundingBox getBB()
 	{
 		//return new BoundingBox(xPos, yPos, xPos + 15f, yPos + 15f);
-		return new BoundingBox(xPos - (width / 2.0f), yPos - (height / 2.0f), xPos + (width / 2.0f), yPos + (height / 2.0f));
+		return new BoundingBox(xPos - (width / 2.0f) + offsetX, yPos - (height / 2.0f) + offsetY, xPos + (width / 2.0f) + offsetX, yPos + (height / 2.0f) + offsetY);
 	}
 	
 	
@@ -356,7 +356,7 @@ public class Entity
 		{
 			for (Vector2i v : intercepts)
 			{
-				BoundingBox gridbb = bbFromGridPos(v.x, v.y);
+				BoundingBox gridbb = getGridPosBB(v.x, v.y);
 				if (!gridbb.boxOverlapsY(bb)) continue;	
 				//if (gridbb.xMin <= bb.xMax) continue; 
 				if (gridbb.xMax <= bb.xMin) continue; 
@@ -374,7 +374,7 @@ public class Entity
 			//System.out.println("DELTA2-START: " + currentDelta);
 			for (Vector2i v : intercepts)
 			{
-				BoundingBox gridbb = bbFromGridPos(v.x, v.y);
+				BoundingBox gridbb = getGridPosBB(v.x, v.y);
 				if (!gridbb.boxOverlapsY(bb)) continue;				
 				//if (gridbb.xMax >= bb.xMin) continue;	
 				if (gridbb.xMin >= bb.xMax) continue;					
@@ -410,7 +410,7 @@ public class Entity
 		{
 			for (Vector2i v : intercepts)
 			{
-				BoundingBox gridbb = bbFromGridPos(v.x, v.y);
+				BoundingBox gridbb = getGridPosBB(v.x, v.y);
 				if (!gridbb.boxOverlapsX(bb)) continue;	
 				//if (gridbb.yMin <= bb.yMax) continue;
 				if (gridbb.yMax <= bb.yMin) continue; 
@@ -427,7 +427,7 @@ public class Entity
 			//currentDelta = -y;
 			for (Vector2i v : intercepts)
 			{
-				BoundingBox gridbb = bbFromGridPos(v.x, v.y);
+				BoundingBox gridbb = getGridPosBB(v.x, v.y);
 				if (!gridbb.boxOverlapsX(bb)) continue;				
 				//if (gridbb.yMax >= bb.yMin) continue;
 				if (gridbb.yMin >= bb.yMax) continue;	
@@ -449,7 +449,7 @@ public class Entity
 	 * Set list of tiles which overlap with specified bounding box
 	 * @param bb - Bounding box to test against
 	 * @param list - List of Vector2i to append overlapping tiles with 
-	 * @param everything - Test again all tile types, or just the first 32
+	 * @param everything - Test against all tile types, or just solid ones
 	 */
 	public void getIntercepts(BoundingBox bb, ArrayList<Vector2i> list, boolean everything)
 	{
@@ -457,10 +457,10 @@ public class Entity
 		{
 			for (int x = ((int)(Math.floor(bb.xMin)) >> 4) - 1; x <= (int)(Math.ceil(bb.xMax)) >> 4; x++)
 			{
-				if (this.bbFromGridPos(x, y).boxOverlaps(bb))
+				if (this.getGridPosBB(x, y).boxOverlaps(bb))
 				{
 					int tile = grid.getTile(x, y);
-					if (tile > 0 && (tile < 32 || everything)) list.add(new Vector2i(x, y));
+					if (tile > 0 && (Grid.isSolid(tile) || everything)) list.add(new Vector2i(x, y));
 				}
 			}
 		}

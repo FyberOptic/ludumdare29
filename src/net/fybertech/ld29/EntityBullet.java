@@ -90,7 +90,7 @@ public class EntityBullet extends Entity
 				
 				//System.out.println("TESTING " + v.x + " " + v.y);
 				
-				if (tile > 0 && tile < 32)
+				if (Grid.isSolid(tile))
 				{					
 					//BoundingBox bb = bbFromGridPos(v.x, v.y);
 					///BoundingBox bbb = new BoundingBox(xPos, yPos, xPos + 16f, yPos + 16f);
@@ -158,7 +158,7 @@ public class EntityBullet extends Entity
 			int tile = grid.getTile(v.x,  v.y);
 			if (tile == TileUtil.TILE_GEM)
 			{
-				BoundingBox bb = bbFromGridPos(v.x, v.y).expand(-8, -8);
+				BoundingBox bb = getGridPosBB(v.x, v.y).expand(-8, -8);
 				if (bb.boxOverlaps(this.getBB()))
 				{			
 					//LD29.gemTotal++;
@@ -179,12 +179,10 @@ public class EntityBullet extends Entity
 			}
 			else if (tile == TileUtil.TILE_STALACTITE)
 			{
-				BoundingBox bb = bbFromGridPos(v.x, v.y).expand(-4, -8);
+				BoundingBox bb = getGridPosBB(v.x, v.y).expand(-4, -8);
 				if (bb.boxOverlaps(this.getBB()))
-				{			
-					//LD29.gemTotal++;
-					SoundManager.playSound("shatter", (float) (Math.random() * 0.25) + 1f,  0.3f,  false);
-					//SoundManager.getSound("gem").playAsSoundEffect((float) (Math.random() * 0.50) + 1.5f,  0.35f,  false);
+				{				
+					//SoundManager.playSound("shatter", (float) (Math.random() * 0.25) + 1f,  0.3f,  false);					
 					grid.setTile(v.x, v.y, 0);					
 					
 					EntityStalactite stalactite = new EntityStalactite(grid, (v.x * 16) + 8, (v.y * 16) + 8);					

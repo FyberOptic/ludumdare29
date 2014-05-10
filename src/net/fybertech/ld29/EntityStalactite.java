@@ -13,12 +13,17 @@ public class EntityStalactite extends Entity {
 		color.set(0.75f, 0.75f, 0.75f);
 		
 		width = 8;
-		height = 8;
+		height = 10;
 		
-		uvOffsetX = 0;
-		uvOffsetY = 3;
+		offsetX = 0;
+		offsetY = -3;
 	}
 
+//	@Override
+//	public BoundingBox getBB()
+//	{
+//		return new BoundingBox(xPos - (width / 2.0f), yPos - (height / 2.0f) - 3, xPos + (width / 2.0f), yPos + (height / 2.0f) - 3);
+//	}
 	
 	@Override
 	public void render()
@@ -37,6 +42,21 @@ public class EntityStalactite extends Entity {
 		yVel += 300 * delta;
 		
 		super.update(deltaTime);
+		
+		
+		for (Entity e : LD29.instance.entities)
+		{
+			if (!(e instanceof EntityLiving)) continue;
+			float distFrom = this.getDistanceFrom(e);
+			if (distFrom < 32 && this.getBBRelatedTo(e).boxOverlaps(e.getBB()))
+			{
+				((EntityLiving)e).onHurt(this,  1);
+				this.destroyEntity = true;
+			}
+		}
+		
+		
+		if (this.onGround) this.destroyEntity = true;
 	}
 	
 }

@@ -6,7 +6,7 @@ public class EntityPlayer extends EntityLiving
 {
 	
 	public boolean isThrusting = false;
-	
+	public boolean isVerticalBoosting = false;
 	
 	
 	public EntityPlayer(Grid g)
@@ -50,7 +50,10 @@ public class EntityPlayer extends EntityLiving
 			else yVel += 300 * delta;
 		}
 		//System.out.println("VEL: " + yVel);
-		if (yVel < -100) yVel = -100;
+		
+		if (isVerticalBoosting) { if (yVel < -200) yVel = -200; }
+		else if (yVel < -100) yVel = -100;		
+		
 		if (yVel > 400) yVel = 400;		
 		
 		doMove(deltaTime);
@@ -71,7 +74,7 @@ public class EntityPlayer extends EntityLiving
 			int tile = grid.getTile(v.x,  v.y);
 			if (tile == 96)
 			{
-				BoundingBox bb = bbFromGridPos(v.x, v.y).expand(-8, -8);
+				BoundingBox bb = getGridPosBB(v.x, v.y).expand(-8, -8);
 				if (bb.boxOverlaps(this.getBB()))
 				{			
 					LD29.gemTotal++;

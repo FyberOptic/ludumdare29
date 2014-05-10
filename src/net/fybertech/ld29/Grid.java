@@ -147,12 +147,13 @@ public class Grid
 		
 		
 		System.out.println("  Populating with stalactites");
-		int tites = 1000;
+		int tites = 500;
 		while (true)
 		{
 			int x = (int)(Math.random() * Grid.TILEGRIDWIDTH);
 			int y = (int)(Math.random() * Grid.TILEGRIDHEIGHT);
-			if (getTile(x, y) == 0 && getTile(x-1, y) == 0 && getTile(x+1, y) == 0 && getTile(x, y-1) > 0) { setTile(x, y, TileUtil.TILE_STALACTITE); tites--; }
+			if (y == 0) continue;
+			if (getTile(x, y) == 0 && getTile(x-1, y) == 0 && getTile(x+1, y) == 0 && Grid.isSolid(getTile(x, y-1))) { setTile(x, y, TileUtil.TILE_STALACTITE); tites--; }
 			if (tites < 0) break;
 		}
 		
@@ -176,7 +177,9 @@ public class Grid
 			int x = n % CHUNKWIDTH;
 			int y = n / CHUNKWIDTH;
 			int tileNum = 7;
-			if (y == Grid.CHUNKHEIGHT-1) tileNum = 8 + (int)(Math.random() * 2);
+			
+			if (y > 10) continue;
+			if (y == Grid.CHUNKHEIGHT-1-5) tileNum = 8 + (int)(Math.random() * 2);
 			
 			rockChunk.setTile(x,  y, tileNum);			
 		}
@@ -269,7 +272,11 @@ public class Grid
 		int cty = y & 0xF;
 		
 		if (cx < 0 || cx >= GRIDWIDTH || cy >= GRIDHEIGHT) return 0;
-		if (cy < 0) return 7; 
+		if (cy < 0)
+		{
+			if (y > -6) return 0;
+			return 7;
+		}
 		
 		return gridChunks[(cy * GRIDWIDTH) + cx].getTile(ctx, cty);
 	}
@@ -433,20 +440,20 @@ public class Grid
 		int tileDownLeft = getTile(x - 1, y + 1);
 		int tileDownRight = getTile(x + 1, y + 1);
 		
-		boolean isLeft = tileLeft > 0 && tileLeft < 32;
-		boolean isRight = tileRight > 0 && tileRight < 32;
-		boolean isUp = tileUp > 0 && tileUp < 32;
-		boolean isDown = tileDown > 0 && tileDown < 32;
+		boolean isLeft = Grid.isSolid(tileLeft);
+		boolean isRight = Grid.isSolid(tileRight);
+		boolean isUp = Grid.isSolid(tileUp);
+		boolean isDown = Grid.isSolid(tileDown);
 		
-		boolean isUpLeft = tileUpLeft > 0 && tileUpLeft < 32;
-		boolean isUpRight = tileUpRight > 0 && tileUpRight < 32;
-		boolean isDownLeft = tileDownLeft > 0 && tileDownLeft < 32;
-		boolean isDownRight = tileDownRight > 0 && tileDownRight < 32;
+		boolean isUpLeft = Grid.isSolid(tileUpLeft);
+		boolean isUpRight = Grid.isSolid(tileUpRight);
+		boolean isDownLeft = Grid.isSolid(tileDownLeft);
+		boolean isDownRight = Grid.isSolid(tileDownRight);
 
 		
 		int data = getData(x,y) & 0xF0;		
 		
-		if (thisTile > 0 && thisTile < 32)// && firstGeneration) 
+		if (isSolid(thisTile))// && firstGeneration) 
 		{ 
 			//setData(x, y, 0); 
 			//if (!isLeft && !isUp) { setTileDirect(x, y, 7); } //setData(x - 1, y, 0); setData(x, y - 1, 0);}
@@ -461,17 +468,35 @@ public class Grid
 			
 			//return; 
 		}
-		else if (thisTile == 0 || thisTile == 96)
+		else if (thisTile == 0 || thisTile == TileUtil.TILE_GEM)
 		{			
 			if (isLeft && isUp) data |= 1;
 			if (isRight && isUp) data |= 2;
 			if (isLeft && isDown) data |= 4;
 			if (isRight && isDown) data |= 8;
 		}
+		else if (thisTile == TileUtil.TILE_STALACTITE)
+		{
+			if (tileUp == 0)
+			{
+				this.setTile(x, y, 0);
+				data = 0;
+				
+				EntityStalactite stalactite = new EntityStalactite(this, (x * 16) + 8, (y * 16) + 8);					
+				LD29.instance.newentities.add(stalactite);
+			}
+		}
 		
 		//System.out.println(data);
 		setData(x, y, data);
 		
+	}
+	
+	
+	public static boolean isSolid(int tileNum)
+	{
+		if (tileNum > 0 && tileNum < 32) return true;
+		return false;
 	}
 	
 	
@@ -482,7 +507,7 @@ public class Grid
 			int x = (int)(Math.random() * Grid.TILEGRIDWIDTH);
 			int y = (int)(Math.random() * Grid.TILEGRIDHEIGHT);
 			int tileBelow = this.getTile(x,  y + 1);
-			if (this.getTile(x,  y) == 0 && tileBelow > 0 && tileBelow < 32) return new Vector2i(x, y);
+			if (this.getTile(x,  y) == 0 && isSolid(tileBelow)) return new Vector2i(x, y);
 		}
 	}
 	
