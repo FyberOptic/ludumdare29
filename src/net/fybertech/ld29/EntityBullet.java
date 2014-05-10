@@ -156,7 +156,7 @@ public class EntityBullet extends Entity
 		for (Vector2i v : intercepts)
 		{
 			int tile = grid.getTile(v.x,  v.y);
-			if (tile == 96)
+			if (tile == TileUtil.TILE_GEM)
 			{
 				BoundingBox bb = bbFromGridPos(v.x, v.y).expand(-8, -8);
 				if (bb.boxOverlaps(this.getBB()))
@@ -174,6 +174,22 @@ public class EntityBullet extends Entity
 							LD29.instance.newentities.add(debris);
 						}
 					
+					this.destroyEntity = true;
+				}
+			}
+			else if (tile == TileUtil.TILE_STALACTITE)
+			{
+				BoundingBox bb = bbFromGridPos(v.x, v.y).expand(-4, -8);
+				if (bb.boxOverlaps(this.getBB()))
+				{			
+					//LD29.gemTotal++;
+					SoundManager.playSound("shatter", (float) (Math.random() * 0.25) + 1f,  0.3f,  false);
+					//SoundManager.getSound("gem").playAsSoundEffect((float) (Math.random() * 0.50) + 1.5f,  0.35f,  false);
+					grid.setTile(v.x, v.y, 0);					
+					
+					EntityStalactite stalactite = new EntityStalactite(grid, (v.x * 16) + 8, (v.y * 16) + 8);					
+					LD29.instance.newentities.add(stalactite);
+										
 					this.destroyEntity = true;
 				}
 			}

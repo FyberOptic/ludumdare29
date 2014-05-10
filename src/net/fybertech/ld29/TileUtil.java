@@ -9,6 +9,7 @@ public class TileUtil
 	
 	public static int TILE_GEM = 96;
 	public static int TILE_PLAYER = 32;
+	public static int TILE_STALACTITE = 42;
 	
 	public TileUtil(int imageWidth, int imageHeight, int tileWidth, int tileHeight)
 	{

@@ -18,6 +18,9 @@ public class Entity
 
 	public int tileNum;
 	
+	public float uvOffsetX = 0;
+	public float uvOffsetY = 0;
+	
 	public int facing = 1;	
 	
 	public int frameTimer = 0;
@@ -49,6 +52,7 @@ public class Entity
 	protected ArrayList<Vector2i> closestTileIntercepts = new ArrayList<Vector2i>();
 	protected BoundingBox movebox = new BoundingBox();
 	
+	Vector3f color = new Vector3f();
 	
 	/**
 	 * Create new entity
@@ -57,6 +61,7 @@ public class Entity
 	public Entity(Grid g)
 	{	
 		grid = g;
+		color.set(1,1,1);
 	}	
 	
 	
@@ -184,22 +189,24 @@ public class Entity
 		float rx = xPos - 8;
 		float ry = yPos - 8;
 		
+		if (!renderingBorder) GL11.glColor3f(color.x, color.y, color.z);
+		
 		GL11.glBegin(GL11.GL_QUADS);
 		GL11.glTexCoord2f(uv.xMin, uv.yMin);	
-		GL11.glVertex2f(rx, ry);	
+		GL11.glVertex2f(rx + uvOffsetX, ry + uvOffsetY);	
 		
 		GL11.glTexCoord2f(uv.xMax, uv.yMin); 
-		GL11.glVertex2f(rx + 16, ry);	
+		GL11.glVertex2f(rx + 16 + uvOffsetX, ry + uvOffsetY);	
 		
 		GL11.glTexCoord2f(uv.xMax, uv.yMax); 
-		GL11.glVertex2f(rx + 16, ry + 16);	
+		GL11.glVertex2f(rx + 16 + uvOffsetX, ry + 16 + uvOffsetY);	
 		
 		GL11.glTexCoord2f(uv.xMin, uv.yMax); 
-		GL11.glVertex2f(rx, ry + 16);
+		GL11.glVertex2f(rx + uvOffsetX, ry + 16 + uvOffsetY);
 		GL11.glEnd();
 		
 		
-		if (LD29.debugMode)
+		if (LD29.debugMode && !renderingBorder)
 		{
 			GL11.glDisable(GL11.GL_TEXTURE_2D);
 			GL11.glPolygonMode(GL11.GL_FRONT_AND_BACK, GL11.GL_LINE);
