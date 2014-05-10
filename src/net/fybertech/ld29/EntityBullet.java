@@ -179,7 +179,7 @@ public class EntityBullet extends Entity
 			}
 			else if (tile == TileUtil.TILE_STALACTITE)
 			{
-				BoundingBox bb = getGridPosBB(v.x, v.y).expand(-4, -8);
+				BoundingBox bb = getGridPosBB(v.x, v.y).expand(-8, -6).translate(0, -3); //.expand(-4, -8);
 				if (bb.boxOverlaps(this.getBB()))
 				{				
 					//SoundManager.playSound("shatter", (float) (Math.random() * 0.25) + 1f,  0.3f,  false);					

@@ -349,7 +349,10 @@ public class LD29
 					Entity e = iterator.next();
 					e.update(deltaTime);
 					if (e.destroyEntity) iterator.remove();
-				}			
+				}
+				entities.addAll(newentities);
+				newentities.clear();
+				
 				grid.update(deltaTime);
 			}
 			else activeGUI.update(deltaTime);

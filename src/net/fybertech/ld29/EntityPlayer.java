@@ -69,6 +69,8 @@ public class EntityPlayer extends EntityLiving
 			SoundManager.playSound("head", (float)(Math.random() * 0.25) + 0.5f,  0.45f,  false);
 		}
 		
+		
+		// Check 'soft' tiles we're colliding with
 		for (Vector2i v : intercepts)
 		{
 			int tile = grid.getTile(v.x,  v.y);
@@ -84,7 +86,7 @@ public class EntityPlayer extends EntityLiving
 			}
 			else if (tile == TileUtil.TILE_STALACTITE)
 			{
-				BoundingBox bb = getGridPosBB(v.x, v.y).expand(-4, -8);
+				BoundingBox bb = getGridPosBB(v.x, v.y).expand(-8, -6).translate(0, -3);
 				if (bb.boxOverlaps(this.getBB()))
 				{					
 					this.onHurt(null,  1);
@@ -92,6 +94,7 @@ public class EntityPlayer extends EntityLiving
 			}
 		}
 		
+		// Reset standing frame if just landed on ground
 		if (!lastGround && onGround) tileNum = 34;
 	}
 	
