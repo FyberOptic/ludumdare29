@@ -134,16 +134,18 @@ public class Entity
 
 	public Entity setRandomPositionOnGroundFrom(Entity e, int min, int max)
 	{
-		while (true)
+		for (int attempt = 0; attempt < 20; attempt++)
 		{
 			setRandomPositionOnGround();			
 			float distFrom = this.getDistanceFrom(e);
 			
 			if (min != -1 && distFrom < min) continue;
 			if (max != -1 && distFrom > max) continue;
-			break;			
+			return this;	
 		}
 		
+		// Failsafe to here if couldn't find a better one
+		setRandomPositionOnGround();
 		return this;
 	}
 	

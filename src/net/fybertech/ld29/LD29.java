@@ -60,15 +60,6 @@ public class LD29
 	public ArrayList<Entity> entities = new ArrayList<Entity>();
 	public ArrayList<Entity> newentities = new ArrayList<Entity>();
 	
-//	public static Audio soundGem = null;
-//	public static Audio soundThrust = null;
-//	public static Audio soundLand = null;
-//	public static Audio soundHead = null;
-//	public static Audio soundShoot = null;
-//	public static Audio soundShothit = null;
-//	public static Audio soundDirtbreak = null;
-//	public static Audio soundSqueak = null;
-	
 	Font awtFont;
 	public static TrueTypeFont font;
 	
@@ -396,7 +387,7 @@ public class LD29
 		
 		//System.out.println("Adding bat");
 		
-		while (true)
+		for (int attempt = 0; attempt < 10; attempt++)
 		{
 			batX = (float)(Math.random() * 800) + 200;
 			batY = (float)(Math.random() * 800) + 200;
@@ -477,6 +468,8 @@ public class LD29
 		// Handle keyboard
 		
 		boolean openedGUI = false;
+		
+		//this.userScale += 0.0002f;
 		
 		while (Keyboard.next())
 		{				
@@ -906,6 +899,35 @@ public class LD29
 			GL11.glColor3f(1,1,1);			
 			renderTileQuad((Mouse.getX() / displayScale) - 3, ((Display.getHeight() - Mouse.getY()) / displayScale) - 3, 41);			
 		}
+		
+//		GL11.glLoadIdentity();
+//		GL11.glScalef(displayScale * userScale, displayScale * userScale, displayScale * userScale);
+//		{	
+//			int x1 = 400;
+//			int y1 = 64;
+//			int w = 32;
+//			int h = 6 * 16;
+//			//float minX = (1f/512) * 288;
+//			//float minY = (1f/512) * 112;
+//			float minX = (1f/512) * x1;
+//			float minY = (1f/512) * y1;
+//			float maxX = minX + ((1f/512) * w);
+//			float maxY = minY + ((1f/512) * h);			
+//			minX += 0.0001f;
+//			minY += 0.0001f;
+//			maxX -= 0.0001f;
+//			maxY -= 0.0001f;
+//			GL11.glBegin(GL11.GL_QUADS);
+//			GL11.glTexCoord2f(minX, minY);
+//			GL11.glVertex2f(0 + 64,0 + 64);
+//			GL11.glTexCoord2f(minX, maxY);
+//			GL11.glVertex2f(0 + 64,h + 64);
+//			GL11.glTexCoord2f(maxX, maxY);
+//			GL11.glVertex2f(w + 64, h + 64);
+//			GL11.glTexCoord2f(maxX, minY);
+//			GL11.glVertex2f(w + 64, 0 + 64);
+//			GL11.glEnd();
+//		}
 	}
 	
 	

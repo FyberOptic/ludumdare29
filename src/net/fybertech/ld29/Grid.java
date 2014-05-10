@@ -146,6 +146,17 @@ public class Grid
 		}
 		
 		
+		System.out.println("  Populating with stalactites");
+		int tites = 200;
+		while (true)
+		{
+			int x = (int)(Math.random() * Grid.TILEGRIDWIDTH);
+			int y = (int)(Math.random() * Grid.TILEGRIDHEIGHT);
+			if (getTile(x, y) == 0 && getTile(x-1, y) == 0 && getTile(x+1, y) == 0 && getTile(x, y-1) > 0) { setTile(x, y, 42); tites--; }
+			if (tites < 0) break;
+		}
+		
+		
 		// Generate lava chunk
 		lavaChunk = new GridChunk(this, -1,-1);
 		for (int n = 0; n < Grid.CHUNKWIDTH * Grid.CHUNKHEIGHT; n++) 
