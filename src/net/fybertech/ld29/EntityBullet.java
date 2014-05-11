@@ -182,7 +182,7 @@ public class EntityBullet extends Entity
 				BoundingBox bb = getGridPosBB(v.x, v.y).expand(-8, -6).translate(0, -3); //.expand(-4, -8);
 				if (bb.boxOverlaps(this.getBB()))
 				{				
-					//SoundManager.playSound("shatter", (float) (Math.random() * 0.25) + 1f,  0.3f,  false);					
+					SoundManager.playSound("shothit", (float)(Math.random() * 0.25) + 0.35f,  0.2f,  false);					
 					grid.setTile(v.x, v.y, 0);					
 					
 					EntityStalactite stalactite = new EntityStalactite(grid, (v.x * 16) + 8, (v.y * 16) + 8);					

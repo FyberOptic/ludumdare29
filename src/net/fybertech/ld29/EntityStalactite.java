@@ -52,11 +52,34 @@ public class EntityStalactite extends Entity {
 			{
 				((EntityLiving)e).onHurt(this,  1);
 				this.destroyEntity = true;
+				
+				SoundManager.playSound("dirtbreak", (float)(Math.random() * 0.50) + 3f,  0.35f,  false);
+				
+				for (int py = 0; py < 4; py++)
+					for (int px = 0; px < 4; px++)
+					{
+						ParticleExplodedDebris debris = new ParticleExplodedDebris(this.grid, this.tileNum, this.xPos, this.yPos, px, py, 4);
+						debris.yVel = (float)(Math.random() * 10f) + 10;
+						LD29.instance.newentities.add(debris);
+					}
 			}
 		}
 		
 		
-		if (this.onGround) this.destroyEntity = true;
+		if (this.onGround && !this.destroyEntity)
+		{		
+			SoundManager.playSound("dirtbreak", (float)(Math.random() * 0.50) + 3f,  0.35f,  false);
+			
+			for (int py = 0; py < 4; py++)
+				for (int px = 0; px < 4; px++)
+				{
+					ParticleExplodedDebris debris = new ParticleExplodedDebris(this.grid, this.tileNum, this.xPos, this.yPos, px, py, 4);
+					debris.yVel = (float)(Math.random() * 10f) + 10;
+					LD29.instance.newentities.add(debris);
+				}
+			 
+			this.destroyEntity = true;			
+		}
 	}
 	
 }
