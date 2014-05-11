@@ -6,10 +6,9 @@ public class GUIText extends GUI {
 	public PixelFont font;
 	public boolean renderBorder;
 	
-
 	
 	public GUIText(GUI parent, String s, PixelFont f, boolean border) {
-		super(parent);
+		super(parent);		
 		text = s;
 		font = f;
 		renderBorder = border;

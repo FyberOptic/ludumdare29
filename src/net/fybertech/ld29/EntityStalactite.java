@@ -80,6 +80,8 @@ public class EntityStalactite extends Entity {
 			 
 			this.destroyEntity = true;			
 		}
+		
+		if (yPos > Grid.TILEGRIDHEIGHT * 16) this.destroyEntity = true;
 	}
 	
 }

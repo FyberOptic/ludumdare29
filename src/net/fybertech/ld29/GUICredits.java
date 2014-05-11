@@ -11,11 +11,22 @@ public class GUICredits extends GUI {
 
 		scaleModifier = 1;
 		
-		centerText("CREDITS");
+		centerText("---- CREDITS ----");
 		addText("");
 		addText("");
-		centerText("Programming, Art, Sound");
+		addText("");
+		centerText("-- CODE, ART, SOUND --");
 		centerText("Jeffrey Bowman");
+		addText("");
+		addText("");
+		centerText("-- LIBRARIES --");
+		centerText("LWJGL");
+		centerText("Slick-Util");
+		addText("");
+		addText("");
+		centerText("-- UTILITIES --");
+		centerText("SFXR");
+		centerText("JarSplice");
 		
 		backButton = (GUIButton) new GUIButton(this).setText("BACK").setTileWidth(3).setID(1).setPosition(0, 20*10);
 		
