@@ -46,7 +46,7 @@ public class EntityPlayer extends EntityLiving
 		{
 			//System.out.println(jumpcounter);
 			float maxjumpcounter = 250;
-			if (isJumping && jumpcounter < maxjumpcounter) { if (jumpcounter > 50) yVel -= (100 * delta) * ((maxjumpcounter - jumpcounter) / maxjumpcounter); }
+			if (isJumping && jumpcounter < maxjumpcounter) { if (jumpcounter > 50) yVel -= (100 * delta) * ((maxjumpcounter - jumpcounter) / maxjumpcounter); }			
 			else yVel += 300 * delta;
 		}
 		//System.out.println("VEL: " + yVel);
@@ -54,7 +54,8 @@ public class EntityPlayer extends EntityLiving
 		if (isVerticalBoosting) { if (yVel < -200) yVel = -200; }
 		else if (yVel < -100) yVel = -100;		
 		
-		if (yVel > 400) yVel = 400;		
+		if (yVel > 25 && yPos >= Grid.TILEGRIDHEIGHT * 16) yVel = 25; 
+		else if (yVel > 400) yVel = 400;		
 		
 		doMove(deltaTime);
 		
