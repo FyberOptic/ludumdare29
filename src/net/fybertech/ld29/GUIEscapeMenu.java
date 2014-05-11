@@ -11,6 +11,7 @@ public class GUIEscapeMenu extends GUI
 	public GUIEscapeMenu(GUI parent) 
 	{
 		super(parent);		
+		scaleModifier = 2;
 		
 		if (LD29.instance.player.hitpoints < 1)
 		{

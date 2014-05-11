@@ -9,7 +9,8 @@ public class GUIGameOver extends GUI
 {
 
 	public GUIGameOver(GUI parent) {
-		super(parent);		
+		super(parent);	
+		scaleModifier = 2;
 	}
 
 	@Override

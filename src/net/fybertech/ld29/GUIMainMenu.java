@@ -22,8 +22,10 @@ public class GUIMainMenu extends GUI
 		quitButton = (GUIButton) new GUIButton(this).setText("QUIT").setTileWidth(6).setID(1).setPosition(16*4, 20*5 - 8);
 		optionsButton = (GUIButton) new GUIButton(this).setText("OPTIONS").setTileWidth(3).setID(2).setPosition(16*0, 20*9 );
 		creditsButton = (GUIButton) new GUIButton(this).setText("CREDITS").setTileWidth(3).setID(3).setPosition(16*0, 20*10);
-		optionsButton.scaleModifier = 1;
-		creditsButton.scaleModifier = 1;
+		//optionsButton.scaleModifier = 1;
+		//creditsButton.scaleModifier = 1;
+		playButton.scaleModifier = 2;
+		quitButton.scaleModifier = 2;
 		
 		this.addChild(playButton);
 		this.addChild(quitButton);
@@ -56,6 +58,10 @@ public class GUIMainMenu extends GUI
 			LD29.instance.grid.wrapVertical = false;
 		}
 		else if (id == 1) LD29.instance.gameRunning = false;
+		else if (id == 3)
+		{
+			LD29.instance.activeGUI = new GUICredits(this);			
+		}
 	}
 	
 	@Override

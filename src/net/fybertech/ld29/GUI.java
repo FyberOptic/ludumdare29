@@ -25,11 +25,12 @@ public class GUI
 	
 	int gID = 0;
 	
-	float scaleModifier = 2;	
+	float scaleModifier = 1;	
 	
 	public GUI(GUI parent)
 	{
 		parentGUI = parent;
+		if (parentGUI != null) scaleModifier = parentGUI.scaleModifier;
 	}
 	
 	public void onMouse(float x, float y, int button, boolean buttonState)
@@ -81,30 +82,33 @@ public class GUI
 	
 	public void update(float deltaTime)
 	{
-		while (Mouse.next())
-		{
-			for (GUI gui : childGUIs)
+		if (LD29.instance.activeGUI == this)
+		{		
+			while (Mouse.next())
 			{
-				float screenWidth = 320 / gui.scaleModifier;
-				float screenHeight = 240 / gui.scaleModifier;
-				float guiX = (Display.getWidth() / (LD29.displayScale * gui.scaleModifier) - screenWidth) / 2.0f;
-				float guiY = (Display.getHeight() / (LD29.displayScale * gui.scaleModifier) - screenHeight) / 2.0f;
+				for (GUI gui : childGUIs)
+				{
+					float screenWidth = 320 / gui.scaleModifier;
+					float screenHeight = 240 / gui.scaleModifier;
+					float guiX = (Display.getWidth() / (LD29.displayScale * gui.scaleModifier) - screenWidth) / 2.0f;
+					float guiY = (Display.getHeight() / (LD29.displayScale * gui.scaleModifier) - screenHeight) / 2.0f;
+					
+					float mouseX = Mouse.getEventX() / (LD29.displayScale * gui.scaleModifier);
+					float mouseY = (Display.getHeight() - Mouse.getEventY() - 1) / (LD29.displayScale * gui.scaleModifier);
+					
+					mouseX -= guiX;
+					mouseY -= guiY;				
+					
+					if (gui.isCoordInside(mouseX, mouseY)) 
+					{					
+						gui.isMouseOver = true;					
+						gui.onMouse(mouseX, mouseY, Mouse.getEventButton(), Mouse.getEventButtonState());
+	
+					}
+					else gui.isMouseOver = false;
+				}			
 				
-				float mouseX = Mouse.getEventX() / (LD29.displayScale * gui.scaleModifier);
-				float mouseY = (Display.getHeight() - Mouse.getEventY() - 1) / (LD29.displayScale * gui.scaleModifier);
-				
-				mouseX -= guiX;
-				mouseY -= guiY;				
-				
-				if (gui.isCoordInside(mouseX, mouseY)) 
-				{					
-					gui.isMouseOver = true;					
-					gui.onMouse(mouseX, mouseY, Mouse.getEventButton(), Mouse.getEventButtonState());
-
-				}
-				else gui.isMouseOver = false;
-			}			
-			
+			}
 		}
 		
 		for (GUI gui : childGUIs) gui.update(deltaTime);
@@ -122,6 +126,7 @@ public class GUI
 	
 	public void render()
 	{
+		GL11.glColor3f(1,1,1);
 		GL11.glLoadIdentity();
 		
 		if (renderScreenCover)
@@ -138,11 +143,21 @@ public class GUI
 		}
 		
 		
+		float localscale = scaleModifier;
+		float localwidth = 320 / localscale;
+		float localheight = 240 / localscale;
 		
-		GL11.glScalef(((float)LD29.displayScale * 2f), ((float) LD29.displayScale * 2f), 1);
-		float guiX = (Display.getWidth() / (LD29.displayScale * 2f) - 160) / 2;
-		float guiY = (Display.getHeight() / (LD29.displayScale * 2f) - 120) / 2;
-		GL11.glTranslatef(guiX,  guiY,  0);;
+		GL11.glLoadIdentity();
+		GL11.glScalef(((float)LD29.displayScale * localscale), ((float) LD29.displayScale * localscale), 1);
+		GL11.glColor3f(0.25f,0.75f,0.25f);
+		float guiX = (Display.getWidth() / (LD29.displayScale * localscale) - localwidth) / 2;
+		float guiY = (Display.getHeight() / (LD29.displayScale * localscale) - localheight) / 2;		
+		GL11.glTranslatef(guiX, guiY,0);
+		
+		//GL11.glScalef(((float)LD29.displayScale * 2f), ((float) LD29.displayScale * 2f), 1);
+		//float guiX = (Display.getWidth() / (LD29.displayScale * 2f) - 160) / 2;
+		//float guiY = (Display.getHeight() / (LD29.displayScale * 2f) - 120) / 2;
+		//GL11.glTranslatef(guiX,  guiY,  0);;
 		
 //		GL11.glDisable(GL11.GL_TEXTURE_2D);
 //		GL11.glColor3f(1,0,0);
@@ -154,6 +169,7 @@ public class GUI
 //		GL11.glEnd();
 //		GL11.glEnable(GL11.GL_TEXTURE_2D);
 		
+		GL11.glColor3f(1,1,1);
 		for (GUI gui : childGUIs) gui.render();
 	}
 	

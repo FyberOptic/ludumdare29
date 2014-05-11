@@ -18,27 +18,32 @@ public class PixelFont8x8 extends PixelFont {
 		float baseY = uvCalcPixel * (5 * 16);
 		float bottomY = baseY + (uvCalcPixel * charHeight);
 		
-		for (int n = 0; n < 11; n++)
+		for (int n = 0; n < 32; n++)
 		{			
-			int basenum = n + 48;
-			if (n == 10) basenum = 169;
+			int basenum = n + 33;
+			//if (n == 10) basenum = 169;
 			chars[basenum] = new BoundingBox(n * charWidth * uvCalcPixel, baseY, (n * charWidth * uvCalcPixel) + (charWidth * uvCalcPixel), bottomY);
 		}
 		
 		
 		baseY += (charHeight * uvCalcPixel);
 		bottomY += (charHeight * uvCalcPixel);
-		for (int n = 0; n < 26; n++)
+		for (int n = 0; n < 32; n++)
 		{			
 			chars[n + 65] = new BoundingBox(n * charWidth * uvCalcPixel, baseY, (n * charWidth * uvCalcPixel) + (charWidth * uvCalcPixel), bottomY);
 		}
 		
 		baseY += (charHeight * uvCalcPixel);
 		bottomY += (charHeight * uvCalcPixel);
-		for (int n = 0; n < 26; n++)
+		for (int n = 0; n < 30; n++)
 		{			
 			chars[n + 97] = new BoundingBox(n * charWidth * uvCalcPixel, baseY, (n * charWidth * uvCalcPixel) + (charWidth * uvCalcPixel), bottomY);
 		}
+		
+		// Copyright char
+		baseY += (charHeight * uvCalcPixel);
+		bottomY += (charHeight * uvCalcPixel);
+		chars[169] = new BoundingBox(0, baseY, (charWidth * uvCalcPixel), bottomY);
 	}
 	
 }
